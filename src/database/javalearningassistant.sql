@@ -53,10 +53,10 @@ CREATE TABLE `course` (
 -- --------------------------------------------------------
 
 --
--- Structure de la table `exercice`
+-- Structure de la table `exercise`
 --
 
-CREATE TABLE `exercice` (
+CREATE TABLE `exercise` (
   `id` int(11) NOT NULL,
   `course_id` int(11) NOT NULL,
   `title` varchar(255) NOT NULL,
@@ -68,12 +68,12 @@ CREATE TABLE `exercice` (
 -- --------------------------------------------------------
 
 --
--- Structure de la table `exercicesubmission`
+-- Structure de la table `exercisesubmission`
 --
 
-CREATE TABLE `exercicesubmission` (
+CREATE TABLE `exercisesubmission` (
   `id` int(11) NOT NULL,
-  `exercice_id` int(11) NOT NULL,
+  `exercise_id` int(11) NOT NULL,
   `student_id` int(11) NOT NULL,
   `submission_text` text NOT NULL,
   `submitted_at` timestamp NOT NULL DEFAULT current_timestamp()
@@ -210,18 +210,18 @@ ALTER TABLE `course`
   ADD KEY `teacher_id` (`teacher_id`);
 
 --
--- Index pour la table `exercice`
+-- Index pour la table `exercise`
 --
-ALTER TABLE `exercice`
+ALTER TABLE `exercise`
   ADD PRIMARY KEY (`id`),
   ADD KEY `course_id` (`course_id`);
 
 --
--- Index pour la table `exercicesubmission`
+-- Index pour la table `exercisesubmission`
 --
-ALTER TABLE `exercicesubmission`
+ALTER TABLE `exercisesubmission`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `exercice_id` (`exercice_id`),
+  ADD KEY `exercise_id` (`exercise_id`),
   ADD KEY `student_id` (`student_id`);
 
 --
@@ -299,15 +299,15 @@ ALTER TABLE `course`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT pour la table `exercice`
+-- AUTO_INCREMENT pour la table `exercise`
 --
-ALTER TABLE `exercice`
+ALTER TABLE `exercise`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT pour la table `exercicesubmission`
+-- AUTO_INCREMENT pour la table `exercisesubmission`
 --
-ALTER TABLE `exercicesubmission`
+ALTER TABLE `exercisesubmission`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
@@ -375,17 +375,17 @@ ALTER TABLE `course`
   ADD CONSTRAINT `course_ibfk_1` FOREIGN KEY (`teacher_id`) REFERENCES `user` (`id`) ON DELETE CASCADE;
 
 --
--- Contraintes pour la table `exercice`
+-- Contraintes pour la table `exercise`
 --
-ALTER TABLE `exercice`
-  ADD CONSTRAINT `exercice_ibfk_1` FOREIGN KEY (`course_id`) REFERENCES `course` (`id`) ON DELETE CASCADE;
+ALTER TABLE `exercise`
+  ADD CONSTRAINT `exercise_ibfk_1` FOREIGN KEY (`course_id`) REFERENCES `course` (`id`) ON DELETE CASCADE;
 
 --
--- Contraintes pour la table `exercicesubmission`
+-- Contraintes pour la table `exercisesubmission`
 --
-ALTER TABLE `exercicesubmission`
-  ADD CONSTRAINT `exercicesubmission_ibfk_1` FOREIGN KEY (`exercice_id`) REFERENCES `exercice` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `exercicesubmission_ibfk_2` FOREIGN KEY (`student_id`) REFERENCES `user` (`id`) ON DELETE CASCADE;
+ALTER TABLE `exercisesubmission`
+  ADD CONSTRAINT `exercisesubmission_ibfk_1` FOREIGN KEY (`exercise_id`) REFERENCES `exercise` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `exercisesubmission_ibfk_2` FOREIGN KEY (`student_id`) REFERENCES `user` (`id`) ON DELETE CASCADE;
 
 --
 -- Contraintes pour la table `notification`
