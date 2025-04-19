@@ -1,0 +1,140 @@
+@font-face {
+    font-family: 'InterRegular';
+    src: url('../fonts/Inter-Regular.ttf');
+}
+
+@font-face {
+    font-family: 'InterBold';
+    src: url('../fonts/Inter-Bold.ttf');
+    font-weight: bold;
+}
+
+
+/* Root styles */
+.root {
+    -fx-background-color: #1C1C1C;
+    -fx-font-family: "InterRegular";
+}
+
+/* Login container */
+.login-container {
+    -fx-background-color: #1C1C1C;
+    -fx-background-radius: 40px;
+    -fx-border-color: #797979;
+    -fx-border-radius: 40px;
+    -fx-border-width: 2px;
+    -fx-spacing: 25px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 10, 0, 0, 0);
+}
+
+/* Logo styles */
+.logo-container {
+    -fx-padding: 0 0 10px 0;
+}
+
+.logo-circle {
+    -fx-fill: white;
+}
+
+/* Welcome text */
+.welcome-text {
+    -fx-padding: 0 0 15px 0;
+}
+
+.welcome-label {
+    -fx-text-fill: white;
+    -fx-font-size: 40px;
+}
+
+.brand-label {
+    -fx-text-fill: #FF7801; /* Orange color for AOPFE */
+    -fx-font-size: 40px;
+    -fx-font-weight: bold;
+}
+
+/* Input fields */
+.input-container {
+    -fx-background-color: #1C1C1C;
+    -fx-background-radius: 5px;
+    -fx-border-color: #797979;
+    -fx-border-radius: 8px;
+    -fx-border-width: 2px;
+    -fx-alignment: center-left;
+}
+
+.icon-container {
+    -fx-padding: 10px;
+    -fx-min-width: 40px;
+    -fx-alignment: center;
+}
+
+.input-divider {
+    -fx-stroke: #797979;
+    -fx-opacity: 0.7;
+    -fx-stroke-width: 2px;
+}
+
+.text-field, .password-field {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: #797979;
+    -fx-font-size: 20px;
+    -fx-padding: 12px 10px;
+    -fx-border-width: 0;
+}
+
+.eye-button {
+    -fx-background-color: transparent;
+    -fx-padding: 12px 15px;
+    -fx-min-width: 50px;
+    -fx-cursor: hand;
+    -fx-background-radius: 0;
+    -fx-border-width: 0;
+    -fx-focus-traversable: false;
+}
+
+/* Sign in button */
+.sign-in-button {
+    -fx-background-color: #FF7801;
+    -fx-text-fill: white;
+    -fx-font-size: 20px;
+    -fx-font-family: "InterRegular";
+    -fx-padding: 10px;
+    -fx-background-radius: 5px;
+    -fx-cursor: hand;
+    -fx-min-width: 175px;
+    -fx-alignment: center;
+}
+
+.sign-in-button:hover {
+    -fx-background-color: #FF8800;
+}
+
+.sign-in-button:pressed {
+    -fx-background-color: #E56A00;
+}
+
+/* Terms text */
+.terms-container {
+    -fx-padding: 10px 0 0 0;
+    -fx-spacing: 0;
+    -fx-wrap-text: true;
+    -fx-alignment: center;
+}
+
+.terms-text {
+    -fx-text-fill: #797979;
+    -fx-font-size: 15px;
+}
+
+.terms-link {
+    -fx-text-fill: #797979;
+    -fx-font-size: 15px;
+    -fx-underline: true;
+    -fx-border-width: 0;
+    -fx-padding: 0;
+}
+
+.terms-link:hover {
+    -fx-text-fill: #FF7700;
+}
