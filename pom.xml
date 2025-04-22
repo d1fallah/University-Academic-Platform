@@ -28,6 +28,12 @@
             <artifactId>jbcrypt</artifactId>
             <version>0.4</version>
         </dependency>
+        <!-- MySQL JDBC Driver -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.33</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -49,6 +55,8 @@
                     <options>
                         <option>--add-reads</option>
                         <option>PFE=jbcrypt</option>
+                        <option>--add-modules</option>
+                        <option>java.sql</option>
                     </options>
                 </configuration>
             </plugin>

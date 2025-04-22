@@ -1,4 +1,5 @@
 C:\Users\Oday\Desktop\intillij\PFE\src\main\java\app\backend\database\DataBaseConnection.java
+C:\Users\Oday\Desktop\intillij\PFE\src\main\java\app\backend\database\DatabaseInitializer.java
 C:\Users\Oday\Desktop\intillij\PFE\src\main\java\app\backend\models\Answer.java
 C:\Users\Oday\Desktop\intillij\PFE\src\main\java\app\backend\models\Course.java
 C:\Users\Oday\Desktop\intillij\PFE\src\main\java\app\backend\models\Exercise.java
@@ -21,6 +22,8 @@ C:\Users\Oday\Desktop\intillij\PFE\src\main\java\app\backend\services\QuizResult
 C:\Users\Oday\Desktop\intillij\PFE\src\main\java\app\backend\services\QuizService.java
 C:\Users\Oday\Desktop\intillij\PFE\src\main\java\app\backend\utils\PasswordHasher.java
 C:\Users\Oday\Desktop\intillij\PFE\src\main\java\app\backend\utils\SessionManager.java
+C:\Users\Oday\Desktop\intillij\PFE\src\main\java\app\frontend\LoadingController.java
 C:\Users\Oday\Desktop\intillij\PFE\src\main\java\app\frontend\LoginController.java
+C:\Users\Oday\Desktop\intillij\PFE\src\main\java\app\frontend\SignupController.java
 C:\Users\Oday\Desktop\intillij\PFE\src\main\java\app\Main.java
 C:\Users\Oday\Desktop\intillij\PFE\src\main\java\module-info.java

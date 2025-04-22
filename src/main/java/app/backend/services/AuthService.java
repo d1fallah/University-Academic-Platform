@@ -13,17 +13,38 @@ public class AuthService {
     // Sign up a new user
     public static boolean signup(User user) {
         Connection conn = DataBaseConnection.getConnection();
+        
+        if (conn == null) {
+            System.out.println("❌ Cannot sign up: Database connection failed.");
+            return false;
+        }
 
         try {
+            // Validate matricule format before continuing
+            String matricule = user.getMatricule().toUpperCase();
+            String role = user.getRole();
+            
+            if ((role.equals("student") && !matricule.startsWith("UNST")) || 
+                (role.equals("teacher") && !matricule.startsWith("UNTS"))) {
+                System.out.println("❌ Matricule format doesn't match the role. Students should use UNST, teachers should use UNTS.");
+                return false;
+            }
+            
             // Step 1: Check if Matricule is in ValidID table
-            String checkMatriculeSQL = "SELECT * FROM ValidID WHERE matricule = ? AND role = ?";
+            String checkMatriculeSQL = "SELECT * FROM ValidID WHERE matricule = ?";
             PreparedStatement checkStmt = conn.prepareStatement(checkMatriculeSQL);
             checkStmt.setString(1, user.getMatricule());
-            checkStmt.setString(2, user.getRole());
             ResultSet rs = checkStmt.executeQuery();
 
             if (!rs.next()) {
-                System.out.println("❌ Invalid Matricule or Role.");
+                System.out.println("❌ Invalid Matricule. Please use a valid university ID.");
+                return false;
+            }
+            
+            // Validate that the role matches what's in the ValidID table
+            String validRole = rs.getString("role");
+            if (!validRole.equals(user.getRole())) {
+                System.out.println("❌ Role mismatch. The matricule is registered for " + validRole + ", not " + user.getRole());
                 return false;
             }
 
@@ -43,7 +64,7 @@ public class AuthService {
             PreparedStatement insertStmt = conn.prepareStatement(insertSQL);
             insertStmt.setString(1, user.getName());
             insertStmt.setString(2, PasswordHasher.hashPassword(user.getPassword()));
-            insertStmt.setString(3, user.getMatricule());
+            insertStmt.setString(3, user.getMatricule().toUpperCase()); // Ensure matricule is uppercase
             insertStmt.setString(4, user.getRole());
 
             int rowsInserted = insertStmt.executeUpdate();
@@ -56,6 +77,7 @@ public class AuthService {
             }
 
         } catch (SQLException e) {
+            System.out.println("❌ Database error during signup: " + e.getMessage());
             e.printStackTrace();
             return false;
         }
@@ -64,6 +86,11 @@ public class AuthService {
     // Login user
     public static User login(String matricule, String password) {
         Connection conn = DataBaseConnection.getConnection();
+        
+        if (conn == null) {
+            System.out.println("❌ Cannot login: Database connection failed.");
+            return null;
+        }
 
         try {
             String sql = "SELECT * FROM User WHERE matricule = ?";
@@ -91,6 +118,7 @@ public class AuthService {
                 System.out.println("❌ Matricule not found.");
             }
         } catch (SQLException e) {
+            System.out.println("❌ Database error during login: " + e.getMessage());
             e.printStackTrace();
         }
 

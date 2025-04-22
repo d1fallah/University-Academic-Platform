@@ -1,6 +1,9 @@
 package app;
 
+import app.backend.database.DataBaseConnection;
+import app.backend.database.DatabaseInitializer;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -12,6 +15,8 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         try {
+            // Initialize database with tables and default valid IDs
+            DatabaseInitializer.initializeDatabase();
 
             // Load fxml file
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/login.fxml"));
@@ -26,9 +31,16 @@ public class Main extends Application {
             // Configure the stage
             primaryStage.setTitle("AOPFE Login");
             primaryStage.setScene(scene);
-
-
+            
+            // Set stage to maximized
+            primaryStage.setMaximized(true);
+            
+            // Show stage
             primaryStage.show();
+        
+            Platform.runLater(() -> {
+                root.requestLayout();
+            });
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println("❌ Failed to start the application.");
@@ -37,5 +49,11 @@ public class Main extends Application {
 
     public static void main(String[] args) {
         launch(args);
+    }
+    
+    @Override
+    public void stop() {
+        // Close database connection when application exits
+        DataBaseConnection.closeConnection();
     }
 }

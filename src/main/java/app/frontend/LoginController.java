@@ -1,17 +1,22 @@
 package app.frontend;
 
+import app.backend.database.DataBaseConnection;
+import app.backend.models.User;
+import app.backend.services.AuthService;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
-import javafx.scene.Node;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.ResourceBundle;
 
 public class LoginController implements Initializable {
@@ -22,10 +27,18 @@ public class LoginController implements Initializable {
 
     private TextField passwordTextField;
     private boolean passwordVisible = false;
+    private static User currentUser = null;
 
+    
+    public static User getCurrentUser() {
+        return currentUser;
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        // Initialize the database connection when the login screen loads
+        DataBaseConnection.getConnection();
+        
         passwordTextField = new TextField();
         passwordTextField.getStyleClass().add("text-field");
         passwordTextField.setPromptText("Password");
@@ -40,12 +53,6 @@ public class LoginController implements Initializable {
     @FXML
     public void togglePasswordVisibility() {
         passwordVisible = !passwordVisible;
-
-        // Store the current children except the text fields
-        List<Node> otherNodes = new ArrayList<>();
-        Node iconContainer = passwordContainer.getChildren().get(0);
-        Node divider = passwordContainer.getChildren().get(1);
-        Node eyeIcon = passwordContainer.getChildren().get(passwordContainer.getChildren().size() - 1);
 
         if (passwordVisible) {
             // Show password
@@ -72,6 +79,86 @@ public class LoginController implements Initializable {
 
     @FXML
     public void handleLogin(ActionEvent event) {
-        System.out.println("Login button clicked");
+        // Get the input values
+        String matricule = usernameField.getText().trim();
+        String password = passwordVisible ? passwordTextField.getText() : passwordField.getText();
+        
+        // Validate input
+        if (matricule.isEmpty() || password.isEmpty()) {
+            showAlert(Alert.AlertType.ERROR, "Login Error", "Please enter both matricule and password.");
+            return;
+        }
+        
+        // Check database connection first
+        if (!DataBaseConnection.isDatabaseConnected()) {
+            showAlert(Alert.AlertType.ERROR, "Database Error", 
+                    "Unable to connect to the database. Please make sure MySQL is running and properly configured.");
+            return;
+        }
+        
+        // Attempt login using AuthService
+        User user = AuthService.login(matricule, password);
+        
+        if (user == null) {
+            showAlert(Alert.AlertType.ERROR, "Login Failed", "Invalid matricule or password.");
+            return;
+        }
+        
+        // Login successful
+        // Store the current user
+        currentUser = user;
+        
+        // Load the main screen based on user role
+        try {
+            // Load the loading screen first for better UX
+            Parent loadingView = FXMLLoader.load(getClass().getResource("/fxml/loading.fxml"));
+            Scene loadingScene = new Scene(loadingView, 1920, 1080);
+            
+            // Get current stage
+            Stage stage = (Stage) usernameField.getScene().getWindow();
+            
+            // Set new Scene
+            stage.setScene(loadingScene);
+            stage.setMaximized(true);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Navigation Error", "Failed to start the loading screen.");
+        }
+    }
+    
+    @FXML
+    public void navigateToSignup(ActionEvent event) {
+        try {
+            // Load the signup view
+            Parent signupView = FXMLLoader.load(getClass().getResource("/fxml/signup.fxml"));
+            Scene signupScene = new Scene(signupView, 1920, 1080);
+            
+            // Get current stage
+            Stage stage = (Stage) usernameField.getScene().getWindow();
+            
+            // Set new Scene
+            stage.setScene(signupScene);
+            stage.setTitle("AOPFE Sign Up");
+            
+            // Force layout recalculation to apply proper padding
+            signupView.requestLayout();
+
+            // Ensure it stays maximized
+            stage.setMaximized(true);
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Navigation Error", "Failed to navigate to the signup page.");
+        }
+    }
+    
+    // Helper method to show alerts
+    private void showAlert(Alert.AlertType alertType, String title, String message) {
+        Alert alert = new Alert(alertType);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }
