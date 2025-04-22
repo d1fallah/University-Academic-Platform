@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+
+<BorderPane prefHeight="1080.0" prefWidth="1920.0" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.frontend.MainController">
+   <left>
+      <VBox prefWidth="260.0" styleClass="sidebar">
+         <children>
+            <!-- App Header -->
+            <HBox alignment="CENTER_LEFT" prefHeight="70.0" spacing="10.0" styleClass="app-header">
+               <children>
+                  <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../images/logo.png" />
+                     </image>
+                  </ImageView>
+                  <Label styleClass="app-title" text="AEPFE" />
+                  <HBox alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS">
+                     <children>
+                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/notification.png" />
+                           </image>
+                        </ImageView>
+                     </children>
+                  </HBox>
+               </children>
+               <padding>
+                  <Insets left="20.0" right="20.0" />
+               </padding>
+            </HBox>
+
+            <!-- Menu Section -->
+            <VBox styleClass="menu-section">
+               <children>
+                  <Label styleClass="section-header" text="MENU" />
+
+                  <!-- Dashboard -->
+                  <HBox styleClass="menu-item" fx:id="dashboardItem">
+                     <children>
+                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/dashboard.png" />
+                           </image>
+                        </ImageView>
+                        <Label text="Dashboard" />
+                     </children>
+                  </HBox>
+
+                  <!-- Courses -->
+                  <HBox styleClass="menu-item" fx:id="coursesItem">
+                     <children>
+                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/courses.png" />
+                           </image>
+                        </ImageView>
+                        <Label text="Courses" />
+                     </children>
+                  </HBox>
+
+                  <!-- Quizzes -->
+                  <HBox styleClass="menu-item" fx:id="quizzesItem">
+                     <children>
+                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/quizzes.png" />
+                           </image>
+                        </ImageView>
+                        <Label text="Quizzes" />
+                     </children>
+                  </HBox>
+
+                  <!-- Exercises -->
+                  <HBox styleClass="menu-item" fx:id="exercisesItem">
+                     <children>
+                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/exercises.png" />
+                           </image>
+                        </ImageView>
+                        <Label text="Exercises" />
+                     </children>
+                  </HBox>
+
+                  <!-- Practical Work -->
+                  <HBox styleClass="menu-item" fx:id="practicalWorkItem">
+                     <children>
+                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/practical.png" />
+                           </image>
+                        </ImageView>
+                        <Label text="Practical Work" />
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+
+            <!-- Library Section -->
+            <VBox styleClass="menu-section">
+               <children>
+                  <Label styleClass="section-header" text="LIBRARY" />
+
+                  <!-- Saved Courses -->
+                  <HBox styleClass="menu-item" fx:id="savedCoursesItem">
+                     <children>
+                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/saved.png" />
+                           </image>
+                        </ImageView>
+                        <Label text="Saved Courses" />
+                     </children>
+                  </HBox>
+
+                  <!-- My Results -->
+                  <HBox styleClass="menu-item" fx:id="myResultsItem">
+                     <children>
+                        <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/results.png" />
+                           </image>
+                        </ImageView>
+                        <Label text="My Results" />
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+
+            <!-- User Profile Section (at bottom) -->
+            <VBox styleClass="user-profile" VBox.vgrow="ALWAYS">
+               <children>
+                  <HBox alignment="CENTER_LEFT" spacing="10.0">
+                     <children>
+                        <StackPane>
+                           <children>
+                              <Circle radius="20.0" styleClass="avatar-circle" />
+                              <ImageView fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../images/avatar.png" />
+                                 </image>
+                              </ImageView>
+                           </children>
+                        </StackPane>
+                        <VBox>
+                           <children>
+                              <Label styleClass="user-name" text="Akram Oday" />
+                              <Label styleClass="user-email" text="akramoday@ife.itz" />
+                           </children>
+                        </VBox>
+                        <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true" HBox.hgrow="ALWAYS">
+                           <image>
+                              <Image url="@../images/arrow-right.png" />
+                           </image>
+                           <HBox.margin>
+                              <Insets left="10.0" />
+                           </HBox.margin>
+                        </ImageView>
+                     </children>
+                     <padding>
+                        <Insets bottom="10.0" left="20.0" right="20.0" top="10.0" />
+                     </padding>
+                  </HBox>
+               </children>
+            </VBox>
+         </children>
+      </VBox>
+   </left>
+   <center>
+      <StackPane fx:id="contentArea" styleClass="content-area">
+         <!-- Content will be loaded here dynamically -->
+      </StackPane>
+   </center>
+</BorderPane>
