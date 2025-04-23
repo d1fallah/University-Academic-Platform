@@ -1,0 +1,26 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "build",
+        "type": "shell",
+        "command": "javac",
+        "args": [
+          "-cp",
+          "lib/jbcrypt-0.4.jar",
+          "-d",
+          "bin",
+          "src/backend/database/*.java",
+          "src/backend/models/*.java",
+          "src/backend/services/*.java",
+          "src/backend/utils/*.java",
+          "src/Main.java"
+        ],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        }
+      }
+    ]
+  }
+  
