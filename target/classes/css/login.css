@@ -1,0 +1,220 @@
+@font-face {
+  font-family: "InterRegular";
+  src: url("../fonts/Inter-Regular.ttf");
+}
+
+@font-face {
+  font-family: "InterBold";
+  src: url("../fonts/Inter-Bold.ttf");
+  font-weight: bold;
+}
+
+/* Root styles */
+.root {
+  -fx-background-color: #1c1c1c;
+  -fx-font-family: "InterRegular";
+  -fx-min-height: 100%;
+}
+
+/* Login container */
+.login-container {
+  -fx-background-color: #1c1c1c;
+  -fx-background-radius: 40px;
+  -fx-border-color: #797979;
+  -fx-border-radius: 40px;
+  -fx-border-width: 2px;
+  -fx-spacing: 25px;
+  -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.6), 10, 0, 0, 0);
+}
+
+/* Logo styles */
+.logo-container {
+  -fx-padding: 0 0 10px 0;
+}
+
+.logo-circle {
+  -fx-fill: white;
+}
+
+/* Welcome text */
+.welcome-text {
+  -fx-padding: 0 0 15px 0;
+}
+
+.welcome-label {
+  -fx-text-fill: white;
+  -fx-font-size: 40px;
+}
+
+.brand-label {
+  -fx-text-fill: #ff7801; /* Orange color for AOPFE */
+  -fx-font-size: 40px;
+  -fx-font-weight: bold;
+}
+
+/* Input fields */
+.input-container {
+  -fx-background-color: #1c1c1c;
+  -fx-background-radius: 5px;
+  -fx-border-color: #797979;
+  -fx-border-radius: 8px;
+  -fx-border-width: 2px;
+  -fx-alignment: center-left;
+}
+
+.icon-container {
+  -fx-padding: 10px;
+  -fx-min-width: 40px;
+  -fx-alignment: center;
+}
+
+.input-divider {
+  -fx-stroke: #797979;
+  -fx-opacity: 0.7;
+  -fx-stroke-width: 2px;
+}
+
+.text-field,
+.password-field {
+  -fx-background-color: transparent;
+  -fx-text-fill: white;
+  -fx-prompt-text-fill: #797979;
+  -fx-font-size: 20px;
+  -fx-padding: 12px 10px;
+  -fx-border-width: 0;
+}
+
+/* ComboBox Styling */
+.combo-box {
+  -fx-background-color: transparent;
+  -fx-text-fill: white;
+  -fx-prompt-text-fill: #797979;
+  -fx-font-size: 20px;
+  -fx-padding: 0;
+  -fx-border-width: 0;
+  -fx-cursor: hand;
+  -fx-min-height: 45px;
+}
+
+.combo-box > .list-cell {
+  -fx-background-color: transparent;
+  -fx-text-fill: white;
+  -fx-padding: 12px 10px;
+  -fx-alignment: center-left;
+}
+
+.combo-box:hover {
+  -fx-cursor: hand;
+}
+
+.combo-box-popup .list-view {
+  -fx-background-color: #1c1c1c;
+  -fx-border-color: #797979;
+  -fx-border-width: 2px;
+  -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.6), 10, 0, 0, 0);
+}
+
+.combo-box-popup .list-cell {
+  -fx-background-color: #1c1c1c;
+  -fx-text-fill: white;
+  -fx-padding: 12px 10px;
+  -fx-cell-size: 45px;
+}
+
+.combo-box-popup .list-cell:filled:selected,
+.combo-box-popup .list-cell:filled:selected:hover {
+  -fx-background-color: #ff7801;
+  -fx-text-fill: white;
+}
+
+.combo-box-popup .list-cell:filled:hover {
+  -fx-background-color: #333333;
+}
+
+.combo-box .arrow-button {
+  -fx-background-color: transparent;
+  -fx-padding: 0 12px;
+}
+
+.combo-box .arrow {
+  -fx-background-color: #797979;
+  -fx-background-insets: 0;
+  -fx-padding: 6px;
+}
+
+.combo-box-base:showing .arrow,
+.combo-box-base:hover .arrow {
+  -fx-background-color: #ff7801;
+}
+
+/* End ComboBox Styling */
+
+.eye-button {
+  -fx-background-color: transparent;
+  -fx-padding: 12px 15px;
+  -fx-min-width: 50px;
+  -fx-cursor: hand;
+  -fx-background-radius: 0;
+  -fx-border-width: 0;
+  -fx-focus-traversable: false;
+}
+
+/* Sign in button */
+.sign-in-button {
+  -fx-background-color: #ff7801;
+  -fx-text-fill: white;
+  -fx-font-size: 20px;
+  -fx-font-family: "InterRegular";
+  -fx-padding: 10px;
+  -fx-background-radius: 5px;
+  -fx-cursor: hand;
+  -fx-min-width: 175px;
+  -fx-alignment: center;
+}
+
+.sign-in-button:hover {
+  -fx-background-color: #ff8800;
+}
+
+.sign-in-button:pressed {
+  -fx-background-color: #e56a00;
+}
+
+/* Terms text */
+.terms-container {
+  -fx-padding: 10px 0 0 0;
+  -fx-spacing: 0;
+  -fx-wrap-text: true;
+  -fx-alignment: center;
+}
+
+.terms-text {
+  -fx-text-fill: #797979;
+  -fx-font-size: 15px;
+}
+
+.terms-link {
+  -fx-text-fill: #797979;
+  -fx-font-size: 15px;
+  -fx-underline: true;
+  -fx-border-width: 0;
+  -fx-padding: 0;
+}
+
+.terms-link:hover {
+  -fx-text-fill: #ff7700;
+}
+
+/* Role info text */
+.role-info-container {
+  -fx-padding: 0 0 5px 0;
+  -fx-alignment: center;
+}
+
+.role-info-text {
+  -fx-text-fill: #a0a0a0;
+  -fx-font-size: 14px;
+  -fx-font-style: italic;
+  -fx-wrap-text: true;
+  -fx-text-alignment: center;
+}
