@@ -8,25 +8,30 @@ public class Course {
     private String title;
     private String description;
     private String comment;
+    private String pdfPath;    
     private int teacherId;
     private Timestamp createdAt;
 
     // Constructors
     public Course() {}
 
-    public Course(int id, String title, String description, String comment, int teacherId, Timestamp createdAt) {
+    // Full constructor including pdfPath
+    public Course(int id, String title, String description, String comment, String pdfPath, int teacherId, Timestamp createdAt) {
         this.id = id;
         this.title = title;
         this.description = description;
         this.comment = comment;
+        this.pdfPath = pdfPath;
         this.teacherId = teacherId;
         this.createdAt = createdAt;
     }
 
-    public Course(String title, String description, String comment, int teacherId) {
+    // Constructor for adding a course without createdAt and id
+    public Course(String title, String description, String comment, String pdfPath, int teacherId) {
         this.title = title;
         this.description = description;
         this.comment = comment;
+        this.pdfPath = pdfPath;
         this.teacherId = teacherId;
     }
 
@@ -61,6 +66,14 @@ public class Course {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public String getPdfPath() {
+        return pdfPath;
+    }
+
+    public void setPdfPath(String pdfPath) {
+        this.pdfPath = pdfPath;
     }
 
     public int getTeacherId() {

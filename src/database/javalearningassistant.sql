@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1
--- Généré le : mar. 08 avr. 2025 à 13:17
+-- Généré le : mer. 23 avr. 2025 à 18:56
 -- Version du serveur :  10.4.11-MariaDB
 -- Version de PHP : 7.4.2
 
@@ -44,19 +44,20 @@ CREATE TABLE `answer` (
 CREATE TABLE `course` (
   `id` int(11) NOT NULL,
   `title` varchar(255) NOT NULL,
-  `description` text NOT NULL,
+  `description` longtext NOT NULL,
   `comment` text DEFAULT NULL,
   `teacher_id` int(11) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `pdf_path` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
 
 --
--- Structure de la table `exercise`
+-- Structure de la table `exercice`
 --
 
-CREATE TABLE `exercise` (
+CREATE TABLE `exercice` (
   `id` int(11) NOT NULL,
   `course_id` int(11) NOT NULL,
   `title` varchar(255) NOT NULL,
@@ -68,12 +69,12 @@ CREATE TABLE `exercise` (
 -- --------------------------------------------------------
 
 --
--- Structure de la table `exercisesubmission`
+-- Structure de la table `exercicesubmission`
 --
 
-CREATE TABLE `exercisesubmission` (
+CREATE TABLE `exercicesubmission` (
   `id` int(11) NOT NULL,
-  `exercise_id` int(11) NOT NULL,
+  `exercice_id` int(11) NOT NULL,
   `student_id` int(11) NOT NULL,
   `submission_text` text NOT NULL,
   `submitted_at` timestamp NOT NULL DEFAULT current_timestamp()
@@ -210,18 +211,18 @@ ALTER TABLE `course`
   ADD KEY `teacher_id` (`teacher_id`);
 
 --
--- Index pour la table `exercise`
+-- Index pour la table `exercice`
 --
-ALTER TABLE `exercise`
+ALTER TABLE `exercice`
   ADD PRIMARY KEY (`id`),
   ADD KEY `course_id` (`course_id`);
 
 --
--- Index pour la table `exercisesubmission`
+-- Index pour la table `exercicesubmission`
 --
-ALTER TABLE `exercisesubmission`
+ALTER TABLE `exercicesubmission`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `exercise_id` (`exercise_id`),
+  ADD KEY `exercice_id` (`exercice_id`),
   ADD KEY `student_id` (`student_id`);
 
 --
@@ -299,15 +300,15 @@ ALTER TABLE `course`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT pour la table `exercise`
+-- AUTO_INCREMENT pour la table `exercice`
 --
-ALTER TABLE `exercise`
+ALTER TABLE `exercice`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT pour la table `exercisesubmission`
+-- AUTO_INCREMENT pour la table `exercicesubmission`
 --
-ALTER TABLE `exercisesubmission`
+ALTER TABLE `exercicesubmission`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
@@ -375,17 +376,17 @@ ALTER TABLE `course`
   ADD CONSTRAINT `course_ibfk_1` FOREIGN KEY (`teacher_id`) REFERENCES `user` (`id`) ON DELETE CASCADE;
 
 --
--- Contraintes pour la table `exercise`
+-- Contraintes pour la table `exercice`
 --
-ALTER TABLE `exercise`
-  ADD CONSTRAINT `exercise_ibfk_1` FOREIGN KEY (`course_id`) REFERENCES `course` (`id`) ON DELETE CASCADE;
+ALTER TABLE `exercice`
+  ADD CONSTRAINT `exercice_ibfk_1` FOREIGN KEY (`course_id`) REFERENCES `course` (`id`) ON DELETE CASCADE;
 
 --
--- Contraintes pour la table `exercisesubmission`
+-- Contraintes pour la table `exercicesubmission`
 --
-ALTER TABLE `exercisesubmission`
-  ADD CONSTRAINT `exercisesubmission_ibfk_1` FOREIGN KEY (`exercise_id`) REFERENCES `exercise` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `exercisesubmission_ibfk_2` FOREIGN KEY (`student_id`) REFERENCES `user` (`id`) ON DELETE CASCADE;
+ALTER TABLE `exercicesubmission`
+  ADD CONSTRAINT `exercicesubmission_ibfk_1` FOREIGN KEY (`exercice_id`) REFERENCES `exercice` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `exercicesubmission_ibfk_2` FOREIGN KEY (`student_id`) REFERENCES `user` (`id`) ON DELETE CASCADE;
 
 --
 -- Contraintes pour la table `notification`

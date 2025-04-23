@@ -2,6 +2,7 @@ package backend.services;
 
 import backend.database.DataBaseConnection;
 import backend.models.Course;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,13 +13,14 @@ public class CourseService {
     public static boolean addCourse(Course course) {
         Connection conn = DataBaseConnection.getConnection();
 
-        String sql = "INSERT INTO Course (title, description, comment, teacher_id) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO Course (title, description, comment, pdf_path, teacher_id) VALUES (?, ?, ?, ?, ?)";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, course.getTitle());
             stmt.setString(2, course.getDescription());
             stmt.setString(3, course.getComment());
-            stmt.setInt(4, course.getTeacherId());
+            stmt.setString(4, course.getPdfPath());
+            stmt.setInt(5, course.getTeacherId());
 
             int rowsInserted = stmt.executeUpdate();
             return rowsInserted > 0;
@@ -33,13 +35,14 @@ public class CourseService {
     public static boolean updateCourse(Course course) {
         Connection conn = DataBaseConnection.getConnection();
 
-        String sql = "UPDATE Course SET title = ?, description = ?, comment = ? WHERE id = ?";
+        String sql = "UPDATE Course SET title = ?, description = ?, comment = ?, pdf_path = ? WHERE id = ?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, course.getTitle());
             stmt.setString(2, course.getDescription());
             stmt.setString(3, course.getComment());
-            stmt.setInt(4, course.getId());
+            stmt.setString(4, course.getPdfPath());
+            stmt.setInt(5, course.getId());
 
             int rowsUpdated = stmt.executeUpdate();
             return rowsUpdated > 0;
@@ -84,6 +87,7 @@ public class CourseService {
                     rs.getString("title"),
                     rs.getString("description"),
                     rs.getString("comment"),
+                    rs.getString("pdf_path"),
                     rs.getInt("teacher_id"),
                     rs.getTimestamp("created_at")
                 );
@@ -113,6 +117,7 @@ public class CourseService {
                     rs.getString("title"),
                     rs.getString("description"),
                     rs.getString("comment"),
+                    rs.getString("pdf_path"),
                     rs.getInt("teacher_id"),
                     rs.getTimestamp("created_at")
                 );
