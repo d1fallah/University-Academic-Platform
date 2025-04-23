@@ -3,7 +3,6 @@ package app.frontend;
 import app.backend.database.DataBaseConnection;
 import app.backend.models.User;
 import app.backend.services.AuthService;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -89,14 +88,14 @@ public class LoginController implements Initializable {
             return;
         }
         
-        // Check database connection first
+        // Check database connection
         if (!DataBaseConnection.isDatabaseConnected()) {
             showAlert(Alert.AlertType.ERROR, "Database Error", 
                     "Unable to connect to the database. Please make sure MySQL is running and properly configured.");
             return;
         }
         
-        // Attempt login using AuthService
+        // Attempt login
         User user = AuthService.login(matricule, password);
         
         if (user == null) {
@@ -110,7 +109,7 @@ public class LoginController implements Initializable {
         
         // Load the main screen based on user role
         try {
-            // Load the loading screen first for better UX
+            // Load the loading screen
             Parent loadingView = FXMLLoader.load(getClass().getResource("/fxml/loading.fxml"));
             Scene loadingScene = new Scene(loadingView, 1920, 1080);
             

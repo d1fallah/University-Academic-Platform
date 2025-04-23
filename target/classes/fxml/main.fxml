@@ -12,7 +12,7 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.shape.Line?>
 
-<BorderPane prefHeight="1080.0" prefWidth="1920.0" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane prefHeight="1080.0" prefWidth="1920.0" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.frontend.MainController">
    <left>
       <StackPane prefWidth="400.0" styleClass="sidebar-container">
          <!-- Background Image for Sidebar -->
@@ -220,8 +220,8 @@
                      </StackPane>
                      <VBox prefHeight="43.0" prefWidth="204.0">
                         <children>
-                           <Label styleClass="user-name" text="Akram Oday" />
-                           <Label prefHeight="33.0" prefWidth="148.0" styleClass="user-email" text="akramoday@pfe.dz" />
+                           <Label fx:id="userNameLabel" styleClass="user-name" text="Akram Oday" />
+                           <Label fx:id="userEmailLabel" prefHeight="33.0" prefWidth="148.0" styleClass="user-email" text="akramoday@pfe.dz" />
                         </children>
                         <HBox.margin>
                            <Insets />

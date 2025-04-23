@@ -9,12 +9,16 @@ app\backend\models\QuizResult.class
 app\backend\services\ExerciseSubmissionService.class
 app\backend\services\ExerciseService.class
 app\backend\models\ExerciseSubmission.class
+app\frontend\CoursesController.class
+app\frontend\CoursesCardsController.class
 app\backend\models\Answer.class
 app\backend\models\Quiz.class
 app\backend\models\Question.class
 app\frontend\SignupController.class
 app\frontend\LoadingController.class
 app\backend\models\PracticalWork.class
+app\frontend\CoursesController$1.class
+app\frontend\MainController.class
 module-info.class
 app\backend\services\CourseService.class
 app\backend\services\PracticalWorkService.class

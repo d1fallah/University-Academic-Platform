@@ -124,4 +124,34 @@ public class CourseService {
 
         return null;
     }
+    
+    // Get courses by teacher ID
+    public static List<Course> getCoursesByTeacherId(int teacherId) {
+        Connection conn = DataBaseConnection.getConnection();
+        List<Course> courses = new ArrayList<>();
+
+        String sql = "SELECT * FROM Course WHERE teacher_id = ? ORDER BY created_at DESC";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, teacherId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Course course = new Course(
+                    rs.getInt("id"),
+                    rs.getString("title"),
+                    rs.getString("description"),
+                    rs.getString("comment"),
+                    rs.getInt("teacher_id"),
+                    rs.getTimestamp("created_at")
+                );
+                courses.add(course);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return courses;
+    }
 }
