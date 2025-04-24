@@ -13,7 +13,7 @@ public class CourseService {
     public static boolean addCourse(Course course) {
         Connection conn = DataBaseConnection.getConnection();
 
-        String sql = "INSERT INTO Course (title, description, comment, pdf_path, teacher_id) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Course (title, description, comment, pdf_path, teacher_id, target_level) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, course.getTitle());
@@ -21,6 +21,7 @@ public class CourseService {
             stmt.setString(3, course.getComment());
             stmt.setString(4, course.getPdfPath());
             stmt.setInt(5, course.getTeacherId());
+            stmt.setString(6, course.getTargetLevel());
 
             int rowsInserted = stmt.executeUpdate();
             return rowsInserted > 0;
@@ -35,14 +36,15 @@ public class CourseService {
     public static boolean updateCourse(Course course) {
         Connection conn = DataBaseConnection.getConnection();
 
-        String sql = "UPDATE Course SET title = ?, description = ?, comment = ?, pdf_path = ? WHERE id = ?";
+        String sql = "UPDATE Course SET title = ?, description = ?, comment = ?, pdf_path = ?, target_level = ? WHERE id = ?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, course.getTitle());
             stmt.setString(2, course.getDescription());
             stmt.setString(3, course.getComment());
             stmt.setString(4, course.getPdfPath());
-            stmt.setInt(5, course.getId());
+            stmt.setString(5, course.getTargetLevel());
+            stmt.setInt(6, course.getId());
 
             int rowsUpdated = stmt.executeUpdate();
             return rowsUpdated > 0;
@@ -89,7 +91,8 @@ public class CourseService {
                     rs.getString("comment"),
                     rs.getString("pdf_path"),
                     rs.getInt("teacher_id"),
-                    rs.getTimestamp("created_at")
+                    rs.getTimestamp("created_at"),
+                    rs.getString("target_level")
                 );
                 courses.add(course);
             }
@@ -119,7 +122,8 @@ public class CourseService {
                     rs.getString("comment"),
                     rs.getString("pdf_path"),
                     rs.getInt("teacher_id"),
-                    rs.getTimestamp("created_at")
+                    rs.getTimestamp("created_at"),
+                    rs.getString("target_level")
                 );
             }
 
@@ -128,5 +132,37 @@ public class CourseService {
         }
 
         return null;
+    }
+
+    // ✅ Get courses only for a student level (L1, L2, etc.)
+    public static List<Course> getCoursesByStudentLevel(String level) {
+        Connection conn = DataBaseConnection.getConnection();
+        List<Course> courses = new ArrayList<>();
+
+        String sql = "SELECT * FROM Course WHERE target_level = ? ORDER BY created_at DESC";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, level);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Course course = new Course(
+                    rs.getInt("id"),
+                    rs.getString("title"),
+                    rs.getString("description"),
+                    rs.getString("comment"),
+                    rs.getString("pdf_path"),
+                    rs.getInt("teacher_id"),
+                    rs.getTimestamp("created_at"),
+                    rs.getString("target_level")
+                );
+                courses.add(course);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return courses;
     }
 }

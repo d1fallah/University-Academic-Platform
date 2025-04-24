@@ -3,6 +3,7 @@ package backend.services;
 import backend.database.DataBaseConnection;
 import backend.models.User;
 import backend.utils.PasswordHasher;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -38,13 +39,14 @@ public class AuthService {
                 return false;
             }
 
-            // Step 3: Insert new user
-            String insertSQL = "INSERT INTO User (name, password, matricule, role) VALUES (?, ?, ?, ?)";
+            // Step 3: Insert new user with enrollment level
+            String insertSQL = "INSERT INTO User (name, password, matricule, role, enrollment_level) VALUES (?, ?, ?, ?, ?)";
             PreparedStatement insertStmt = conn.prepareStatement(insertSQL);
             insertStmt.setString(1, user.getName());
             insertStmt.setString(2, PasswordHasher.hashPassword(user.getPassword()));
             insertStmt.setString(3, user.getMatricule());
             insertStmt.setString(4, user.getRole());
+            insertStmt.setString(5, user.getEnrollmentLevel());
 
             int rowsInserted = insertStmt.executeUpdate();
             if (rowsInserted > 0) {
@@ -73,14 +75,15 @@ public class AuthService {
 
             if (rs.next()) {
                 String storedPassword = rs.getString("password");
-                if (PasswordHasher.checkPassword(password, storedPassword)) { // For now simple, later use PasswordHasher
+                if (PasswordHasher.checkPassword(password, storedPassword)) {
                     User user = new User(
                         rs.getInt("id"),
                         rs.getString("name"),
                         storedPassword,
                         rs.getString("matricule"),
                         rs.getString("role"),
-                        rs.getTimestamp("created_at")
+                        rs.getTimestamp("created_at"),
+                        rs.getString("enrollment_level") // ✅ fetch enrollment level
                     );
                     System.out.println("✅ Login successful. Welcome " + user.getName() + "!");
                     return user;

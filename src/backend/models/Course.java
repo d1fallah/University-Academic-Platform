@@ -8,15 +8,16 @@ public class Course {
     private String title;
     private String description;
     private String comment;
-    private String pdfPath;    
+    private String pdfPath;
     private int teacherId;
     private Timestamp createdAt;
+    private String targetLevel; // ✅ New field for L1, L2, L3, M1, M2
 
     // Constructors
     public Course() {}
 
-    // Full constructor including pdfPath
-    public Course(int id, String title, String description, String comment, String pdfPath, int teacherId, Timestamp createdAt) {
+    // Full constructor including targetLevel
+    public Course(int id, String title, String description, String comment, String pdfPath, int teacherId, Timestamp createdAt, String targetLevel) {
         this.id = id;
         this.title = title;
         this.description = description;
@@ -24,15 +25,17 @@ public class Course {
         this.pdfPath = pdfPath;
         this.teacherId = teacherId;
         this.createdAt = createdAt;
+        this.targetLevel = targetLevel;
     }
 
-    // Constructor for adding a course without createdAt and id
-    public Course(String title, String description, String comment, String pdfPath, int teacherId) {
+    // Constructor for inserting new course (no id, no timestamp)
+    public Course(String title, String description, String comment, String pdfPath, int teacherId, String targetLevel) {
         this.title = title;
         this.description = description;
         this.comment = comment;
         this.pdfPath = pdfPath;
         this.teacherId = teacherId;
+        this.targetLevel = targetLevel;
     }
 
     // Getters and Setters
@@ -90,5 +93,13 @@ public class Course {
 
     public void setCreatedAt(Timestamp createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getTargetLevel() {
+        return targetLevel;
+    }
+
+    public void setTargetLevel(String targetLevel) {
+        this.targetLevel = targetLevel;
     }
 }
