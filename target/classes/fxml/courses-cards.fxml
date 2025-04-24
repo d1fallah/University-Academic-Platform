@@ -4,47 +4,40 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
 <BorderPane styleClass="content-container" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.frontend.CoursesCardsController">
    <top>
-      <HBox alignment="CENTER_LEFT" spacing="20.0" BorderPane.alignment="CENTER">
+      <VBox BorderPane.alignment="CENTER">
          <children>
-            <Label styleClass="courses-header" text="Courses">
-               <font>
-                  <Font name="System Bold" size="24.0" />
-               </font>
-            </Label>
-            <HBox alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS" spacing="15.0">
+            <HBox alignment="CENTER_LEFT">
                <children>
-                  <HBox styleClass="search-container" alignment="CENTER_LEFT">
+                  <Label styleClass="courses-title" text="Courses">
+                     <font>
+                        <Font name="Inter" size="61.0" />
+                     </font>
+                  </Label>
+                  <Region HBox.hgrow="ALWAYS" />
+                  <HBox alignment="CENTER_LEFT" styleClass="search-container-large">
                      <children>
-                        <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@../images/QR%20Code.png" />
-                           </image>
-                        </ImageView>
-                        <TextField fx:id="searchField" promptText="Search courses" styleClass="search-field" HBox.hgrow="ALWAYS" />
-                     </children>
-                  </HBox>
-                  <Button styleClass="notification-bell" mnemonicParsing="false">
-                     <graphic>
+                        <TextField fx:id="searchField" onAction="#handleSearch" promptText="Search courses" styleClass="search-field-large" HBox.hgrow="ALWAYS" />
                         <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../images/Bell.png" />
+                              <Image url="@../images/SearchLogo.png" />
                            </image>
                         </ImageView>
-                     </graphic>
-                  </Button>
-                  <Button fx:id="manageCourseButton" mnemonicParsing="false" onAction="#handleManageCourses" styleClass="view-course-button" text="Manage Courses" visible="${controller.isTeacher}">
+                     </children>
+                  </HBox>
+                  <Button fx:id="manageCourseButton" managed="false" mnemonicParsing="false" onAction="#handleManageCourses" styleClass="view-course-button" text="Manage Courses" visible="false">
                      <graphic>
                         <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -54,18 +47,29 @@
                      </graphic>
                   </Button>
                </children>
+               <VBox.margin>
+                  <Insets bottom="20.0" left="30.0" right="30.0" top="30.0" />
+               </VBox.margin>
+               <padding>
+                  <Insets bottom="30.0" />
+               </padding>
+            </HBox>
+            <HBox alignment="CENTER">
+               <children>
+                  <Separator prefWidth="1360.0" styleClass="header-separator" />
+               </children>
+               <VBox.margin>
+                  <Insets bottom="30.0" />
+               </VBox.margin>
             </HBox>
          </children>
-         <BorderPane.margin>
-            <Insets bottom="20.0" left="30.0" right="30.0" top="30.0" />
-         </BorderPane.margin>
-      </HBox>
+      </VBox>
    </top>
    
    <center>
       <ScrollPane fitToHeight="true" fitToWidth="true" styleClass="content-scroll" BorderPane.alignment="CENTER">
          <content>
-            <VBox styleClass="content-area">
+            <VBox prefHeight="16.0" prefWidth="1140.0" styleClass="content-area">
                <!-- Course Cards Section -->
                <FlowPane fx:id="courseCardsContainer" hgap="10.0" vgap="10.0">
                   <!-- Course cards will be added here dynamically -->

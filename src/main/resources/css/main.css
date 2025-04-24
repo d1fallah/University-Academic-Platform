@@ -1,5 +1,20 @@
+@font-face {
+  font-family: "Inter";
+  src: url("../fonts/Inter-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Inter";
+  src: url("../fonts/Inter-Bold.ttf") format("truetype");
+  font-weight: bold;
+  font-style: normal;
+}
+
 .root {
-  -fx-background-color: #212121;
+  -fx-background-color: #1C1C1C;
+  -fx-font-family: "Inter";
 }
 
 .sidebar-container {
@@ -135,11 +150,11 @@
 }
 
 .course-card {
-    -fx-background-color: transparent;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 10, 0, 0, 0);
-    -fx-background-radius: 16;
-    -fx-border-radius: 16;
-    -fx-cursor: hand;
+  -fx-background-color: transparent;
+  -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.4), 10, 0, 0, 0);
+  -fx-background-radius: 16;
+  -fx-border-radius: 16;
+  -fx-cursor: hand;
 }
 
 .course-card:hover {
@@ -154,7 +169,7 @@
 }
 
 .card-content {
-    -fx-background-color: transparent;
+  -fx-background-color: transparent;
 }
 
 .card-header {
@@ -163,25 +178,25 @@
 }
 
 .card-title {
-    -fx-font-size: 24px;
-    -fx-font-weight: bold;
-    -fx-text-fill: white;
+  -fx-font-size: 24px;
+  -fx-font-weight: bold;
+  -fx-text-fill: white;
 }
 
 .card-description {
-    -fx-font-size: 16px;
-    -fx-text-fill: #b9b9b9;
-    -fx-wrap-text: true;
+  -fx-font-size: 16px;
+  -fx-text-fill: #b9b9b9;
+  -fx-wrap-text: true;
 }
 
 .card-instructor {
-    -fx-text-fill: #ffffff;
-    -fx-font-size: 16px;
+  -fx-text-fill: #ffffff;
+  -fx-font-size: 16px;
 }
 
 .instructor-name {
-    -fx-text-fill: #ffffff;
-    -fx-font-size: 16px;
+  -fx-text-fill: #ffffff;
+  -fx-font-size: 16px;
 }
 
 .card-footer {
@@ -206,12 +221,12 @@
 }
 
 .view-course-button {
-    -fx-background-color: #65558f;
-    -fx-text-fill: white;
-    -fx-font-size: 12px;
-    -fx-background-radius: 10;
-    -fx-padding: 10 20 10 20;
-    -fx-cursor: hand;
+  -fx-background-color: #65558f;
+  -fx-text-fill: white;
+  -fx-font-size: 12px;
+  -fx-background-radius: 10;
+  -fx-padding: 10 20 10 20;
+  -fx-cursor: hand;
 }
 
 .view-course-button:hover {
@@ -312,4 +327,46 @@
 
 .notification-bell:hover {
   -fx-opacity: 0.8;
+}
+
+.courses-title {
+  -fx-font-size: 41px;
+  -fx-text-fill: white;
+}
+
+.search-container-large {
+  -fx-background-color: transparent;
+  -fx-background-radius: 10px;
+  -fx-border-color: white;
+  -fx-border-radius: 10px;
+  -fx-padding: 5px 15px;
+  -fx-alignment: center-left;
+  -fx-spacing: 10px;
+  -fx-pref-width: 800px;
+  -fx-pref-height: 60px;
+}
+
+.search-field-large {
+  -fx-background-color: transparent;
+  -fx-background-radius: 0;
+  -fx-text-fill: white;
+  -fx-prompt-text-fill: #9b9b9b;
+  -fx-border-color: transparent;
+  -fx-padding: 10px 5px;
+  -fx-font-size: 18px;
+}
+
+.search-field-large .text {
+  -fx-font-weight: bold;
+}
+
+.search-field-large .prompt-text {
+  -fx-font-weight: bold;
+}
+
+.header-separator {
+  -fx-background-color: white;
+  -fx-padding: 0;
+  -fx-opacity: 0.2;
+  -fx-pref-height: 1px;
 }

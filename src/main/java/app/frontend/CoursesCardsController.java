@@ -110,6 +110,7 @@ public class CoursesCardsController implements Initializable {
             cardBackground.setFitWidth(480);
             cardBackground.setFitHeight(270);
             cardBackground.setPreserveRatio(false);
+            cardBackground.setOpacity(0.7);
         } catch (Exception e) {
             System.out.println("Failed to load background image for course card");
         }
@@ -131,7 +132,7 @@ public class CoursesCardsController implements Initializable {
 
         // Create container for title
         VBox titleContainer = new VBox();
-        titleContainer.setAlignment(Pos.CENTER_LEFT);
+        titleContainer.setAlignment(Pos.TOP_LEFT);
         titleContainer.setPrefWidth(390);
         HBox.setHgrow(titleContainer, Priority.ALWAYS);
 

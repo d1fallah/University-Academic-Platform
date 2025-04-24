@@ -9,14 +9,12 @@
   font-weight: bold;
 }
 
-/* Root styles */
 .root {
   -fx-background-color: #1c1c1c;
   -fx-font-family: "InterRegular";
   -fx-min-height: 100%;
 }
 
-/* Login container */
 .login-container {
   -fx-background-color: #1c1c1c;
   -fx-background-radius: 40px;
@@ -27,7 +25,6 @@
   -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.6), 10, 0, 0, 0);
 }
 
-/* Logo styles */
 .logo-container {
   -fx-padding: 0 0 10px 0;
 }
@@ -36,7 +33,6 @@
   -fx-fill: white;
 }
 
-/* Welcome text */
 .welcome-text {
   -fx-padding: 0 0 15px 0;
 }
@@ -47,12 +43,11 @@
 }
 
 .brand-label {
-  -fx-text-fill: #ff7801; /* Orange color for AOPFE */
+  -fx-text-fill: #ff7801;
   -fx-font-size: 40px;
   -fx-font-weight: bold;
 }
 
-/* Input fields */
 .input-container {
   -fx-background-color: #1c1c1c;
   -fx-background-radius: 5px;
@@ -84,7 +79,6 @@
   -fx-border-width: 0;
 }
 
-/* ComboBox Styling */
 .combo-box {
   -fx-background-color: transparent;
   -fx-text-fill: white;
@@ -147,8 +141,6 @@
   -fx-background-color: #ff7801;
 }
 
-/* End ComboBox Styling */
-
 .eye-button {
   -fx-background-color: transparent;
   -fx-padding: 12px 15px;
@@ -159,7 +151,6 @@
   -fx-focus-traversable: false;
 }
 
-/* Sign in button */
 .sign-in-button {
   -fx-background-color: #ff7801;
   -fx-text-fill: white;
@@ -180,7 +171,6 @@
   -fx-background-color: #e56a00;
 }
 
-/* Terms text */
 .terms-container {
   -fx-padding: 10px 0 0 0;
   -fx-spacing: 0;
@@ -205,7 +195,6 @@
   -fx-text-fill: #ff7700;
 }
 
-/* Role info text */
 .role-info-container {
   -fx-padding: 0 0 5px 0;
   -fx-alignment: center;
