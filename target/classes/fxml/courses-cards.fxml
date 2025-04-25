@@ -21,11 +21,17 @@
          <children>
             <HBox alignment="CENTER_LEFT">
                <children>
-                  <Label styleClass="courses-title" text="Courses">
-                     <font>
-                        <Font name="Inter" size="61.0" />
-                     </font>
-                  </Label>
+                  <HBox alignment="CENTER_LEFT" spacing="20">
+                     <children>
+                        <Label styleClass="courses-title" text="Courses">
+                           <font>
+                              <Font name="Inter" size="61.0" />
+                           </font>
+                        </Label>
+                        <Button fx:id="manageCourseButton" managed="true" mnemonicParsing="false" onAction="#handleManageCourses" text="Manage my courses" visible="false" styleClass="manage-courses-button">
+                        </Button>
+                     </children>
+                  </HBox>
                   <Region HBox.hgrow="ALWAYS" />
                   <HBox alignment="CENTER_LEFT" styleClass="search-container-large">
                      <children>
@@ -37,15 +43,6 @@
                         </ImageView>
                      </children>
                   </HBox>
-                  <Button fx:id="manageCourseButton" managed="false" mnemonicParsing="false" onAction="#handleManageCourses" styleClass="view-course-button" text="Manage Courses" visible="false">
-                     <graphic>
-                        <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
-                           <image>
-                              <Image url="@../images/Square%20Academic%20Cap.png" />
-                           </image>
-                        </ImageView>
-                     </graphic>
-                  </Button>
                </children>
                <VBox.margin>
                   <Insets bottom="20.0" left="30.0" right="30.0" top="30.0" />

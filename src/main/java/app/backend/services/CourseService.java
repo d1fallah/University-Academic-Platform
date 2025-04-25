@@ -12,13 +12,15 @@ public class CourseService {
     public static boolean addCourse(Course course) {
         Connection conn = DataBaseConnection.getConnection();
 
-        String sql = "INSERT INTO Course (title, description, comment, teacher_id) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO Course (title, description, comment, teacher_id, pdf_path, target_level) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, course.getTitle());
             stmt.setString(2, course.getDescription());
             stmt.setString(3, course.getComment());
             stmt.setInt(4, course.getTeacherId());
+            stmt.setString(5, course.getPdfPath());
+            stmt.setString(6, course.getTargetLevel());
 
             int rowsInserted = stmt.executeUpdate();
             return rowsInserted > 0;
@@ -33,13 +35,15 @@ public class CourseService {
     public static boolean updateCourse(Course course) {
         Connection conn = DataBaseConnection.getConnection();
 
-        String sql = "UPDATE Course SET title = ?, description = ?, comment = ? WHERE id = ?";
+        String sql = "UPDATE Course SET title = ?, description = ?, comment = ?, pdf_path = ?, target_level = ? WHERE id = ?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, course.getTitle());
             stmt.setString(2, course.getDescription());
             stmt.setString(3, course.getComment());
-            stmt.setInt(4, course.getId());
+            stmt.setString(4, course.getPdfPath());
+            stmt.setString(5, course.getTargetLevel());
+            stmt.setInt(6, course.getId());
 
             int rowsUpdated = stmt.executeUpdate();
             return rowsUpdated > 0;
@@ -87,6 +91,8 @@ public class CourseService {
                     rs.getInt("teacher_id"),
                     rs.getTimestamp("created_at")
                 );
+                course.setPdfPath(rs.getString("pdf_path"));
+                course.setTargetLevel(rs.getString("target_level"));
                 courses.add(course);
             }
 
@@ -108,7 +114,7 @@ public class CourseService {
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                return new Course(
+                Course course = new Course(
                     rs.getInt("id"),
                     rs.getString("title"),
                     rs.getString("description"),
@@ -116,6 +122,9 @@ public class CourseService {
                     rs.getInt("teacher_id"),
                     rs.getTimestamp("created_at")
                 );
+                course.setPdfPath(rs.getString("pdf_path"));
+                course.setTargetLevel(rs.getString("target_level"));
+                return course;
             }
 
         } catch (SQLException e) {
@@ -145,6 +154,8 @@ public class CourseService {
                     rs.getInt("teacher_id"),
                     rs.getTimestamp("created_at")
                 );
+                course.setPdfPath(rs.getString("pdf_path"));
+                course.setTargetLevel(rs.getString("target_level"));
                 courses.add(course);
             }
 

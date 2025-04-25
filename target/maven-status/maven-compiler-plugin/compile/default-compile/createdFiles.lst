@@ -1,3 +1,4 @@
+app\frontend\CourseViewerController.class
 app\backend\services\QuizService.class
 app\backend\services\AnswerService.class
 app\backend\services\PracticalWorkSubmissionService.class
@@ -5,6 +6,7 @@ app\Main.class
 app\backend\database\DatabaseInitializer.class
 app\backend\utils\SessionManager.class
 app\backend\services\QuestionService.class
+app\frontend\AddCourseDialogController.class
 app\backend\models\QuizResult.class
 app\backend\services\ExerciseSubmissionService.class
 app\backend\services\ExerciseService.class
@@ -27,6 +29,7 @@ app\backend\models\User.class
 app\frontend\LoginController.class
 app\backend\models\PracticalWorkSubmission.class
 app\backend\services\AuthService.class
+app\frontend\MyCoursesController.class
 app\backend\models\Course.class
 app\backend\utils\PasswordHasher.class
 app\backend\database\DataBaseConnection.class

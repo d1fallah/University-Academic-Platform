@@ -3,6 +3,7 @@ package app.frontend;
 import app.backend.models.Course;
 import app.backend.models.User;
 import app.backend.services.CourseService;
+import app.backend.services.AuthService;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
@@ -12,25 +13,20 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.Priority;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Rectangle;
-import javafx.geometry.Pos;
-import javafx.scene.paint.Color;
 
 import java.io.IOException;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
@@ -206,7 +202,13 @@ public class CoursesCardsController implements Initializable {
             System.out.println("Failed to load instructor icon");
         }
 
-        String teacherName = "Kerdoudi Mohamed Lamine"; // todo get teacher name from database
+        // Get the teacher name from the database using the teacherId
+        String teacherName = "Unknown Teacher";
+        User teacher = AuthService.getUserById(course.getTeacherId());
+        if (teacher != null) {
+            teacherName = teacher.getName();
+        }
+        
         Label instructorLabel = new Label(teacherName);
         instructorLabel.getStyleClass().add("instructor-name");
 
@@ -246,12 +248,31 @@ public class CoursesCardsController implements Initializable {
      * Handles the action when a user clicks on a course card to view details
      */
     private void handleViewCourseDetails(Course course) {
-        // Alert for testing - this would navigate to course pdf in full implementation
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Course Details");
-        alert.setHeaderText("Viewing: " + course.getTitle());
-        alert.setContentText(course.getDescription());
-        alert.showAndWait();
+        try {
+            // Check if the course has a PDF file
+            if (course.getPdfPath() == null || course.getPdfPath().isEmpty()) {
+                showAlert(Alert.AlertType.WARNING, "No PDF Available", 
+                    "This course does not have a PDF file attached.");
+                return;
+            }
+            
+            // Load the course viewer view
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/course-viewer.fxml"));
+            Parent courseViewerParent = loader.load();
+            
+            // Get the controller and set the course
+            CourseViewerController controller = loader.getController();
+            controller.setCourse(course);
+            
+            // Get the main layout's content area and set the course viewer
+            StackPane contentArea = (StackPane) manageCourseButton.getScene().lookup("#contentArea");
+            contentArea.getChildren().clear();
+            contentArea.getChildren().add(courseViewerParent);
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Error", "Failed to load course viewer: " + e.getMessage());
+        }
     }
 
     /**
@@ -297,12 +318,14 @@ public class CoursesCardsController implements Initializable {
     @FXML
     private void handleManageCourses(ActionEvent event) {
         try {
-            // Load the course management view
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/courses.fxml"));
-            Parent courseManagementView = loader.load();
-            
-            // Replace the current view with the management view
-            courseCardsContainer.getScene().setRoot(courseManagementView);
+            // Load the my courses view
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/my-courses.fxml"));
+            Parent myCoursesView = loader.load();
+
+            // Get the main layout's content area and set the my courses view
+            StackPane contentArea = (StackPane) manageCourseButton.getScene().lookup("#contentArea");
+            contentArea.getChildren().clear();
+            contentArea.getChildren().add(myCoursesView);
         } catch (IOException e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Navigation Error", "Failed to open course management page.");

@@ -10,6 +10,8 @@ public class Course {
     private String comment;
     private int teacherId;
     private Timestamp createdAt;
+    private String pdfPath;
+    private String targetLevel;
 
     // Constructors
     public Course() {}
@@ -77,5 +79,21 @@ public class Course {
 
     public void setCreatedAt(Timestamp createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getPdfPath() {
+        return pdfPath;
+    }
+
+    public void setPdfPath(String pdfPath) {
+        this.pdfPath = pdfPath;
+    }
+    
+    public String getTargetLevel() {
+        return targetLevel;
+    }
+    
+    public void setTargetLevel(String targetLevel) {
+        this.targetLevel = targetLevel;
     }
 }

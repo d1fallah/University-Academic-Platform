@@ -7,15 +7,12 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
-import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -202,20 +199,5 @@ public class CoursesController implements Initializable {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
-    }
-
-    @FXML
-    public void handleViewCourseCards(ActionEvent event) {
-        try {
-            // Load the course cards view
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/courses-cards.fxml"));
-            Parent courseCardsView = loader.load();
-            
-            // Replace the current view with the card view
-            titleField.getScene().setRoot(courseCardsView);
-        } catch (IOException e) {
-            e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Navigation Error", "Failed to open course cards view.");
-        }
     }
 }

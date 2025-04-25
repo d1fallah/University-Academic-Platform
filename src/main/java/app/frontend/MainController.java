@@ -8,6 +8,7 @@ import javafx.scene.Parent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 
 import java.io.IOException;
 import java.net.URL;
@@ -25,6 +26,17 @@ public class MainController implements Initializable {
     @FXML private HBox myResultsItem;
     @FXML private Label userNameLabel;
     @FXML private Label userEmailLabel;
+    @FXML private Label userRoleLabel; // Label for the role badge
+    @FXML private Label portalTypeLabel; // Label for the portal type (Student Portal/Teacher Portal)
+
+    // Active dot indicators
+    @FXML private ImageView dashboardActiveDot;
+    @FXML private ImageView coursesActiveDot;
+    @FXML private ImageView quizzesActiveDot;
+    @FXML private ImageView exercisesActiveDot;
+    @FXML private ImageView practicalWorkActiveDot;
+    @FXML private ImageView savedCoursesActiveDot;
+    @FXML private ImageView myResultsActiveDot;
 
     private User currentUser;
 
@@ -37,6 +49,16 @@ public class MainController implements Initializable {
         if (currentUser != null) {
             userNameLabel.setText(currentUser.getName());
             userEmailLabel.setText(currentUser.getMatricule());
+            
+            // Set portal type and user role badge based on user role
+            String userRole = currentUser.getRole();
+            if ("teacher".equals(userRole)) {
+                portalTypeLabel.setText("Teacher Portal");
+                userRoleLabel.setText("Teacher");
+            } else {
+                portalTypeLabel.setText("Student Portal");
+                userRoleLabel.setText("Student");
+            }
         }
         
         // Set up click listeners for menu items
@@ -131,16 +153,100 @@ public class MainController implements Initializable {
     
     // Helper method to set the active menu item
     private void setActiveMenuItem(HBox menuItem) {
-        // Remove active class from all menu items
-        dashboardItem.getStyleClass().remove("active-menu-item");
-        coursesItem.getStyleClass().remove("active-menu-item");
-        quizzesItem.getStyleClass().remove("active-menu-item");
-        exercisesItem.getStyleClass().remove("active-menu-item");
-        practicalWorkItem.getStyleClass().remove("active-menu-item");
-        savedCoursesItem.getStyleClass().remove("active-menu-item");
-        myResultsItem.getStyleClass().remove("active-menu-item");
+        // Clear all active styles first
+        resetAllMenuItems();
         
         // Add active class to the selected menu item
         menuItem.getStyleClass().add("active-menu-item");
+        
+        // Show the active dot for the selected menu item (except Dashboard)
+        if (menuItem != dashboardItem) {
+            showActiveDotForMenuItem(menuItem);
+        }
+        
+        // Set active icon for the selected menu item
+        if (menuItem == dashboardItem) {
+            setMenuItemIcon(menuItem, "/images/ActiveDashboard.png");
+        } else if (menuItem == coursesItem) {
+            setMenuItemIcon(menuItem, "/images/ActiveCourse.png");
+        } else if (menuItem == quizzesItem) {
+            setMenuItemIcon(menuItem, "/images/ActiveQuizes.png");
+        } else if (menuItem == exercisesItem) {
+            setMenuItemIcon(menuItem, "/images/ActiveExercises.png");
+        } else if (menuItem == practicalWorkItem) {
+            setMenuItemIcon(menuItem, "/images/ActiveKeyboard.png");
+        } else if (menuItem == savedCoursesItem) {
+            setMenuItemIcon(menuItem, "/images/ActiveHeart.png");
+        } else if (menuItem == myResultsItem) {
+            setMenuItemIcon(menuItem, "/images/ActiveMedal.png");
+        }
+    }
+    
+    // Reset all menu items to their default state
+    private void resetAllMenuItems() {
+        // List of all menu items
+        HBox[] menuItems = {
+            dashboardItem, coursesItem, quizzesItem, exercisesItem,
+            practicalWorkItem, savedCoursesItem, myResultsItem
+        };
+        
+        // List of all active dots
+        ImageView[] activeDots = {
+            dashboardActiveDot, coursesActiveDot, quizzesActiveDot, exercisesActiveDot,
+            practicalWorkActiveDot, savedCoursesActiveDot, myResultsActiveDot
+        };
+        
+        // Reset styles and hide dots
+        for (HBox item : menuItems) {
+            item.getStyleClass().remove("active-menu-item");
+        }
+        
+        for (ImageView dot : activeDots) {
+            dot.setVisible(false);
+        }
+        
+        // Reset all icons to default
+        setMenuItemIcon(dashboardItem, "/images/QR Code.png");
+        setMenuItemIcon(coursesItem, "/images/Square Academic Cap.png");
+        setMenuItemIcon(quizzesItem, "/images/Object Scan.png");
+        setMenuItemIcon(exercisesItem, "/images/Ruler Cross Pen.png");
+        setMenuItemIcon(practicalWorkItem, "/images/Keyboard.png");
+        setMenuItemIcon(savedCoursesItem, "/images/Heart Angle.png");
+        setMenuItemIcon(myResultsItem, "/images/Medal Ribbons Star.png");
+    }
+    
+    // Show the active dot for a specific menu item
+    private void showActiveDotForMenuItem(HBox menuItem) {
+        ImageView dot = null;
+        
+        if (menuItem == coursesItem) {
+            dot = coursesActiveDot;
+        } else if (menuItem == quizzesItem) {
+            dot = quizzesActiveDot;
+        } else if (menuItem == exercisesItem) {
+            dot = exercisesActiveDot;
+        } else if (menuItem == practicalWorkItem) {
+            dot = practicalWorkActiveDot;
+        } else if (menuItem == savedCoursesItem) {
+            dot = savedCoursesActiveDot;
+        } else if (menuItem == myResultsItem) {
+            dot = myResultsActiveDot;
+        }
+        
+        if (dot != null) {
+            dot.setImage(new javafx.scene.image.Image(getClass().getResource("/images/ActiveDot.png").toExternalForm()));
+            dot.setVisible(true);
+        }
+    }
+    
+    // Helper method to set menu item icon
+    private void setMenuItemIcon(HBox menuItem, String iconPath) {
+        if (menuItem.getChildren().get(0) instanceof ImageView) {
+            ImageView imageView = (ImageView) menuItem.getChildren().get(0);
+            imageView.setImage(new javafx.scene.image.Image(getClass().getResource(iconPath).toExternalForm()));
+            imageView.setFitWidth(35);
+            imageView.setFitHeight(35);
+            imageView.setPreserveRatio(true);
+        }
     }
 }

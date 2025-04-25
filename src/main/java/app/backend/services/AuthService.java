@@ -124,4 +124,42 @@ public class AuthService {
 
         return null;
     }
+
+    /**
+     * Get a user by ID
+     * 
+     * @param userId The ID of the user to retrieve
+     * @return The User object if found, null otherwise
+     */
+    public static User getUserById(int userId) {
+        Connection conn = DataBaseConnection.getConnection();
+        
+        if (conn == null) {
+            System.out.println("❌ Cannot get user: Database connection failed.");
+            return null;
+        }
+
+        try {
+            String sql = "SELECT * FROM User WHERE id = ?";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                User user = new User(
+                    rs.getInt("id"),
+                    rs.getString("name"),
+                    rs.getString("password"),
+                    rs.getString("matricule"),
+                    rs.getString("role"),
+                    rs.getTimestamp("created_at")
+                );
+                return user;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
 }

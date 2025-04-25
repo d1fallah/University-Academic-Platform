@@ -4,6 +4,9 @@ module PFE {
     requires java.sql;
     requires jbcrypt;
     requires javafx.graphics;
+    requires org.apache.pdfbox;
+    requires javafx.swing;
+    requires java.desktop;
 
     exports app;
     exports app.frontend to javafx.fxml;
