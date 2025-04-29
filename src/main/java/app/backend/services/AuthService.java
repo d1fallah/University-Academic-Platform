@@ -100,7 +100,7 @@ public class AuthService {
 
             if (rs.next()) {
                 String storedPassword = rs.getString("password");
-                if (PasswordHasher.checkPassword(password, storedPassword)) { // For now simple, later use PasswordHasher
+                if (PasswordHasher.checkPassword(password, storedPassword)) {
                     User user = new User(
                         rs.getInt("id"),
                         rs.getString("name"),

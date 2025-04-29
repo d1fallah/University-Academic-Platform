@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane prefHeight="1080.0" prefWidth="1520.0" styleClass="content-section" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.frontend.ProfileController">
+   <stylesheets>
+      <URL value="@../css/profile.css" />
+   </stylesheets>
+   <top>
+      <HBox alignment="CENTER_LEFT" BorderPane.alignment="CENTER">
+         <children>
+            <Label styleClass="page-title" text="Profile" HBox.hgrow="ALWAYS" />
+            <Pane prefHeight="0.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
+            <Button fx:id="logoutButton" alignment="CENTER" mnemonicParsing="false" onAction="#handleLogout" prefHeight="54.0" prefWidth="198.0" styleClass="logout-button">
+               <graphic>
+                  <HBox alignment="CENTER" spacing="10">
+                     <Label text="Log out" textFill="WHITE">
+                        <font>
+                           <Font name="System Bold" size="16.0" />
+                        </font></Label>
+                     <ImageView fitHeight="21.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                           <Image url="@../images/Logout2.png" />
+                        </image>
+                     </ImageView>
+                  </HBox>
+               </graphic>
+            </Button>
+         </children>
+         <padding>
+            <Insets left="74.0" right="74.0" top="30.0" />
+         </padding>
+      </HBox>
+   </top>
+   <center>
+      <VBox alignment="TOP_CENTER" maxWidth="1362.0" prefHeight="972.0" prefWidth="1362.0" styleClass="profile-container" BorderPane.alignment="TOP_CENTER">
+         <children>
+            <Line startX="1360.0" stroke="#e0e0e0" styleClass="section-divider">
+               <VBox.margin>
+                  <Insets bottom="41.0" top="-50.0" />
+               </VBox.margin></Line>
+            <VBox alignment="CENTER" maxWidth="1000.0" prefHeight="200.0" prefWidth="1000.0">
+               <children>
+                  <VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" prefHeight="160.0" prefWidth="160.0" styleClass="image-container">
+                     <children>
+                        <ImageView fitHeight="110.0" fitWidth="110.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../images/profilep.png" />
+                           </image>
+                        </ImageView>
+                     </children>
+                  </VBox>
+                  <Label fx:id="nameLabel" styleClass="profile-name" text="Mohamed Oday" />
+                  <Label fx:id="roleLabel" alignment="CENTER" prefHeight="34.0" prefWidth="109.0" styleClass="role-badge" text="Student">
+                     <VBox.margin>
+                        <Insets bottom="41.0" />
+                     </VBox.margin>
+                  </Label>
+      
+                  <Line endX="1000.0" stroke="#e0e0e0" styleClass="section-divider">
+                     <VBox.margin>
+                        <Insets bottom="41.0" />
+                     </VBox.margin>
+                  </Line>
+                  <VBox alignment="CENTER" maxWidth="-Infinity" prefWidth="912.0">
+                     <children>
+            
+                        <GridPane hgap="10" styleClass="profile-info-grid" vgap="20">
+                           <columnConstraints>
+                              <ColumnConstraints hgrow="NEVER" minWidth="100" prefWidth="120" />
+                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10" prefWidth="200" />
+                              <ColumnConstraints halignment="RIGHT" hgrow="NEVER" />
+                           </columnConstraints>
+            
+                           <!-- Matricule Row -->
+                           <Label styleClass="field-label" text="Matricule:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                           <Label fx:id="matriculeLabel" styleClass="field-value" text="STD001" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+            
+                           <!-- Password Row -->
+                           <Label styleClass="field-label" text="Password:" textFill="WHITE" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                           <Label styleClass="field-value" text="********" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                           <Hyperlink fx:id="changePasswordLink" onAction="#handleChangePassword" styleClass="action-link" text="Change Password" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+            
+                           <!-- Phone Row -->
+                           <Label styleClass="field-label" text="Phone:" textFill="WHITE" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                           <Label fx:id="phoneLabel" styleClass="field-value" text="+213 123 45 67 89" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                           <Hyperlink fx:id="phoneActionLink" onAction="#handlePhoneAction" styleClass="action-link" text="Change Phone number" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                           <rowConstraints>
+                              <RowConstraints />
+                              <RowConstraints />
+                              <RowConstraints />
+                           </rowConstraints>
+                           <VBox.margin>
+                              <Insets bottom="41.0" />
+                           </VBox.margin>
+                        </GridPane>
+                     </children>
+                  </VBox>
+      
+                  <Line startX="1000.0" stroke="#e0e0e0" styleClass="section-divider">
+                     <VBox.margin>
+                        <Insets bottom="41.0" />
+                     </VBox.margin>
+                  </Line>
+                  <VBox alignment="CENTER" maxWidth="-Infinity" prefWidth="912.0">
+                     <children>
+            
+                        <GridPane hgap="10" styleClass="profile-info-grid" vgap="20">
+                           <columnConstraints>
+                              <ColumnConstraints hgrow="NEVER" minWidth="100" prefWidth="120" />
+                              <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10" prefWidth="200" />
+                           </columnConstraints>
+            
+                           <!-- Level Row -->
+                           <Label styleClass="field-label" text="Level:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+                           <Label fx:id="levelLabel" styleClass="user-info" text="License 1" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+            
+                           <!-- University Row -->
+                           <Label styleClass="field-label" text="University:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+                           <Label fx:id="universityLabel" styleClass="user-info" text="Mohamed khider biskra" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                           <rowConstraints>
+                              <RowConstraints />
+                              <RowConstraints />
+                              <RowConstraints />
+                           </rowConstraints>
+                           <VBox.margin>
+                              <Insets bottom="41.0" />
+                           </VBox.margin>
+                        </GridPane>
+                     </children>
+                  </VBox>
+               </children>
+            </VBox>
+         </children>
+      </VBox>
+   </center>
+   <padding>
+      <Insets bottom="20.0" />
+   </padding>
+</BorderPane>

@@ -252,7 +252,7 @@
                </VBox>
 
                <!-- User Profile Section (at bottom) -->
-               <HBox alignment="CENTER_LEFT" spacing="15.0" styleClass="profile-container">
+               <HBox fx:id="profileContainer" alignment="CENTER_LEFT" spacing="15.0" styleClass="profile-container">
                   <children>
                      <StackPane>
                         <children>
@@ -281,7 +281,7 @@
                            <Insets bottom="5.0" top="5.0" />
                         </padding>
                      </VBox>
-                     <ImageView fitHeight="35.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true" HBox.hgrow="ALWAYS">
+                     <ImageView fitHeight="35.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true" styleClass="side-bar-arrow" HBox.hgrow="ALWAYS">
                         <image>
                            <Image url="@../images/Alt%20Arrow%20Right.png" />
                         </image>

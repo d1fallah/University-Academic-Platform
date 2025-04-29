@@ -33,6 +33,36 @@ public class LoginController implements Initializable {
         return currentUser;
     }
 
+    /**
+     * Sets the current user
+     * 
+     * @param user The user to set as current user
+     */
+    public static void setCurrentUser(User user) {
+        currentUser = user;
+    }
+    
+    /**
+     * Loads the login view for a given stage
+     * 
+     * @param stage The stage to load the login view into
+     * @throws IOException If the login view cannot be loaded
+     */
+    public static void loadLoginView(Stage stage) throws IOException {
+        // Load the login view
+        Parent loginView = FXMLLoader.load(LoginController.class.getResource("/fxml/login.fxml"));
+        Scene loginScene = new Scene(loginView, 1920, 1080);
+        
+        // Set new Scene
+        stage.setScene(loginScene);
+        stage.setTitle("AOPFE Login");
+        
+        // Ensure it stays maximized
+        stage.setMaximized(true);
+        
+        loginView.requestLayout();
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         // Initialize the database connection when the login screen loads

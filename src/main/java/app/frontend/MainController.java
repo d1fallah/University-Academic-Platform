@@ -28,6 +28,7 @@ public class MainController implements Initializable {
     @FXML private Label userEmailLabel;
     @FXML private Label userRoleLabel; // Label for the role badge
     @FXML private Label portalTypeLabel; // Label for the portal type (Student Portal/Teacher Portal)
+    @FXML private HBox profileContainer; // The HBox containing the profile info and arrow
 
     // Active dot indicators
     @FXML private ImageView dashboardActiveDot;
@@ -63,6 +64,9 @@ public class MainController implements Initializable {
         
         // Set up click listeners for menu items
         setupMenuListeners();
+        
+        // Set up click listener for the profile section
+        profileContainer.setOnMouseClicked(event -> loadProfile());
         
         // Default to dashboard view on startup
         loadDashboard();
@@ -137,6 +141,13 @@ public class MainController implements Initializable {
         setActiveMenuItem(myResultsItem);
         // Will be implemented later
         loadContent("my-results.fxml");
+    }
+    
+    // Load profile content
+    private void loadProfile() {
+        // Reset all menu items since profile is not a menu item
+        resetAllMenuItems();
+        loadContent("profile.fxml");
     }
     
     // Helper method to load FXML content into the content area

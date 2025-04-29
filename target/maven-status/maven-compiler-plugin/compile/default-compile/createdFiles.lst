@@ -22,6 +22,7 @@ app\backend\models\PracticalWork.class
 app\frontend\CoursesController$1.class
 app\frontend\MainController.class
 module-info.class
+app\frontend\ProfileController.class
 app\backend\services\CourseService.class
 app\backend\services\PracticalWorkService.class
 app\backend\services\QuizResultService.class

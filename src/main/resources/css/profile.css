@@ -1,0 +1,117 @@
+/* Profile Page Styles */
+
+.content-section {
+  -fx-background-color: #1e1e1e;
+  -fx-text-fill: white;
+  -fx-background-radius: 0;
+  -fx-border-width: 0;
+}
+
+.page-title {
+  -fx-font-family: "Inter Bold";
+  -fx-font-size: 46px;
+  -fx-text-fill: white;
+  -fx-font-weight: bold;
+}
+
+.logout-button {
+  -fx-background-color: #ff7700;
+  -fx-background-radius: 20px;
+  -fx-text-fill: white;
+  -fx-font-family: "Inter Bold";
+  -fx-font-size: 16px;
+  -fx-font-weight: bold;
+  -fx-background-radius: 20px;
+  -fx-padding: 15px 16px;
+  -fx-cursor: hand;
+}
+
+.logout-button:hover {
+  -fx-background-color: #ff8800;
+}
+
+.profile-container {
+  -fx-spacing: 5px;
+  -fx-max-width: 800px;
+  -fx-alignment: center;
+}
+
+.profile-avatar {
+  -fx-effect: dropshadow(gaussian, rgba(255, 119, 0, 0.4), 10, 0, 0, 0);
+  -fx-background-radius: 50%;
+  -fx-border-radius: 50%;
+  -fx-padding: 4px;
+  -fx-border-color: linear-gradient(to bottom right, #6a11cb, #2575fc);
+  -fx-border-width: 3px;
+  -fx-background-color: linear-gradient(to bottom right, #6a11cb, #2575fc);
+  -fx-background-insets: 0, 0, 0, 0;
+}
+
+.profile-name {
+  -fx-font-family: "Inter Bold";
+  -fx-font-size: 46px;
+  -fx-text-fill: white;
+  -fx-font-weight: bold;
+}
+
+.role-badge {
+  -fx-font-family: "Inter Regular";
+  -fx-font-size: 16px;
+  -fx-text-fill: black;
+  -fx-font-weight: bold;
+  -fx-background-color: #ffffff;
+  -fx-background-radius: 11px;
+  -fx-padding: 5px 16px;
+}
+
+.section-divider {
+  -fx-stroke: #ffffff;
+  -fx-opacity: 0.2;
+  -fx-stroke-width: 2;
+}
+
+.profile-info-grid {
+  -fx-alignment: center-left;
+  -fx-hgap: 20;
+  -fx-vgap: 20;
+  -fx-padding: 10px;
+}
+
+.field-label {
+  -fx-font-family: "Inter Regular";
+  -fx-font-size: 19px;
+  -fx-text-fill: white;
+}
+
+.field-value {
+  -fx-font-family: "Inter Regular";
+  -fx-font-size: 19px;
+  -fx-text-fill: white;
+  -fx-font-weight: bold;
+}
+
+.action-link {
+  -fx-font-family: "Inter Regular";
+  -fx-font-size: 16px;
+  -fx-text-fill: #ff7f00;
+  -fx-underline: true;
+  -fx-cursor: hand;
+  -fx-font-weight: bold;
+}
+
+.action-link:hover {
+  -fx-text-fill: #ff8800;
+}
+
+.user-info {
+  -fx-font-size: 16px;
+  -fx-text-fill: #ff7f00;
+  -fx-opacity: 0.5;
+}
+
+.image-container {
+    -fx-border-color: linear-gradient(to bottom right, #73B3FF, #A6514E);
+    -fx-border-radius: 50px;
+    -fx-border-width: 7px;
+    -fx-effect: dropshadow(gaussian, linear-gradient(to bottom right, rgba(115, 179, 255, 0.7), rgba(166, 81, 78, 0.7)), 15, 0.7, 0, 0);
+}
