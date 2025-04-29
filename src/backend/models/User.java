@@ -10,12 +10,13 @@ public class User {
     private String matricule;
     private String role;
     private Timestamp createdAt;
-    private String enrollmentLevel; // ✅ New field for L1, L2, L3, M1, M2
+    private String enrollmentLevel; // ✅ L1, L2, etc.
+    private String universityName;  // ✅ New field
 
     // Constructors
     public User() {}
 
-    public User(int id, String name, String password, String matricule, String role, Timestamp createdAt, String enrollmentLevel) {
+    public User(int id, String name, String password, String matricule, String role, Timestamp createdAt, String enrollmentLevel, String universityName) {
         this.id = id;
         this.name = name;
         this.password = password;
@@ -23,14 +24,16 @@ public class User {
         this.role = role;
         this.createdAt = createdAt;
         this.enrollmentLevel = enrollmentLevel;
+        this.universityName = universityName;
     }
 
-    public User(String name, String password, String matricule, String role, String enrollmentLevel) {
+    public User(String name, String password, String matricule, String role, String enrollmentLevel, String universityName) {
         this.name = name;
         this.password = password;
         this.matricule = matricule;
         this.role = role;
         this.enrollmentLevel = enrollmentLevel;
+        this.universityName = universityName;
     }
 
     // Getters and Setters
@@ -93,5 +96,13 @@ public class User {
 
     public void setEnrollmentLevel(String enrollmentLevel) {
         this.enrollmentLevel = enrollmentLevel;
+    }
+
+    public String getUniversityName() {
+        return universityName;
+    }
+
+    public void setUniversityName(String universityName) {
+        this.universityName = universityName;
     }
 }

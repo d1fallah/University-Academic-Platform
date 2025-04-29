@@ -14,40 +14,45 @@ public class AuthService {
     // Sign up a new user
     public static boolean signup(User user) {
         Connection conn = DataBaseConnection.getConnection();
-
+    
         try {
-            // Step 1: Check if Matricule is in ValidID table
-            String checkMatriculeSQL = "SELECT * FROM ValidID WHERE matricule = ? AND role = ?";
+            // Step 1: Check if Matricule is in ValidID table and fetch enrollment level + university name
+            String checkMatriculeSQL = "SELECT enrollment_level, university_name FROM ValidID WHERE matricule = ? AND role = ?";
             PreparedStatement checkStmt = conn.prepareStatement(checkMatriculeSQL);
             checkStmt.setString(1, user.getMatricule());
             checkStmt.setString(2, user.getRole());
             ResultSet rs = checkStmt.executeQuery();
-
+    
             if (!rs.next()) {
                 System.out.println("❌ Invalid Matricule or Role.");
                 return false;
             }
-
+    
+            // Fetch enrollment level and university from ValidID
+            String enrollmentLevel = rs.getString("enrollment_level");
+            String universityName = rs.getString("university_name");
+    
             // Step 2: Check if Matricule already used in User table
             String existingUserSQL = "SELECT * FROM User WHERE matricule = ?";
             PreparedStatement existStmt = conn.prepareStatement(existingUserSQL);
             existStmt.setString(1, user.getMatricule());
             ResultSet existRs = existStmt.executeQuery();
-
+    
             if (existRs.next()) {
                 System.out.println("❌ Matricule already used.");
                 return false;
             }
-
-            // Step 3: Insert new user with enrollment level
-            String insertSQL = "INSERT INTO User (name, password, matricule, role, enrollment_level) VALUES (?, ?, ?, ?, ?)";
+    
+            // Step 3: Insert new user with fetched enrollment level and university name
+            String insertSQL = "INSERT INTO User (name, password, matricule, role, enrollment_level, university_name) VALUES (?, ?, ?, ?, ?, ?)";
             PreparedStatement insertStmt = conn.prepareStatement(insertSQL);
             insertStmt.setString(1, user.getName());
             insertStmt.setString(2, PasswordHasher.hashPassword(user.getPassword()));
             insertStmt.setString(3, user.getMatricule());
             insertStmt.setString(4, user.getRole());
-            insertStmt.setString(5, user.getEnrollmentLevel());
-
+            insertStmt.setString(5, enrollmentLevel);
+            insertStmt.setString(6, universityName);
+    
             int rowsInserted = insertStmt.executeUpdate();
             if (rowsInserted > 0) {
                 System.out.println("✅ Signup successful!");
@@ -56,12 +61,13 @@ public class AuthService {
                 System.out.println("❌ Signup failed.");
                 return false;
             }
-
+    
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
     }
+    
 
     // Login user
     public static User login(String matricule, String password) {
@@ -83,7 +89,8 @@ public class AuthService {
                         rs.getString("matricule"),
                         rs.getString("role"),
                         rs.getTimestamp("created_at"),
-                        rs.getString("enrollment_level") // ✅ fetch enrollment level
+                        rs.getString("enrollment_level"),
+                        rs.getString("university_name")
                     );
                     System.out.println("✅ Login successful. Welcome " + user.getName() + "!");
                     return user;
