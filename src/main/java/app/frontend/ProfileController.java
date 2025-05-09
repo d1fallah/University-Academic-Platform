@@ -11,6 +11,7 @@ import javafx.stage.Stage;
 
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.Random;
 
 public class ProfileController implements Initializable {
 
@@ -37,7 +38,7 @@ public class ProfileController implements Initializable {
             matriculeLabel.setText(currentUser.getMatricule());
             
             // Set university information (static for now)
-            universityLabel.setText("Mohamed khider biskra");
+            universityLabel.setText(currentUser.getUniversityName());
             
             // Handle level display
             try {

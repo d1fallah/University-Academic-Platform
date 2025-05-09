@@ -26,9 +26,9 @@ public class MainController implements Initializable {
     @FXML private HBox myResultsItem;
     @FXML private Label userNameLabel;
     @FXML private Label userEmailLabel;
-    @FXML private Label userRoleLabel; // Label for the role badge
-    @FXML private Label portalTypeLabel; // Label for the portal type (Student Portal/Teacher Portal)
-    @FXML private HBox profileContainer; // The HBox containing the profile info and arrow
+    @FXML private Label userRoleLabel;
+    @FXML private Label portalTypeLabel;
+    @FXML private HBox profileContainer;
 
     // Active dot indicators
     @FXML private ImageView dashboardActiveDot;
@@ -48,7 +48,24 @@ public class MainController implements Initializable {
         
         // Update user information in the sidebar if user is available
         if (currentUser != null) {
-            userNameLabel.setText(currentUser.getName());
+            // Handle long names in the sidebar
+            String userName = currentUser.getName();
+            
+            // If the name is too long and contains "Mohamed", replace with "M."
+            if (userName.contains("Mohamed") && userName.length() > 20) {
+                userName = userName.replace("Mohamed", "M.");
+            }
+            
+            // Apply font size reduction for longer names
+            if (userName.length() > 20) {
+                userNameLabel.setStyle("-fx-font-size: 11px;");
+            } else if (userName.length() > 16) {
+                userNameLabel.setStyle("-fx-font-size: 13px;");
+            } else if (userName.length() > 12) {
+                userNameLabel.setStyle("-fx-font-size: 14px;");
+            }
+            
+            userNameLabel.setText(userName);
             userEmailLabel.setText(currentUser.getMatricule());
             
             // Set portal type and user role badge based on user role
@@ -105,14 +122,81 @@ public class MainController implements Initializable {
     // Load courses content
     private void loadCourses() {
         setActiveMenuItem(coursesItem);
-        loadContent("courses-cards.fxml");
+        
+        // If user is a student, show teachers first
+        if (currentUser != null && currentUser.getRole().equals("student")) {
+            loadContent("teachers-cards.fxml");
+        } else if (currentUser != null && currentUser.getRole().equals("teacher")) {
+            // For teachers, load the teachers view but exclude their own card
+            // and keep the manage courses button visible
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/teachers-cards.fxml"));
+                Parent teachersView = loader.load();
+                
+                // Get the controller and set flag to exclude current teacher and show manage button
+                TeachersCardsController controller = loader.getController();
+                controller.setExcludeCurrentTeacher(true);
+                controller.setShowManageCourseButton(true);
+                
+                contentArea.getChildren().clear();
+                contentArea.getChildren().add(teachersView);
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.out.println("❌ Failed to load teachers-cards.fxml");
+                // Fallback to the regular course cards view
+                loadContent("courses-cards.fxml");
+            }
+        } else {
+            // For other users or if user is null, show the regular course cards view
+            loadContent("courses-cards.fxml");
+        }
     }
     
     // Load quizzes content
     private void loadQuizzes() {
         setActiveMenuItem(quizzesItem);
-        // Will be implemented later
-        loadContent("quizzes.fxml");
+        
+        // If user is a student, show teachers first
+        if (currentUser != null && currentUser.getRole().equals("student")) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/teachers-cards.fxml"));
+                Parent teachersView = loader.load();
+                
+                // Get the controller and set flags
+                TeachersCardsController controller = loader.getController();
+                controller.setIsQuizView(true); // Set quiz view flag
+                
+                contentArea.getChildren().clear();
+                contentArea.getChildren().add(teachersView);
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.out.println("❌ Failed to load teachers-cards.fxml");
+                loadContent("quizzes.fxml");
+            }
+        } else if (currentUser != null && currentUser.getRole().equals("teacher")) {
+            // For teachers, load the teachers view but exclude their own card
+            // and keep the manage courses button visible
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/teachers-cards.fxml"));
+                Parent teachersView = loader.load();
+                
+                // Get the controller and set flags
+                TeachersCardsController controller = loader.getController();
+                controller.setExcludeCurrentTeacher(true);
+                controller.setShowManageCourseButton(true);
+                controller.setIsQuizView(true); // Set quiz view flag
+                
+                contentArea.getChildren().clear();
+                contentArea.getChildren().add(teachersView);
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.out.println("❌ Failed to load teachers-cards.fxml");
+                loadContent("quizzes.fxml");
+            }
+        } else {
+            // For other users or if user is null, show the regular quizzes view
+            loadContent("quizzes.fxml");
+        }
     }
     
     // Load exercises content

@@ -87,7 +87,7 @@
       </BorderPane>
       
       <!-- Add Course Dialog Overlay -->
-      <StackPane fx:id="addCourseOverlay" visible="false">
+      <StackPane fx:id="addCourseOverlay" stylesheets="@../css/dialog.css" visible="false">
          <children>
             <BorderPane fx:id="dialogContainer" maxHeight="550.0" maxWidth="1207.0" styleClass="dialog-container">
                <top>

@@ -125,4 +125,100 @@ public class QuizService {
 
         return null;
     }
+
+    // Get all quizzes
+    public static List<Quiz> getAllQuizzes() {
+        Connection conn = DataBaseConnection.getConnection();
+        List<Quiz> quizzes = new ArrayList<>();
+
+        String sql = "SELECT * FROM Quiz ORDER BY created_at DESC";
+
+        try (Statement stmt = conn.createStatement()) {
+            ResultSet rs = stmt.executeQuery(sql);
+
+            while (rs.next()) {
+                Quiz quiz = new Quiz(
+                    rs.getInt("id"),
+                    rs.getInt("course_id"),
+                    rs.getString("title"),
+                    rs.getString("description"),
+                    rs.getString("comment"),
+                    rs.getTimestamp("created_at")
+                );
+                quizzes.add(quiz);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return quizzes;
+    }
+    
+    // Get quizzes by enrollment level
+    public static List<Quiz> getQuizzesByEnrollmentLevel(String level) {
+        Connection conn = DataBaseConnection.getConnection();
+        List<Quiz> quizzes = new ArrayList<>();
+
+        // Get quizzes from courses that match the given enrollment level
+        String sql = "SELECT q.* FROM Quiz q " +
+                     "INNER JOIN Course c ON q.course_id = c.id " +
+                     "WHERE c.target_level = ? " +
+                     "ORDER BY q.created_at DESC";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, level);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Quiz quiz = new Quiz(
+                    rs.getInt("id"),
+                    rs.getInt("course_id"),
+                    rs.getString("title"),
+                    rs.getString("description"),
+                    rs.getString("comment"),
+                    rs.getTimestamp("created_at")
+                );
+                quizzes.add(quiz);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return quizzes;
+    }
+    
+    // Get all quizzes by teacher ID
+    public static List<Quiz> getQuizzesByTeacherId(int teacherId) {
+        Connection conn = DataBaseConnection.getConnection();
+        List<Quiz> quizzes = new ArrayList<>();
+
+        String sql = "SELECT q.* FROM Quiz q " +
+                     "INNER JOIN Course c ON q.course_id = c.id " +
+                     "WHERE c.teacher_id = ? " +
+                     "ORDER BY q.created_at DESC";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, teacherId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Quiz quiz = new Quiz(
+                    rs.getInt("id"),
+                    rs.getInt("course_id"),
+                    rs.getString("title"),
+                    rs.getString("description"),
+                    rs.getString("comment"),
+                    rs.getTimestamp("created_at")
+                );
+                quizzes.add(quiz);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return quizzes;
+    }
 }

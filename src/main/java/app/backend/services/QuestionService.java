@@ -8,22 +8,33 @@ import java.util.List;
 
 public class QuestionService {
 
-    // Add a new question
-    public static boolean addQuestion(Question question) {
+    // Add a new question and return the generated ID
+    public static int addQuestion(Question question) {
         Connection conn = DataBaseConnection.getConnection();
+        int generatedId = -1;
 
         String sql = "INSERT INTO Question (quiz_id, question_text) VALUES (?, ?)";
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setInt(1, question.getQuizId());
             stmt.setString(2, question.getQuestionText());
 
             int rowsInserted = stmt.executeUpdate();
-            return rowsInserted > 0;
+            
+            if (rowsInserted > 0) {
+                // Get the generated question ID
+                ResultSet rs = stmt.getGeneratedKeys();
+                if (rs.next()) {
+                    generatedId = rs.getInt(1);
+                }
+                rs.close();
+            }
+            
+            return generatedId;
 
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
+            return -1;
         }
     }
 

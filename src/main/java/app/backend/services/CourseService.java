@@ -165,4 +165,106 @@ public class CourseService {
 
         return courses;
     }
+
+    // Get courses by target level or all if the user is a teacher
+    public static List<Course> getCoursesByEnrollmentLevel(String level, boolean isTeacher) {
+        // If user is a teacher, return all courses
+        if (isTeacher) {
+            return getAllCourses();
+        }
+        
+        Connection conn = DataBaseConnection.getConnection();
+        List<Course> courses = new ArrayList<>();
+
+        // SQL to get courses for specific level or with null level (available to all)
+        String sql = "SELECT * FROM Course WHERE target_level = ? OR target_level IS NULL ORDER BY created_at DESC";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, level);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Course course = new Course(
+                    rs.getInt("id"),
+                    rs.getString("title"),
+                    rs.getString("description"),
+                    rs.getString("comment"),
+                    rs.getInt("teacher_id"),
+                    rs.getTimestamp("created_at")
+                );
+                course.setPdfPath(rs.getString("pdf_path"));
+                course.setTargetLevel(rs.getString("target_level"));
+                courses.add(course);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return courses;
+    }
+    
+    /**
+     * Get courses filtered by both teacher ID and student enrollment level
+     * 
+     * @param teacherId The ID of the teacher whose courses to retrieve
+     * @param level The enrollment level of the student
+     * @return List of matching courses
+     */
+    public static List<Course> getCoursesByTeacherAndLevel(int teacherId, String level) {
+        Connection conn = DataBaseConnection.getConnection();
+        List<Course> courses = new ArrayList<>();
+
+        // SQL to get courses for specific teacher that match the level or have no level specified
+        String sql = "SELECT * FROM Course WHERE teacher_id = ? AND (target_level = ? OR target_level IS NULL) ORDER BY created_at DESC";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, teacherId);
+            stmt.setString(2, level);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Course course = new Course(
+                    rs.getInt("id"),
+                    rs.getString("title"),
+                    rs.getString("description"),
+                    rs.getString("comment"),
+                    rs.getInt("teacher_id"),
+                    rs.getTimestamp("created_at")
+                );
+                course.setPdfPath(rs.getString("pdf_path"));
+                course.setTargetLevel(rs.getString("target_level"));
+                courses.add(course);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return courses;
+    }
+    
+    /**
+     * Get count of courses by teacher ID
+     * 
+     * @param teacherId The ID of the teacher
+     * @return Number of courses
+     */
+    public static int getCourseCountByTeacher(int teacherId) {
+        Connection conn = DataBaseConnection.getConnection();
+        int count = 0;
+
+        String sql = "SELECT COUNT(*) as count FROM Course WHERE teacher_id = ?";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, teacherId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                count = rs.getInt("count");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return count;
+    }
 }

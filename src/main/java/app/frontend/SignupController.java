@@ -162,7 +162,7 @@ public class SignupController implements Initializable {
         }
         
         // Create a new user object
-        User newUser = new User(name, password, matricule, role);
+        User newUser = new User(name, password, matricule, role, null, null);
         
         // Attempt signup using AuthService
         boolean signupSuccess = AuthService.signup(newUser);

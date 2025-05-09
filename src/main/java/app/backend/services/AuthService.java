@@ -7,6 +7,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AuthService {
 
@@ -47,6 +49,14 @@ public class AuthService {
                 System.out.println("❌ Role mismatch. The matricule is registered for " + validRole + ", not " + user.getRole());
                 return false;
             }
+            
+            // Get enrollment level and university name from ValidID table
+            String enrollmentLevel = rs.getString("enrollment_level");
+            String universityName = rs.getString("university_name");
+            
+            // Set these values in the user object
+            user.setEnrollmentLevel(enrollmentLevel);
+            user.setUniversityName(universityName);
 
             // Step 2: Check if Matricule already used in User table
             String existingUserSQL = "SELECT * FROM User WHERE matricule = ?";
@@ -60,12 +70,14 @@ public class AuthService {
             }
 
             // Step 3: Insert new user
-            String insertSQL = "INSERT INTO User (name, password, matricule, role) VALUES (?, ?, ?, ?)";
+            String insertSQL = "INSERT INTO User (name, password, matricule, role, enrollment_level, university_name) VALUES (?, ?, ?, ?, ?, ?)";
             PreparedStatement insertStmt = conn.prepareStatement(insertSQL);
             insertStmt.setString(1, user.getName());
             insertStmt.setString(2, PasswordHasher.hashPassword(user.getPassword()));
             insertStmt.setString(3, user.getMatricule().toUpperCase()); // Ensure matricule is uppercase
             insertStmt.setString(4, user.getRole());
+            insertStmt.setString(5, user.getEnrollmentLevel());
+            insertStmt.setString(6, user.getUniversityName());
 
             int rowsInserted = insertStmt.executeUpdate();
             if (rowsInserted > 0) {
@@ -107,7 +119,9 @@ public class AuthService {
                         storedPassword,
                         rs.getString("matricule"),
                         rs.getString("role"),
-                        rs.getTimestamp("created_at")
+                        rs.getTimestamp("created_at"),
+                        rs.getString("enrollment_level"),
+                        rs.getString("university_name")
                     );
                     System.out.println("✅ Login successful. Welcome " + user.getName() + "!");
                     return user;
@@ -152,7 +166,9 @@ public class AuthService {
                     rs.getString("password"),
                     rs.getString("matricule"),
                     rs.getString("role"),
-                    rs.getTimestamp("created_at")
+                    rs.getTimestamp("created_at"),
+                    rs.getString("enrollment_level"),
+                    rs.getString("university_name")
                 );
                 return user;
             }
@@ -161,5 +177,44 @@ public class AuthService {
         }
 
         return null;
+    }
+
+    /**
+     * Get all teachers in the system
+     * 
+     * @return List of all users with teacher role
+     */
+    public static List<User> getAllTeachers() {
+        Connection conn = DataBaseConnection.getConnection();
+        List<User> teachers = new ArrayList<>();
+        
+        if (conn == null) {
+            System.out.println("❌ Cannot get teachers: Database connection failed.");
+            return teachers;
+        }
+
+        try {
+            String sql = "SELECT * FROM User WHERE role = 'teacher'";
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                User teacher = new User(
+                    rs.getInt("id"),
+                    rs.getString("name"),
+                    rs.getString("password"),
+                    rs.getString("matricule"),
+                    rs.getString("role"),
+                    rs.getTimestamp("created_at"),
+                    rs.getString("enrollment_level"),
+                    rs.getString("university_name")
+                );
+                teachers.add(teacher);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return teachers;
     }
 }

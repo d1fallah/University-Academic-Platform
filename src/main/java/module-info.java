@@ -11,8 +11,10 @@ module PFE {
     exports app;
     exports app.frontend to javafx.fxml;
     exports app.backend.utils;
+    exports app.backend.models;  // Add this line to export the models package
 
     opens app to javafx.graphics;
     opens app.frontend to javafx.fxml;
     opens app.backend.utils to jbcrypt;
+    opens app.backend.models to javafx.base;  // Open models to javafx.base for property binding
 }

@@ -107,18 +107,45 @@ public class DataBaseConnection {
             if (rs.next() && rs.getInt("count") == 0) {
                 System.out.println("🔄 No valid IDs found. Adding default valid IDs...");
                 
-                // Add some default valid IDs with the new format
-                Statement insertStmt = connection.createStatement();
-                insertStmt.executeUpdate("INSERT INTO validid (matricule, role) VALUES ('UNST00000001', 'student')");
-                insertStmt.executeUpdate("INSERT INTO validid (matricule, role) VALUES ('UNST00000002', 'student')");
-                insertStmt.executeUpdate("INSERT INTO validid (matricule, role) VALUES ('UNTS00000001', 'teacher')");
-                insertStmt.executeUpdate("INSERT INTO validid (matricule, role) VALUES ('UNTS00000002', 'teacher')");
+                // Add default valid IDs with university name and enrollment levels
+                PreparedStatement insertStmt = connection.prepareStatement(
+                    "INSERT INTO validid (matricule, role, enrollment_level, university_name) VALUES (?, ?, ?, ?)");
+                
+                // Add teacher
+                insertStmt.setString(1, "UNTS00000001");
+                insertStmt.setString(2, "teacher");
+                insertStmt.setString(3, null);  // Teachers don't have enrollment level
+                insertStmt.setString(4, "Mohamed Khider Biskra");
+                insertStmt.executeUpdate();
+
+                // Add teacher
+                insertStmt.setString(1, "UNTS00000002");
+                insertStmt.setString(2, "teacher");
+                insertStmt.setString(3, null);  // Teachers don't have enrollment level
+                insertStmt.setString(4, "Mohamed Khider Biskra");
+                insertStmt.executeUpdate();
+                
+                // Add L1 student
+                insertStmt.setString(1, "UNST00000001");
+                insertStmt.setString(2, "student");
+                insertStmt.setString(3, "L1");
+                insertStmt.setString(4, "Mohamed Khider Biskra");
+                insertStmt.executeUpdate();
+                
+                // Add L2 student
+                insertStmt.setString(1, "UNST00000002");
+                insertStmt.setString(2, "student");
+                insertStmt.setString(3, "L2");
+                insertStmt.setString(4, "Mohamed Khider Biskra");
+                insertStmt.executeUpdate();
                 
                 System.out.println("✅ Default valid IDs added successfully!");
             } else {
                 // Check and add sample IDs with the new format if they don't exist yet
                 String[] newIDs = {"UNST00000001", "UNST00000002", "UNTS00000001", "UNTS00000002"};
                 String[] roles = {"student", "student", "teacher", "teacher"};
+                String[] levels = {"L1", "L2", null, null};  // null for teacher
+                String university = "Mohamed Khider Biskra";
                 
                 for (int i = 0; i < newIDs.length; i++) {
                     String checkSQL = "SELECT COUNT(*) AS count FROM validid WHERE matricule = ?";
@@ -129,11 +156,24 @@ public class DataBaseConnection {
                     if (checkRs.next() && checkRs.getInt("count") == 0) {
                         System.out.println("🔄 Adding " + newIDs[i] + " to valid IDs...");
                         PreparedStatement insertStmt = connection.prepareStatement(
-                            "INSERT INTO validid (matricule, role) VALUES (?, ?)");
+                            "INSERT INTO validid (matricule, role, enrollment_level, university_name) VALUES (?, ?, ?, ?)");
                         insertStmt.setString(1, newIDs[i]);
                         insertStmt.setString(2, roles[i]);
+                        insertStmt.setString(3, levels[i]);
+                        insertStmt.setString(4, university);
                         insertStmt.executeUpdate();
                         System.out.println("✅ " + newIDs[i] + " added successfully!");
+                    } else {
+                        // If ID exists, check if we need to update the university name and enrollment level
+                        String updateSQL = "UPDATE validid SET enrollment_level = ?, university_name = ? WHERE matricule = ?";
+                        PreparedStatement updateStmt = connection.prepareStatement(updateSQL);
+                        updateStmt.setString(1, levels[i]);
+                        updateStmt.setString(2, university);
+                        updateStmt.setString(3, newIDs[i]);
+                        int updated = updateStmt.executeUpdate();
+                        if (updated > 0) {
+                            System.out.println("✅ Updated " + newIDs[i] + " with enrollment level and university name");
+                        }
                     }
                 }
             }

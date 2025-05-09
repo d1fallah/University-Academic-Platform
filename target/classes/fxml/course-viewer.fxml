@@ -21,6 +21,7 @@
                <Button fx:id="nextButton" styleClass="pdf-control-button" text="Next" />
                <Button fx:id="zoomOutButton" styleClass="pdf-control-button" text="-" />
                <Button fx:id="zoomInButton" styleClass="pdf-control-button" text="+" />
+               <Button fx:id="returnButton" styleClass="pdf-control-button" text="Return to Courses" />
             </HBox>
          </HBox>
       </VBox>
