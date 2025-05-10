@@ -288,6 +288,26 @@ public class MyCoursesController implements Initializable {
         HBox buttonBox = new HBox(8); // Increased spacing between buttons
         buttonBox.setAlignment(Pos.CENTER_RIGHT);
 
+        // View button with eye icon
+        Button viewButton = new Button();
+        viewButton.getStyleClass().add("icon-button");
+        viewButton.setPrefWidth(24);
+        viewButton.setPrefHeight(24);
+        viewButton.setOnAction(e -> handleViewCourse(course));
+        
+        // View icon
+        ImageView viewIcon = new ImageView();
+        try {
+            Image eyeImage = new Image(getClass().getResourceAsStream("/images/Eye.png"));
+            viewIcon.setImage(eyeImage);
+            viewIcon.setFitWidth(15);
+            viewIcon.setFitHeight(15);
+            viewIcon.setPreserveRatio(true);
+        } catch (Exception e) {
+            System.out.println("Failed to load eye icon");
+        }
+        viewButton.setGraphic(viewIcon);
+
         // Edit button - now with icon
         Button editButton = new Button();
         editButton.getStyleClass().add("icon-button"); // Will add this class to CSS
@@ -328,7 +348,7 @@ public class MyCoursesController implements Initializable {
         }
         deleteButton.setGraphic(deleteIcon);
 
-        buttonBox.getChildren().addAll(editButton, deleteButton);
+        buttonBox.getChildren().addAll(viewButton, editButton, deleteButton);
 
         // Add date and buttons to footer
         footerBox.getChildren().addAll(dateBox, buttonBox);
@@ -675,6 +695,43 @@ public class MyCoursesController implements Initializable {
             showAlert(Alert.AlertType.INFORMATION, "Success", "Course updated successfully!");
         } else {
             showAlert(Alert.AlertType.ERROR, "Error", "Failed to update the course.");
+        }
+    }
+
+    /**
+     * Handles viewing a course
+     */
+    private void handleViewCourse(Course course) {
+        try {
+            // Check if the course has a PDF file
+            if (course.getPdfPath() == null || course.getPdfPath().isEmpty()) {
+                showAlert(Alert.AlertType.WARNING, "No PDF Available", 
+                    "This course does not have a PDF file attached.");
+                return;
+            }
+            
+            // Load the course viewer view
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/course-viewer.fxml"));
+            Parent courseViewerParent = loader.load();
+            
+            // Set up the controller and pass the course
+            CourseViewerController controller = loader.getController();
+            
+            // Make sure we set the teacher ID to the current user's ID so the return navigation works properly
+            if (currentUser != null) {
+                controller.setCourse(course, currentUser.getId());
+            } else {
+                controller.setCourse(course);
+            }
+            
+            // Get the main layout's content area and set the course viewer
+            StackPane contentArea = (StackPane) courseCardsContainer.getScene().lookup("#contentArea");
+            contentArea.getChildren().clear();
+            contentArea.getChildren().add(courseViewerParent);
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Error", "Failed to load course viewer: " + e.getMessage());
         }
     }
 }

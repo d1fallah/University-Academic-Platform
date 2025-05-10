@@ -27,10 +27,13 @@ C:\Users\Oday\Desktop\intillij\PFE\src\main\java\app\backend\utils\PasswordHashe
 C:\Users\Oday\Desktop\intillij\PFE\src\main\java\app\backend\utils\SessionManager.java
 C:\Users\Oday\Desktop\intillij\PFE\src\main\java\app\frontend\AddCourseDialogController.java
 C:\Users\Oday\Desktop\intillij\PFE\src\main\java\app\frontend\CourseViewerController.java
+C:\Users\Oday\Desktop\intillij\PFE\src\main\java\app\frontend\ExercisesController.java
+C:\Users\Oday\Desktop\intillij\PFE\src\main\java\app\frontend\ExerciseViewerController.java
 C:\Users\Oday\Desktop\intillij\PFE\src\main\java\app\frontend\LoadingController.java
 C:\Users\Oday\Desktop\intillij\PFE\src\main\java\app\frontend\LoginController.java
 C:\Users\Oday\Desktop\intillij\PFE\src\main\java\app\frontend\MainController.java
 C:\Users\Oday\Desktop\intillij\PFE\src\main\java\app\frontend\MyCoursesController.java
+C:\Users\Oday\Desktop\intillij\PFE\src\main\java\app\frontend\MyExercisesController.java
 C:\Users\Oday\Desktop\intillij\PFE\src\main\java\app\frontend\MyQuizzesController.java
 C:\Users\Oday\Desktop\intillij\PFE\src\main\java\app\frontend\ProfileController.java
 C:\Users\Oday\Desktop\intillij\PFE\src\main\java\app\frontend\QuizResultController.java
@@ -38,6 +41,7 @@ C:\Users\Oday\Desktop\intillij\PFE\src\main\java\app\frontend\QuizViewerControll
 C:\Users\Oday\Desktop\intillij\PFE\src\main\java\app\frontend\QuizzesController.java
 C:\Users\Oday\Desktop\intillij\PFE\src\main\java\app\frontend\SignupController.java
 C:\Users\Oday\Desktop\intillij\PFE\src\main\java\app\frontend\TeacherCoursesController.java
+C:\Users\Oday\Desktop\intillij\PFE\src\main\java\app\frontend\TeacherExercisesController.java
 C:\Users\Oday\Desktop\intillij\PFE\src\main\java\app\frontend\TeacherQuizzesController.java
 C:\Users\Oday\Desktop\intillij\PFE\src\main\java\app\frontend\TeachersCardsController.java
 C:\Users\Oday\Desktop\intillij\PFE\src\main\java\app\Main.java

@@ -202,8 +202,54 @@ public class MainController implements Initializable {
     // Load exercises content
     private void loadExercises() {
         setActiveMenuItem(exercisesItem);
-        // Will be implemented later
-        loadContent("exercises.fxml");
+        
+        // For students, load teacher cards filtered by their level
+        if (currentUser != null && currentUser.getRole().equals("student")) {
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/teachers-cards.fxml"));
+                Parent teachersView = loader.load();
+                
+                // Get the controller and set flags - make sure isQuizView is set to false first
+                TeachersCardsController controller = loader.getController();
+                controller.setIsQuizView(false); // Explicitly set quiz view to false first
+                controller.setIsExerciseView(true); // Set exercise view flag
+                
+                contentArea.getChildren().clear();
+                contentArea.getChildren().add(teachersView);
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.out.println("❌ Failed to load teachers-cards.fxml");
+                loadContent("exercises.fxml");
+            }
+        } else if (currentUser != null && currentUser.getRole().equals("teacher")) {
+            // For teachers, load teacher cards but exclude their own card
+            // and keep the manage exercises button visible
+            try {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/teachers-cards.fxml"));
+                Parent teachersView = loader.load();
+                
+                // Get the controller and set flags - make sure isQuizView is set to false first
+                TeachersCardsController controller = loader.getController();
+                controller.setExcludeCurrentTeacher(true);
+                controller.setShowManageCourseButton(true);
+                controller.setIsQuizView(false); // Explicitly set quiz view to false first
+                controller.setIsExerciseView(true); // Set exercise view flag
+                
+                // Debug - verify flag values
+                System.out.println("After setting flags in loadExercises - isExerciseView: " + 
+                                  controller.isExerciseView() + ", isQuizView: " + controller.isQuizView());
+                
+                contentArea.getChildren().clear();
+                contentArea.getChildren().add(teachersView);
+            } catch (IOException e) {
+                e.printStackTrace();
+                System.out.println("❌ Failed to load teachers-cards.fxml");
+                loadContent("exercises.fxml");
+            }
+        } else {
+            // For other users or if user is null, show the regular exercises view
+            loadContent("exercises.fxml");
+        }
     }
     
     // Load practical works content

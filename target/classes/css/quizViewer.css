@@ -3,7 +3,6 @@
   -fx-min-height: 100%;
 }
 
-/* Quiz Viewer Styles */
 .quiz-viewer-container {
   -fx-background-color: #1c1c1c;
   -fx-background-radius: 15px;
@@ -12,14 +11,13 @@
   -fx-border-width: 2px;
   -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.6), 10, 0, 0, 0);
   -fx-max-width: 650px;
-  -fx-max-height: 450px; /* Default max height */
+  -fx-max-height: 450px;
   -fx-min-height: 300px;
   -fx-padding: 20;
 }
 
-/* Add a class for expanded container when content is long */
 .quiz-viewer-container-expanded {
-  -fx-max-height: 550px; /* Additional 100px for long content */
+  -fx-max-height: 550px;
 }
 
 .quiz-header {
@@ -44,7 +42,6 @@
   -fx-padding: 0 0 2px 0;
 }
 
-/* Progress indicator */
 .progress-label {
   -fx-font-size: 14px;
   -fx-font-family: "Inter Bold";
@@ -85,15 +82,13 @@
   -fx-background-color: rgba(255, 119, 0, 0.5);
 }
 
-/* Questions container */
 .questions-container {
   -fx-background-color: transparent;
   -fx-padding: 10px;
   -fx-spacing: 8;
-  -fx-alignment: center-left; /* Align horizontally centered but left-aligned text */
+  -fx-alignment: center-left;
 }
 
-/* Question box */
 .question-box {
   -fx-background-color: #333333;
   -fx-background-radius: 10px;
@@ -103,13 +98,12 @@
   -fx-border-width: 0 0 0 3px;
   -fx-max-width: 580px;
   -fx-min-width: 450px;
-  -fx-alignment: center-left; /* Center vertically, align text left */
+  -fx-alignment: center-left;
   -fx-spacing: 5;
-  -fx-min-height: 50px; /* Add minimum height */
-  -fx-pref-height: -1; /* Allow height to adjust to content */
+  -fx-min-height: 50px;
+  -fx-pref-height: -1;
 }
 
-/* Question text */
 .question-text {
   -fx-font-size: 18px;
   -fx-font-family: "Inter Bold";
@@ -120,16 +114,14 @@
   -fx-text-alignment: left;
 }
 
-/* Answer option container */
 .answer-container {
   -fx-padding: 2px 0 2px 5px;
   -fx-spacing: 3;
   -fx-alignment: center-left;
   -fx-min-width: 400px;
-  -fx-pref-height: -1; /* Allow height to adjust to content */
+  -fx-pref-height: -1;
 }
 
-/* Primary button for Next/Submit Quiz */
 .primary-button {
   -fx-background-color: #ff7700;
   -fx-text-fill: white;
@@ -152,7 +144,6 @@
   -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.4), 2, 0, 0, 1);
 }
 
-/* Submit Quiz button (last question) */
 .submit-button {
   -fx-background-color: #2e8b57;
 }
@@ -165,7 +156,6 @@
   -fx-background-color: #2e7d32;
 }
 
-/* Secondary button */
 .secondary-button {
   -fx-background-color: transparent;
   -fx-text-fill: white;
@@ -188,7 +178,6 @@
   -fx-background-color: rgba(255, 255, 255, 0.15);
 }
 
-/* Loading message */
 .loading-message {
   -fx-font-size: 16px;
   -fx-font-family: "Inter";
@@ -196,7 +185,6 @@
   -fx-alignment: center;
 }
 
-/* Error styles */
 .error-container {
   -fx-alignment: center;
   -fx-padding: 20px;
@@ -211,7 +199,6 @@
   -fx-wrap-text: true;
 }
 
-/* Add Question Dialog Styles */
 .answer-radio {
   -fx-text-fill: white;
   -fx-font-size: 18px;
@@ -249,12 +236,10 @@
   -fx-background-color: #ff7700;
 }
 
-/* Dialog overlay background */
 #addQuestionOverlay {
   -fx-background-color: rgba(0, 0, 0, 0.7);
 }
 
-/* New styles for improved visibility of quiz elements */
 .quiz-course-label {
   -fx-font-size: 20px;
   -fx-font-family: "Inter Bold";
@@ -294,7 +279,6 @@
   -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.4), 8, 0, 0, 4);
 }
 
-/* Input label (for Answer Options header) */
 .input-label {
   -fx-font-size: 22px;
   -fx-font-family: "Inter Bold";
@@ -303,7 +287,6 @@
   -fx-padding: 5px 0;
 }
 
-/* Dialog title (Quiz title) */
 .dialog-title {
   -fx-font-size: 32px;
   -fx-font-family: "Inter Bold";

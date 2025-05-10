@@ -14,19 +14,16 @@
     -fx-padding: 40;
 }
 
-/* Logo container */
 .logo-container {
     -fx-padding: 10;
 }
 
-/* Status text */
 .status-text {
     -fx-font-size: 34px;
     -fx-text-fill: #797979;
     -fx-font-family: "Inter";
 }
 
-/* Progress bar styling */
 .progress-bar {
     -fx-accent: #ff7700;
 }

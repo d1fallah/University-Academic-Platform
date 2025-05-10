@@ -4,9 +4,12 @@ app\backend\services\AnswerService.class
 app\backend\services\PracticalWorkSubmissionService.class
 app\Main.class
 app\backend\database\DatabaseInitializer.class
+app\frontend\ExerciseViewerController.class
 app\backend\services\QuestionService.class
 app\backend\services\ExerciseSubmissionService.class
+app\frontend\MyExercisesController.class
 app\backend\services\ExerciseService.class
+app\frontend\ExercisesController.class
 app\backend\models\ExerciseSubmission.class
 app\backend\models\Answer.class
 app\frontend\TeacherQuizzesController.class
@@ -32,6 +35,7 @@ app\frontend\AddCourseDialogController.class
 app\backend\models\QuizResult.class
 app\frontend\QuizResultController.class
 app\frontend\QuizViewerController.class
+app\frontend\TeacherExercisesController.class
 app\frontend\SignupController.class
 app\frontend\TeachersCardsController.class
 app\backend\models\PracticalWork.class

@@ -1,10 +1,9 @@
-/* Quiz Result Styles */
+
 .root {
   -fx-background-color: transparent;
   -fx-min-height: 100%;
 }
 
-/* Container styles */
 .result-container {
   -fx-background-color: #2d2d2d;
   -fx-background-radius: 15px;
@@ -23,7 +22,6 @@
   -fx-background-color: transparent;
 }
 
-/* Score circle in the header */
 .score-circle {
   -fx-background-color: rgba(45, 45, 45, 0.6);
   -fx-background-radius: 50%;
@@ -52,14 +50,12 @@
   -fx-padding: 0;
 }
 
-/* Course title */
 .course-title {
   -fx-text-fill: #94a3b8;
   -fx-font-size: 20px;
   -fx-font-weight: bold;
 }
 
-/* Tab styles */
 .main-tabs {
   -fx-background-color: transparent;
   -fx-pref-width: 100%;
@@ -133,20 +129,17 @@
   -fx-border-color: transparent;
 }
 
-/* Overview tab content */
 .overview-tab {
   -fx-padding: 10px 0;
   -fx-spacing: 15px;
 }
 
-/* Stats HBox container */
 .stats-box-container {
   -fx-spacing: 15;
   -fx-alignment: center;
   -fx-padding: 0;
 }
 
-/* Stats boxes in Overview */
 .stat-box {
   -fx-background-color: #2d2d2d;
   -fx-background-radius: 8px;
@@ -179,7 +172,6 @@
   -fx-padding: 8px 0 0 0;
 }
 
-/* Performance section */
 .performance-container {
   -fx-background-color: #2d2d2d;
   -fx-background-radius: 8px;
@@ -206,7 +198,7 @@
   -fx-max-width: Infinity;
   -fx-background-color: #333333;
   -fx-background-radius: 5px;
-  -fx-accent: #ff9800; /* Orange accent color to match app theme */
+  -fx-accent: #ff9800;
   -fx-border-radius: 5px;
   -fx-effect: innershadow(one-pass-box, rgba(0, 0, 0, 0.2), 1, 0, 0, 1);
 }
@@ -229,7 +221,6 @@
   -fx-padding: 5px 0 0 0;
 }
 
-/* Question Review tab styles */
 .questions-list {
   -fx-padding: 5px 0;
   -fx-spacing: 15px;
@@ -263,7 +254,6 @@
   -fx-padding: 0 0 5 0;
 }
 
-/* Answer styles */
 .answer-box {
   -fx-alignment: center-left;
   -fx-spacing: 15px;
@@ -295,7 +285,6 @@
   -fx-padding: 0;
 }
 
-/* For Status Badge */
 .status-badge {
   -fx-background-radius: 4px;
   -fx-padding: 5px 10px;
@@ -319,7 +308,6 @@
   -fx-border-radius: 4px;
 }
 
-/* Button styles */
 .primary-button {
   -fx-background-color: #ff9800;
   -fx-text-fill: white;
@@ -354,7 +342,6 @@
   -fx-text-fill: white;
 }
 
-/* ScrollPane styles */
 .transparent-scroll {
   -fx-background-color: transparent;
   -fx-background: transparent;
@@ -381,7 +368,6 @@
   -fx-background-color: rgba(255, 255, 255, 0.3);
 }
 
-/* Unknown answer style */
 .unknown-answer {
   -fx-background-color: #4d4d4d;
   -fx-text-fill: #cccccc;
@@ -389,19 +375,16 @@
   -fx-background-radius: 3px;
 }
 
-/* Quiz course label */
 .quiz-course-label {
   -fx-text-fill: #b3b3b3;
   -fx-font-size: 16px;
 }
 
-/* For unanswered questions */
 .no-answer-text {
   -fx-text-fill: #94a3b8;
   -fx-font-style: italic;
 }
 
-/* Make sure content stays within bounds */
 .dialog-content {
   -fx-fit-to-width: true;
   -fx-fit-to-height: true;
@@ -409,7 +392,6 @@
   -fx-max-height: 500px;
 }
 
-/* Dialog footer styles */
 .dialog-footer {
   -fx-padding: 10px 20px 20px 20px;
   -fx-border-width: 0;

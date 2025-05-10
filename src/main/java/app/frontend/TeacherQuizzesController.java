@@ -197,7 +197,7 @@ public class TeacherQuizzesController implements Initializable {
         // Quiz logo/icon
         ImageView quizIcon = new ImageView();
         try {
-            Image iconImg = new Image(getClass().getResourceAsStream("/images/quiz.png"));
+            Image iconImg = new Image(getClass().getResourceAsStream("/images/Object Scan.png"));
             quizIcon.setImage(iconImg);
             quizIcon.setFitHeight(40);
             quizIcon.setFitWidth(40);
@@ -264,6 +264,7 @@ public class TeacherQuizzesController implements Initializable {
 
         Button viewButton = new Button(buttonText);
         viewButton.getStyleClass().add("view-course-button");
+        viewButton.setStyle("-fx-background-color: #0095ff;");
         viewButton.setPrefWidth(110);
         viewButton.setPrefHeight(24);
         viewButton.setOnAction(e -> handleViewQuiz(quiz));

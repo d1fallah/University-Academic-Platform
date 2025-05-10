@@ -269,6 +269,7 @@ public class TeacherCoursesController implements Initializable {
 
         Button viewButton = new Button("View Course");
         viewButton.getStyleClass().add("view-course-button");
+        viewButton.setStyle("-fx-background-color: #65558f;");
         viewButton.setPrefWidth(110);
         viewButton.setPrefHeight(24);
         viewButton.setOnAction(e -> handleViewCourseDetails(course));
@@ -336,6 +337,24 @@ public class TeacherCoursesController implements Initializable {
             if (currentUser != null && currentUser.getRole().equals("teacher")) {
                 controller.setExcludeCurrentTeacher(true);
                 controller.setShowManageCourseButton(true);
+            }
+            
+            // Check if we're in the Exercises section by looking at the viewTitleLabel's text or URL
+            boolean isExerciseSection = false;
+            try {
+                Label viewTitle = (Label) teacherNameLabel.getScene().lookup("#viewTitleLabel");
+                if (viewTitle != null && viewTitle.getText().contains("Exercises")) {
+                    isExerciseSection = true;
+                }
+            } catch (Exception e) {
+                // Fallback to checking the URL in case the label lookup fails
+                String url = teacherNameLabel.getScene().getWindow().toString();
+                isExerciseSection = url != null && url.contains("exercise");
+            }
+            
+            // Set appropriate view flag
+            if (isExerciseSection) {
+                controller.setIsExerciseView(true);
             }
             
             // Get the main layout's content area and set the teachers view

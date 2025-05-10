@@ -15,7 +15,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane styleClass="content-container" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.frontend.TeacherQuizzesController">
+<BorderPane styleClass="content-container" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.frontend.TeacherExercisesController">
    <top>
       <VBox BorderPane.alignment="CENTER">
          <children>
@@ -31,7 +31,7 @@
                               <Insets right="8.0" />
                            </HBox.margin>
                         </ImageView>
-                        <Label fx:id="teacherNameLabel" styleClass="courses-title" text="Teacher Name">
+                        <Label fx:id="teacherNameLabel" styleClass="courses-title" text="Exercises by Teacher Name">
                            <font>
                               <Font name="Inter" size="41.0" />
                            </font>
@@ -44,7 +44,7 @@
                   <Region HBox.hgrow="ALWAYS" />
                   <HBox alignment="CENTER_LEFT" maxHeight="-Infinity" prefHeight="60.0" styleClass="search-container-large">
                      <children>
-                        <TextField fx:id="searchField" onAction="#handleSearch" promptText="Search quizzes" styleClass="search-field-large" HBox.hgrow="ALWAYS" />
+                        <TextField fx:id="searchField" onAction="#handleSearch" promptText="Search exercises" styleClass="search-field-large" HBox.hgrow="ALWAYS" />
                         <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@../images/SearchLogo.png" />
@@ -75,7 +75,7 @@
    <bottom>
       <HBox alignment="CENTER_LEFT" BorderPane.alignment="CENTER_LEFT">
          <children>
-            <Button fx:id="backToTeachersButton" mnemonicParsing="false" onAction="#handleBackToTeachers" styleClass="back-button" text="Back to Teachers">
+            <Button fx:id="backButton" mnemonicParsing="false" styleClass="back-button" text="Back to Teachers">
                <graphic>
                   <ImageView fitHeight="20.0" fitWidth="21.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -95,9 +95,9 @@
       <ScrollPane fitToHeight="true" fitToWidth="true" styleClass="content-scroll" BorderPane.alignment="CENTER">
          <content>
             <VBox prefHeight="16.0" prefWidth="1140.0" styleClass="content-area">
-               <!-- Quiz Cards Section -->
-               <FlowPane fx:id="quizCardsContainer" hgap="10.0" vgap="10.0">
-                  <!-- Quiz cards will be added here dynamically -->
+               <!-- Exercise Cards Section -->
+               <FlowPane fx:id="exercisesFlowPane" hgap="10.0" vgap="10.0">
+                  <!-- Exercise cards will be added here dynamically -->
                </FlowPane>
                
                <padding>
@@ -107,4 +107,4 @@
          </content>
       </ScrollPane>
    </center>
-</BorderPane>
+</BorderPane> 

@@ -63,7 +63,10 @@ CREATE TABLE `exercice` (
   `title` varchar(255) NOT NULL,
   `description` text NOT NULL,
   `comment` text DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `pdf_path` varchar(255) DEFAULT NULL,
+  `target_level` enum('L1','L2','L3','M1','M2') DEFAULT NULL,
+  `teacher_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -230,7 +233,8 @@ ALTER TABLE `course`
 --
 ALTER TABLE `exercice`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `course_id` (`course_id`);
+  ADD KEY `course_id` (`course_id`),
+  ADD KEY `teacher_id` (`teacher_id`);
 
 --
 -- Index pour la table `exercicesubmission`
@@ -410,7 +414,8 @@ ALTER TABLE `course`
 -- Contraintes pour la table `exercice`
 --
 ALTER TABLE `exercice`
-  ADD CONSTRAINT `exercice_ibfk_1` FOREIGN KEY (`course_id`) REFERENCES `course` (`id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `exercice_ibfk_1` FOREIGN KEY (`course_id`) REFERENCES `course` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `exercice_ibfk_2` FOREIGN KEY (`teacher_id`) REFERENCES `user` (`id`) ON DELETE CASCADE;
 
 --
 -- Contraintes pour la table `exercicesubmission`

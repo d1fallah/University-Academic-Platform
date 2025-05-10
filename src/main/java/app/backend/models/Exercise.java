@@ -10,6 +10,9 @@ public class Exercise {
     private String description;
     private String comment;
     private Timestamp createdAt;
+    private String pdfPath;
+    private String targetLevel;
+    private int teacherId;
 
     // Constructors
     public Exercise() {}
@@ -28,6 +31,20 @@ public class Exercise {
         this.title = title;
         this.description = description;
         this.comment = comment;
+    }
+
+    // Full constructor with all fields
+    public Exercise(int id, int courseId, String title, String description, String comment, 
+                   Timestamp createdAt, String pdfPath, String targetLevel, int teacherId) {
+        this.id = id;
+        this.courseId = courseId;
+        this.title = title;
+        this.description = description;
+        this.comment = comment;
+        this.createdAt = createdAt;
+        this.pdfPath = pdfPath;
+        this.targetLevel = targetLevel;
+        this.teacherId = teacherId;
     }
 
     // Getters and Setters
@@ -77,5 +94,29 @@ public class Exercise {
 
     public void setCreatedAt(Timestamp createdAt) {
         this.createdAt = createdAt;
+    }
+    
+    public String getPdfPath() {
+        return pdfPath;
+    }
+
+    public void setPdfPath(String pdfPath) {
+        this.pdfPath = pdfPath;
+    }
+    
+    public String getTargetLevel() {
+        return targetLevel;
+    }
+    
+    public void setTargetLevel(String targetLevel) {
+        this.targetLevel = targetLevel;
+    }
+    
+    public int getTeacherId() {
+        return teacherId;
+    }
+    
+    public void setTeacherId(int teacherId) {
+        this.teacherId = teacherId;
     }
 }

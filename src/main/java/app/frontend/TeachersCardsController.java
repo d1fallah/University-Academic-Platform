@@ -43,6 +43,7 @@ public class TeachersCardsController implements Initializable {
     private boolean excludeCurrentTeacher = false;
     private boolean showManageCourseButton = false;
     private boolean isQuizView = false;
+    private boolean isExerciseView = false;
     private User lastViewedTeacher = null;
 
     @Override
@@ -68,17 +69,35 @@ public class TeachersCardsController implements Initializable {
     private void updateViewLabels() {
         // Update the view title
         if (viewTitleLabel != null) {
-            viewTitleLabel.setText(isQuizView ? "Quizzes" : "Courses");
+            if (isExerciseView) {
+                viewTitleLabel.setText("Exercises");
+            } else if (isQuizView) {
+                viewTitleLabel.setText("Quizzes");
+            } else {
+                viewTitleLabel.setText("Courses");
+            }
         }
         
         // Update the manage button text
         if (manageCourseButton != null) {
-            manageCourseButton.setText(isQuizView ? "Manage my quizzes" : "Manage my courses");
+            if (isExerciseView) {
+                manageCourseButton.setText("Manage my exercises");
+            } else if (isQuizView) {
+                manageCourseButton.setText("Manage my quizzes");
+            } else {
+                manageCourseButton.setText("Manage my courses");
+            }
         }
         
         // Update search field prompt
         if (searchField != null) {
-            searchField.setPromptText(isQuizView ? "Search teachers for quizzes..." : "Search teachers...");
+            if (isExerciseView) {
+                searchField.setPromptText("Search teachers for exercises...");
+            } else if (isQuizView) {
+                searchField.setPromptText("Search teachers for quizzes...");
+            } else {
+                searchField.setPromptText("Search teachers...");
+            }
         }
     }
     
@@ -208,12 +227,34 @@ public class TeachersCardsController implements Initializable {
         nameLabel.setAlignment(Pos.CENTER);
 
         // Create the appropriate button based on the view
-        Button viewButton = new Button(isQuizView ? "View Quizzes" : "View Courses");
+        String buttonText;
+        String buttonStyle = "";
+        
+        if (isExerciseView) {
+            buttonText = "View Exercises";
+            buttonStyle = "-fx-background-color: #be123c;";
+        } else if (isQuizView) {
+            buttonText = "View Quizzes";
+            buttonStyle = "-fx-background-color: #0095ff;";
+        } else {
+            buttonText = "View Courses";
+            buttonStyle = "-fx-background-color: #65558f;";
+        }
+        
+        // Debug - print out what section we're in
+        System.out.println("Creating teacher card with isExerciseView: " + isExerciseView + 
+                           ", isQuizView: " + isQuizView + 
+                           ", buttonText: " + buttonText);
+        
+        Button viewButton = new Button(buttonText);
         viewButton.getStyleClass().add("view-course-button");
+        viewButton.setStyle(buttonStyle);
         viewButton.setPrefWidth(150);
         viewButton.setPrefHeight(30);
         viewButton.setOnAction(e -> {
-            if (isQuizView) {
+            if (isExerciseView) {
+                handleViewTeacherExercises(teacher);
+            } else if (isQuizView) {
                 handleViewTeacherQuizzes(teacher);
             } else {
                 handleViewTeacherCourses(teacher);
@@ -230,6 +271,32 @@ public class TeachersCardsController implements Initializable {
         cardPane.setAccessibleText("Teacher: " + teacher.getName());
 
         return cardPane;
+    }
+    
+    /**
+     * Handles the action when a user clicks on a teacher card to view exercises
+     */
+    private void handleViewTeacherExercises(User teacher) {
+        try {
+            // Load the teacher exercises view
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/teacher-exercises.fxml"));
+            Parent exercisesView = loader.load();
+            
+            // Get the controller and set the teacher
+            TeacherExercisesController controller = loader.getController();
+            controller.setTeacher(teacher);
+            
+            // Store the last viewed teacher
+            lastViewedTeacher = teacher;
+            
+            // Get the main layout's content area and set the exercises view
+            StackPane contentArea = (StackPane) teacherCardsContainer.getScene().lookup("#contentArea");
+            contentArea.getChildren().clear();
+            contentArea.getChildren().add(exercisesView);
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("❌ Failed to load teacher-exercises.fxml");
+        }
     }
     
     /**
@@ -284,26 +351,32 @@ public class TeachersCardsController implements Initializable {
     }
 
     /**
-     * Handles the click on "Manage my courses" button
+     * Handles the manage button click action
      */
     @FXML
     private void handleManageCourses(ActionEvent event) {
         try {
-            // Determine which view to load based on isQuizView flag
-            String fxmlToLoad = isQuizView ? "/fxml/my-quizzes.fxml" : "/fxml/my-courses.fxml";
+            Parent contentView;
             
-            // Load the appropriate view
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlToLoad));
-            Parent viewToShow = loader.load();
+            if (isExerciseView) {
+                // Load My Exercises view
+                contentView = FXMLLoader.load(getClass().getResource("/fxml/my-exercises.fxml"));
+            } else if (isQuizView) {
+                // Load My Quizzes view
+                contentView = FXMLLoader.load(getClass().getResource("/fxml/my-quizzes.fxml"));
+            } else {
+                // Load My Courses view
+                contentView = FXMLLoader.load(getClass().getResource("/fxml/my-courses.fxml"));
+            }
             
-            // Get the main layout's content area and set the view
-            StackPane contentArea = (StackPane) teacherCardsContainer.getScene().lookup("#contentArea");
+            // Get the content area and set the view
+            StackPane contentArea = (StackPane) manageCourseButton.getScene().lookup("#contentArea");
             contentArea.getChildren().clear();
-            contentArea.getChildren().add(viewToShow);
+            contentArea.getChildren().add(contentView);
             
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("Failed to load view: " + e.getMessage());
+            System.out.println("❌ Failed to load management view");
         }
     }
 
@@ -348,5 +421,45 @@ public class TeachersCardsController implements Initializable {
      */
     public User getLastViewedTeacher() {
         return lastViewedTeacher;
+    }
+
+    /**
+     * Sets whether this is an exercise view
+     */
+    public void setIsExerciseView(boolean isExerciseView) {
+        System.out.println("Setting isExerciseView to: " + isExerciseView);
+        this.isExerciseView = isExerciseView;
+        
+        // Make sure quiz view is set to false if exercise view is true
+        if (isExerciseView) {
+            this.isQuizView = false;
+        }
+        
+        updateViewLabels();
+        
+        // If this is set after initialization, update button text and reload teachers
+        if (manageCourseButton != null) {
+            manageCourseButton.setText(isExerciseView ? "Manage my exercises" : 
+                (isQuizView ? "Manage my quizzes" : "Manage my courses"));
+        }
+        
+        // Immediately update existing cards if container exists
+        if (teacherCardsContainer != null) {
+            loadAllTeachers();
+        }
+    }
+    
+    /**
+     * Returns whether this is an exercise view
+     */
+    public boolean isExerciseView() {
+        return isExerciseView;
+    }
+    
+    /**
+     * Returns whether this is a quiz view
+     */
+    public boolean isQuizView() {
+        return isQuizView;
     }
 }

@@ -1,8 +1,8 @@
 package app.frontend;
 
-import app.backend.models.Course;
+import app.backend.models.Exercise;
 import app.backend.models.User;
-import app.backend.services.CourseService;
+import app.backend.services.ExerciseService;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -26,7 +26,7 @@ import java.net.URL;
 import java.nio.file.Paths;
 import java.util.ResourceBundle;
 
-public class CourseViewerController implements Initializable {
+public class ExerciseViewerController implements Initializable {
 
     @FXML private BorderPane pdfViewerContainer;
     @FXML private Label titleLabel;
@@ -46,7 +46,7 @@ public class CourseViewerController implements Initializable {
     private int currentPage = 0;
     private int totalPages = 0;
     private float zoomFactor = 1.0f;
-    private Course currentCourse;
+    private Exercise currentExercise;
     private int teacherId = -1;
 
     @Override
@@ -56,39 +56,39 @@ public class CourseViewerController implements Initializable {
         nextButton.setOnAction(e -> showNextPage());
         zoomInButton.setOnAction(e -> zoomIn());
         zoomOutButton.setOnAction(e -> zoomOut());
-        returnButton.setOnAction(e -> returnToCourses());
+        returnButton.setOnAction(e -> returnToExercises());
         
         // Hide error container by default
         errorContainer.setVisible(false);
         errorContainer.setManaged(false);
     }
 
-    public void setCourse(Course course) {
-        this.currentCourse = course;
-        titleLabel.setText(course.getTitle());
+    public void setExercise(Exercise exercise) {
+        this.currentExercise = exercise;
+        titleLabel.setText(exercise.getTitle());
         
         // Store the teacher ID
-        if (course.getTeacherId() > 0) {
-            this.teacherId = course.getTeacherId();
+        if (exercise.getTeacherId() > 0) {
+            this.teacherId = exercise.getTeacherId();
         }
         
         // Load the PDF
-        loadPdf(course.getPdfPath());
+        loadPdf(exercise.getPdfPath());
     }
     
-    // Set course with explicit teacher ID for proper navigation
-    public void setCourse(Course course, int teacherId) {
-        this.teacherId = teacherId;
-        setCourse(course);
-    }
-    
-    public void setCourse(int courseId) {
-        Course course = CourseService.getCourseById(courseId);
-        if (course != null) {
-            setCourse(course);
+    public void setExercise(int exerciseId) {
+        Exercise exercise = ExerciseService.getExerciseById(exerciseId);
+        if (exercise != null) {
+            setExercise(exercise);
         } else {
-            showError("Course not found.");
+            showError("Exercise not found.");
         }
+    }
+    
+    // Set exercise with explicit teacher ID for proper navigation
+    public void setExercise(Exercise exercise, int teacherId) {
+        this.teacherId = teacherId;
+        setExercise(exercise);
     }
     
     private void loadPdf(String pdfPath) {
@@ -96,7 +96,7 @@ public class CourseViewerController implements Initializable {
         closeDocument();
         
         if (pdfPath == null || pdfPath.isEmpty()) {
-            showError("No PDF available for this course.");
+            showError("No PDF available for this exercise.");
             return;
         }
         
@@ -106,11 +106,11 @@ public class CourseViewerController implements Initializable {
             
             // If file doesn't exist with direct path, try different approaches
             if (!file.exists()) {
-                // Try to find the file in the courses directory
+                // Try to find the file in the exercises directory
                 String filename = new File(pdfPath).getName();
-                File coursesDir = new File("courses");
-                if (coursesDir.exists() && coursesDir.isDirectory()) {
-                    File[] matchingFiles = coursesDir.listFiles((dir, name) -> name.equals(filename));
+                File exercisesDir = new File("exercises");
+                if (exercisesDir.exists() && exercisesDir.isDirectory()) {
+                    File[] matchingFiles = exercisesDir.listFiles((dir, name) -> name.equals(filename));
                     if (matchingFiles != null && matchingFiles.length > 0) {
                         file = matchingFiles[0];
                     }
@@ -119,7 +119,7 @@ public class CourseViewerController implements Initializable {
                 // If still not found, look for a file with similar timestamp prefix
                 if (!file.exists() && filename.contains("_")) {
                     final String searchPattern = filename.substring(filename.indexOf("_"));
-                    File[] matchingFiles = coursesDir.listFiles((dir, name) -> name.contains(searchPattern));
+                    File[] matchingFiles = exercisesDir.listFiles((dir, name) -> name.contains(searchPattern));
                     if (matchingFiles != null && matchingFiles.length > 0) {
                         file = matchingFiles[0];
                     }
@@ -129,7 +129,7 @@ public class CourseViewerController implements Initializable {
                 if (!file.exists()) {
                     showError("PDF file not found: " + pdfPath + "\n\n" +
                               "Please ensure the PDF file exists and check the path in the database.\n" +
-                              "Try placing the PDF in the 'courses' folder with name: " + filename);
+                              "Try placing the PDF in the 'exercises' folder with name: " + filename);
                     return;
                 }
             }
@@ -238,9 +238,9 @@ public class CourseViewerController implements Initializable {
     }
 
     /**
-     * Returns to the specific teacher's courses page or general courses view
+     * Returns to the specific teacher's exercises page or general exercises view
      */
-    private void returnToCourses() {
+    private void returnToExercises() {
         try {
             // Clean up resources before returning
             cleanup();
@@ -251,62 +251,67 @@ public class CourseViewerController implements Initializable {
             User currentUser = LoginController.getCurrentUser();
             boolean isTeacher = currentUser != null && currentUser.getRole().equals("teacher");
             
-            // Check if we're a teacher viewing our own course
-            if (currentCourse != null && isTeacher && currentCourse.getTeacherId() == currentUser.getId()) {
-                System.out.println("Teacher viewing their own course - returning to my-courses.fxml");
+            // Check if we came from a teacher's My Exercises page
+            if (currentExercise != null && isTeacher && currentExercise.getTeacherId() == currentUser.getId()) {
+                System.out.println("Teacher viewing their own exercise - returning to my-exercises.fxml");
                 
-                // This is a teacher viewing their own course, return to my-courses
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/my-courses.fxml"));
-                Parent myCourses = loader.load();
+                // This is a teacher viewing their own exercise, return to my-exercises
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/my-exercises.fxml"));
+                Parent myExercises = loader.load();
                 contentArea.getChildren().clear();
-                contentArea.getChildren().add(myCourses);
+                contentArea.getChildren().add(myExercises);
                 return;
             }
             
-            // If we have a teacher ID and it's not the current user, go to that teacher's courses
+            // If we have a teacher ID and it's not the current user, go to that teacher's exercises
             if (teacherId > 0 && (!isTeacher || teacherId != currentUser.getId())) {
-                // Get the teacher user object from the teacher ID using AuthService instead of UserService
+                // Get the teacher user object from the teacher ID
                 User teacher = app.backend.services.AuthService.getUserById(teacherId);
                 
                 if (teacher != null) {
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/teacher-courses.fxml"));
-                    Parent teacherCoursesView = loader.load();
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/teacher-exercises.fxml"));
+                    Parent teacherExercisesView = loader.load();
                     
                     // Get the controller and set the teacher
-                    TeacherCoursesController controller = loader.getController();
+                    TeacherExercisesController controller = loader.getController();
                     controller.setTeacher(teacher);
                     
                     contentArea.getChildren().clear();
-                    contentArea.getChildren().add(teacherCoursesView);
+                    contentArea.getChildren().add(teacherExercisesView);
                 } else {
                     // Fallback if the teacher can't be found
                     loadDefaultView(contentArea);
                 }
             } 
-            // If the user is a teacher, go to my-courses (if we didn't already handle it above)
+            // If the user is a teacher, go to my-exercises (if we didn't already handle it above)
             else if (isTeacher) {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/my-courses.fxml"));
-                Parent myCourses = loader.load();
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/my-exercises.fxml"));
+                Parent myExercises = loader.load();
                 contentArea.getChildren().clear();
-                contentArea.getChildren().add(myCourses);
+                contentArea.getChildren().add(myExercises);
             } 
-            // Otherwise go to the default courses view
+            // Otherwise go to the default exercises view
             else {
                 loadDefaultView(contentArea);
             }
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("Failed to return to courses view: " + e.getMessage());
+            System.out.println("Failed to return to exercises view: " + e.getMessage());
         }
     }
     
     /**
-     * Helper method to load the default courses view (teachers-cards)
+     * Helper method to load the default exercises view (teachers-cards)
      */
     private void loadDefaultView(StackPane contentArea) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/teachers-cards.fxml"));
         Parent teachersView = loader.load();
+        
+        // Get the controller and set the exercise view flag
+        TeachersCardsController controller = loader.getController();
+        controller.setIsExerciseView(true);
+        
         contentArea.getChildren().clear();
         contentArea.getChildren().add(teachersView);
     }
-}
+} 
