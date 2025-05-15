@@ -12,7 +12,7 @@ public class PracticalWorkService {
     public static boolean addPracticalWork(PracticalWork practicalWork) {
         Connection conn = DataBaseConnection.getConnection();
 
-        String sql = "INSERT INTO PracticalWork (course_id, title, description, comment, deadline) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO PracticalWork (course_id, title, description, comment, deadline, teacher_id, pdf_path, target_level) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, practicalWork.getCourseId());
@@ -20,6 +20,9 @@ public class PracticalWorkService {
             stmt.setString(3, practicalWork.getDescription());
             stmt.setString(4, practicalWork.getComment());
             stmt.setDate(5, practicalWork.getDeadline());
+            stmt.setInt(6, practicalWork.getTeacherId());
+            stmt.setString(7, practicalWork.getPdfPath());
+            stmt.setString(8, practicalWork.getTargetLevel());
 
             int rowsInserted = stmt.executeUpdate();
             return rowsInserted > 0;
@@ -34,14 +37,16 @@ public class PracticalWorkService {
     public static boolean updatePracticalWork(PracticalWork practicalWork) {
         Connection conn = DataBaseConnection.getConnection();
 
-        String sql = "UPDATE PracticalWork SET title = ?, description = ?, comment = ?, deadline = ? WHERE id = ?";
+        String sql = "UPDATE PracticalWork SET title = ?, description = ?, comment = ?, deadline = ?, pdf_path = ?, target_level = ? WHERE id = ?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, practicalWork.getTitle());
             stmt.setString(2, practicalWork.getDescription());
             stmt.setString(3, practicalWork.getComment());
             stmt.setDate(4, practicalWork.getDeadline());
-            stmt.setInt(5, practicalWork.getId());
+            stmt.setString(5, practicalWork.getPdfPath());
+            stmt.setString(6, practicalWork.getTargetLevel());
+            stmt.setInt(7, practicalWork.getId());
 
             int rowsUpdated = stmt.executeUpdate();
             return rowsUpdated > 0;
@@ -89,7 +94,44 @@ public class PracticalWorkService {
                     rs.getString("description"),
                     rs.getString("comment"),
                     rs.getDate("deadline"),
-                    rs.getTimestamp("created_at")
+                    rs.getTimestamp("created_at"),
+                    rs.getInt("teacher_id"),
+                    rs.getString("pdf_path"),
+                    rs.getString("target_level")
+                );
+                works.add(work);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return works;
+    }
+
+    // Get all practical works for a teacher
+    public static List<PracticalWork> getPracticalWorksByTeacherId(int teacherId) {
+        Connection conn = DataBaseConnection.getConnection();
+        List<PracticalWork> works = new ArrayList<>();
+
+        String sql = "SELECT * FROM PracticalWork WHERE teacher_id = ? ORDER BY created_at DESC";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, teacherId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                PracticalWork work = new PracticalWork(
+                    rs.getInt("id"),
+                    rs.getInt("course_id"),
+                    rs.getString("title"),
+                    rs.getString("description"),
+                    rs.getString("comment"),
+                    rs.getDate("deadline"),
+                    rs.getTimestamp("created_at"),
+                    rs.getInt("teacher_id"),
+                    rs.getString("pdf_path"),
+                    rs.getString("target_level")
                 );
                 works.add(work);
             }
@@ -119,7 +161,10 @@ public class PracticalWorkService {
                     rs.getString("description"),
                     rs.getString("comment"),
                     rs.getDate("deadline"),
-                    rs.getTimestamp("created_at")
+                    rs.getTimestamp("created_at"),
+                    rs.getInt("teacher_id"),
+                    rs.getString("pdf_path"),
+                    rs.getString("target_level")
                 );
             }
 

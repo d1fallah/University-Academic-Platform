@@ -44,6 +44,7 @@ public class TeachersCardsController implements Initializable {
     private boolean showManageCourseButton = false;
     private boolean isQuizView = false;
     private boolean isExerciseView = false;
+    private boolean isPracticalWorkView = false;
     private User lastViewedTeacher = null;
 
     @Override
@@ -73,6 +74,8 @@ public class TeachersCardsController implements Initializable {
                 viewTitleLabel.setText("Exercises");
             } else if (isQuizView) {
                 viewTitleLabel.setText("Quizzes");
+            } else if (isPracticalWorkView) {
+                viewTitleLabel.setText("Practical Works");
             } else {
                 viewTitleLabel.setText("Courses");
             }
@@ -84,6 +87,8 @@ public class TeachersCardsController implements Initializable {
                 manageCourseButton.setText("Manage my exercises");
             } else if (isQuizView) {
                 manageCourseButton.setText("Manage my quizzes");
+            } else if (isPracticalWorkView) {
+                manageCourseButton.setText("Manage my practical works");
             } else {
                 manageCourseButton.setText("Manage my courses");
             }
@@ -95,6 +100,8 @@ public class TeachersCardsController implements Initializable {
                 searchField.setPromptText("Search teachers for exercises...");
             } else if (isQuizView) {
                 searchField.setPromptText("Search teachers for quizzes...");
+            } else if (isPracticalWorkView) {
+                searchField.setPromptText("Search teachers for practical works...");
             } else {
                 searchField.setPromptText("Search teachers...");
             }
@@ -256,6 +263,8 @@ public class TeachersCardsController implements Initializable {
                 handleViewTeacherExercises(teacher);
             } else if (isQuizView) {
                 handleViewTeacherQuizzes(teacher);
+            } else if (isPracticalWorkView) {
+                handleViewTeacherCourses(teacher);
             } else {
                 handleViewTeacherCourses(teacher);
             }
@@ -300,26 +309,49 @@ public class TeachersCardsController implements Initializable {
     }
     
     /**
-     * Handles the action when a user clicks on a teacher card to view courses
+     * Handles viewing a teacher's courses
      */
     private void handleViewTeacherCourses(User teacher) {
         try {
-            // Load the courses cards view
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/teacher-courses.fxml"));
-            Parent coursesView = loader.load();
+            lastViewedTeacher = teacher;
             
-            // Get the controller and set the teacher
-            TeacherCoursesController controller = loader.getController();
-            controller.setTeacher(teacher);
+            // Determine which view to load based on the view type
+            String fxmlPath;
+            if (isExerciseView) {
+                fxmlPath = "/fxml/teacher-exercises.fxml";
+            } else if (isQuizView) {
+                fxmlPath = "/fxml/teacher-quizzes.fxml";
+            } else if (isPracticalWorkView) {
+                fxmlPath = "/fxml/teacher-practical-works-view.fxml";
+            } else {
+                fxmlPath = "/fxml/teacher-courses.fxml";
+            }
             
-            // Get the main layout's content area and set the courses view
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(fxmlPath));
+            Parent teacherView = loader.load();
+            
+            // Set the teacher in the controller
+            if (isExerciseView) {
+                TeacherExercisesController controller = loader.getController();
+                controller.setTeacher(teacher);
+            } else if (isQuizView) {
+                TeacherQuizzesController controller = loader.getController();
+                controller.setTeacher(teacher);
+            } else if (isPracticalWorkView) {
+                TeacherPracticalWorksViewController controller = loader.getController();
+                controller.setTeacher(teacher);
+            } else {
+                TeacherCoursesController controller = loader.getController();
+                controller.setTeacher(teacher);
+            }
+            
+            // Get the content area and set the view
             StackPane contentArea = (StackPane) teacherCardsContainer.getScene().lookup("#contentArea");
             contentArea.getChildren().clear();
-            contentArea.getChildren().add(coursesView);
+            contentArea.getChildren().add(teacherView);
             
         } catch (IOException e) {
             e.printStackTrace();
-            System.out.println("Failed to load teacher courses: " + e.getMessage());
         }
     }
 
@@ -364,6 +396,9 @@ public class TeachersCardsController implements Initializable {
             } else if (isQuizView) {
                 // Load My Quizzes view
                 contentView = FXMLLoader.load(getClass().getResource("/fxml/my-quizzes.fxml"));
+            } else if (isPracticalWorkView) {
+                // Load My Practical Works view
+                contentView = FXMLLoader.load(getClass().getResource("/fxml/my-practical-works.fxml"));
             } else {
                 // Load My Courses view
                 contentView = FXMLLoader.load(getClass().getResource("/fxml/my-courses.fxml"));
@@ -461,5 +496,38 @@ public class TeachersCardsController implements Initializable {
      */
     public boolean isQuizView() {
         return isQuizView;
+    }
+
+    /**
+     * Sets whether this is a practical work view
+     * When true, viewing a teacher will show their practical works instead of courses
+     * 
+     * @param isPracticalWorkView Whether this is a practical work view
+     */
+    public void setIsPracticalWorkView(boolean isPracticalWorkView) {
+        this.isPracticalWorkView = isPracticalWorkView;
+        
+        // Update labels
+        if (viewTitleLabel != null) {
+            viewTitleLabel.setText("Practical Works");
+        }
+        
+        if (manageCourseButton != null) {
+            manageCourseButton.setText("Manage my practical works");
+        }
+        
+        if (searchField != null) {
+            searchField.setPromptText("Search teachers for practical works...");
+        }
+        
+        // Reload to reflect changes
+        loadAllTeachers();
+    }
+    
+    /**
+     * Returns whether this is a practical work view
+     */
+    public boolean isPracticalWorkView() {
+        return isPracticalWorkView;
     }
 }

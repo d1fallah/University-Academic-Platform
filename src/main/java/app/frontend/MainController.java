@@ -255,7 +255,6 @@ public class MainController implements Initializable {
     // Load practical works content
     private void loadPracticalWorks() {
         setActiveMenuItem(practicalWorkItem);
-        // Will be implemented later
         loadContent("practical-works.fxml");
     }
     

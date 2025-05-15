@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.text.Font?>
+
+<StackPane fx:id="practicalWorksContainer" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.frontend.TeacherPracticalWorksController" stylesheets="@../css/main.css,@../css/dialog.css">
+   <children>
+      <BorderPane styleClass="content-container" prefHeight="720.0" prefWidth="1280.0">
+         <top>
+            <VBox BorderPane.alignment="CENTER">
+               <children>
+                  <HBox alignment="CENTER_LEFT">
+                     <children>
+                        <HBox alignment="CENTER_LEFT" spacing="20">
+                           <children>
+                              <Label fx:id="viewTitleLabel" styleClass="courses-title" text="Practical Works">
+                                 <font>
+                                    <Font name="Inter" size="41.0" />
+                                 </font>
+                              </Label>
+                              <Button fx:id="managePracticalWorksButton" mnemonicParsing="false" onAction="#handleManagePracticalWorks" styleClass="manage-courses-button" text="Manage my practical works" />
+                           </children>
+                        </HBox>
+                        <Region HBox.hgrow="ALWAYS" />
+                        <HBox alignment="CENTER_LEFT" maxHeight="-Infinity" prefHeight="60.0" styleClass="search-container-large">
+                           <children>
+                              <TextField fx:id="searchField" promptText="Search teachers for practical works" styleClass="search-field-large" HBox.hgrow="ALWAYS" />
+                              <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../images/SearchLogo.png" />
+                                 </image>
+                              </ImageView>
+                           </children>
+                        </HBox>
+                     </children>
+                     <VBox.margin>
+                        <Insets bottom="20.0" left="30.0" right="30.0" top="30.0" />
+                     </VBox.margin>
+                     <padding>
+                        <Insets bottom="30.0" />
+                     </padding>
+                  </HBox>
+                  <HBox alignment="CENTER">
+                     <children>
+                        <Separator prefWidth="1360.0" styleClass="header-separator" />
+                     </children>
+                     <VBox.margin>
+                        <Insets bottom="30.0" />
+                     </VBox.margin>
+                  </HBox>
+               </children>
+            </VBox>
+         </top>
+         
+         <center>
+            <ScrollPane fitToHeight="true" fitToWidth="true" styleClass="content-scroll" BorderPane.alignment="CENTER">
+               <content>
+                  <VBox prefHeight="16.0" prefWidth="1140.0" styleClass="content-area">
+                     <children>
+                        <FlowPane fx:id="teacherCardsContainer" hgap="20.0" vgap="20.0">
+                           <!-- Teacher cards will be added here dynamically -->
+                        </FlowPane>
+                     </children>
+                     <padding>
+                        <Insets bottom="30.0" left="30.0" right="30.0" top="10.0" />
+                     </padding>
+                  </VBox>
+               </content>
+            </ScrollPane>
+         </center>
+      </BorderPane>
+      
+      <!-- Overlay for adding/editing practical works -->
+      <StackPane fx:id="addPracticalWorkOverlay" styleClass="dialog-overlay" visible="false">
+         <children>
+            <BorderPane fx:id="dialogContainer" styleClass="dialog-container" maxWidth="600.0" maxHeight="650.0">
+               <top>
+                  <Label styleClass="dialog-title" text="Add new Practical Work" BorderPane.alignment="CENTER" />
+               </top>
+               <center>
+                  <VBox spacing="15.0" styleClass="dialog-content">
+                     <children>
+                        <Label styleClass="dialog-label" text="Practical Work Title" />
+                        <TextField fx:id="practicalWorkNameField" promptText="Enter practical work title" styleClass="dialog-input-field" />
+                        
+                        <Label styleClass="dialog-label" text="Description" />
+                        <TextArea fx:id="practicalWorkDescriptionField" prefHeight="100.0" promptText="Enter a detailed description" wrapText="true" styleClass="dialog-input-field" />
+                        
+                        <Label styleClass="dialog-label" text="Course" />
+                        <ComboBox fx:id="courseComboBox" prefWidth="150.0" promptText="Select a course" styleClass="dialog-input-field" />
+                        
+                        <Label styleClass="dialog-label" text="Education Level" />
+                        <ComboBox fx:id="levelComboBox" prefWidth="150.0" promptText="Select level" styleClass="dialog-input-field" />
+                        
+                        <Label styleClass="dialog-label" text="Deadline" />
+                        <DatePicker fx:id="deadlinePicker" promptText="Select deadline date" styleClass="dialog-input-field" />
+                        
+                        <Label styleClass="dialog-label" text="PDF File (optional)" />
+                        <StackPane fx:id="dropArea" styleClass="dialog-drop-area">
+                           <children>
+                              <VBox alignment="CENTER" spacing="10.0">
+                                 <children>
+                                    <Label fx:id="selectedFileLabel" text="No file selected" styleClass="selected-file-label" />
+                                    <Button fx:id="selectFileButton" mnemonicParsing="false" onAction="#handleSelectFile" styleClass="browse-files-button" text="Browse Files" />
+                                 </children>
+                                 <padding>
+                                    <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                                 </padding>
+                              </VBox>
+                           </children>
+                        </StackPane>
+                     </children>
+                     <padding>
+                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                     </padding>
+                  </VBox>
+               </center>
+               <bottom>
+                  <HBox alignment="CENTER_RIGHT" spacing="15.0" BorderPane.alignment="CENTER">
+                     <children>
+                        <Button mnemonicParsing="false" onAction="#handleCancel" styleClass="cancel-button" text="Cancel" />
+                        <Button mnemonicParsing="false" onAction="#handleSave" styleClass="save-button" text="Save" />
+                     </children>
+                     <padding>
+                        <Insets bottom="20.0" left="20.0" right="20.0" top="10.0" />
+                     </padding>
+                  </HBox>
+               </bottom>
+            </BorderPane>
+         </children>
+      </StackPane>
+      
+      <!-- Teacher Card Template -->
+      <fx:define>
+         <StackPane fx:id="teacherCardTemplate" visible="false">
+            <children>
+               <VBox styleClass="teacher-card" maxWidth="320" maxHeight="220" alignment="TOP_CENTER" spacing="15">
+                  <padding>
+                     <Insets top="20.0" right="20.0" bottom="20.0" left="20.0" />
+                  </padding>
+                  <children>
+                     <ImageView fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true">
+                        <image>
+                           <Image url="@../images/teacher_avatar.png" />
+                        </image>
+                     </ImageView>
+                     <Label styleClass="teacher-card-name" text="Teacher Name" wrapText="true" />
+                     <Region VBox.vgrow="ALWAYS" />
+                     <Button mnemonicParsing="false" styleClass="view-exercises-button" text="View Practical Works" style="-fx-background-color: #65558f;" />
+                  </children>
+               </VBox>
+            </children>
+         </StackPane>
+      </fx:define>
+   </children>
+</StackPane> 

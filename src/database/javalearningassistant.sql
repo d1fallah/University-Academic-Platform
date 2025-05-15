@@ -110,7 +110,10 @@ CREATE TABLE `practicalwork` (
   `description` text NOT NULL,
   `comment` text DEFAULT NULL,
   `deadline` date NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `teacher_id` int(11) NOT NULL,
+  `pdf_path` varchar(255) DEFAULT NULL,
+  `target_level` enum('L1','L2','L3','M1','M2') DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- --------------------------------------------------------
@@ -434,7 +437,8 @@ ALTER TABLE `notification`
 -- Contraintes pour la table `practicalwork`
 --
 ALTER TABLE `practicalwork`
-  ADD CONSTRAINT `practicalwork_ibfk_1` FOREIGN KEY (`course_id`) REFERENCES `course` (`id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `practicalwork_ibfk_1` FOREIGN KEY (`course_id`) REFERENCES `course` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `practicalwork_ibfk_2` FOREIGN KEY (`teacher_id`) REFERENCES `user` (`id`) ON DELETE CASCADE;
 
 --
 -- Contraintes pour la table `practicalworksubmission`
