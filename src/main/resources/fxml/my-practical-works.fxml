@@ -20,7 +20,7 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<StackPane stylesheets="@../css/main.css, @../css/quizResult.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.frontend.MyPracticalWorksController">
+<StackPane stylesheets="@../css/main.css, @../css/quizResult.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.frontend.TeacherPracticalWorksController">
    <children>
       <BorderPane styleClass="content-container" stylesheets="@../css/main.css">
          <top>

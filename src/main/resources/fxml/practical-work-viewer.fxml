@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.StackPane?>
 
-<BorderPane fx:id="pdfViewerContainer" styleClass="pdf-viewer-container" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.frontend.PracticalWorkViewerController">
+<BorderPane fx:id="pdfViewerContainer" styleClass="pdf-viewer-container" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.frontend.ViewPracticalWorkController">
    <top>
       <VBox spacing="0">
          <HBox styleClass="pdf-viewer-header" alignment="CENTER_LEFT" spacing="15">

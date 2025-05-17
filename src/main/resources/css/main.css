@@ -731,3 +731,83 @@
   -fx-border-color: #ff7700;
   -fx-border-width: 2px;
 }
+
+/* Styles for practical work submissions view */
+.submission-item {
+  -fx-background-color: #333333;
+  -fx-background-radius: 10px;
+  -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.3), 5, 0, 0, 0);
+}
+
+.submission-item:hover {
+  -fx-background-color: #3a3a3a;
+}
+
+.submission-name {
+  -fx-font-size: 16px;
+  -fx-font-weight: bold;
+  -fx-text-fill: white;
+}
+
+.submission-matricule {
+  -fx-font-size: 14px;
+  -fx-text-fill: #10b981;
+}
+
+.submission-date {
+  -fx-font-size: 13px;
+  -fx-text-fill: rgba(255, 255, 255, 0.7);
+  -fx-font-style: italic;
+}
+
+.download-button {
+  -fx-background-color: #10b981;
+  -fx-text-fill: white;
+  -fx-font-weight: bold;
+  -fx-background-radius: 5px;
+  -fx-padding: 8px 16px;
+  -fx-cursor: hand;
+}
+
+.download-button:hover {
+  -fx-background-color: #0ea271;
+}
+
+.download-button:pressed {
+  -fx-background-color: #0c8f63;
+}
+
+.no-data-message {
+  -fx-font-size: 16px;
+  -fx-text-fill: rgba(255, 255, 255, 0.7);
+  -fx-alignment: center;
+  -fx-text-alignment: center;
+  -fx-padding: 30px 0;
+}
+
+.page-subtitle {
+  -fx-font-size: 16px;
+  -fx-text-fill: rgba(255, 255, 255, 0.7);
+}
+
+.transparent-scroll-pane {
+  -fx-background-color: transparent;
+  -fx-background: transparent;
+  -fx-border-color: transparent;
+}
+
+.transparent-scroll-pane > .viewport {
+  -fx-background-color: transparent;
+}
+
+.transparent-scroll-pane .scroll-bar:vertical {
+  -fx-background-color: transparent;
+}
+
+.transparent-scroll-pane .scroll-bar:horizontal {
+  -fx-background-color: transparent;
+}
+
+.transparent-scroll-pane .corner {
+  -fx-background-color: transparent;
+}

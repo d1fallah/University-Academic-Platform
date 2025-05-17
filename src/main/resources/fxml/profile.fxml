@@ -17,7 +17,7 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="1080.0" prefWidth="1520.0" styleClass="content-section" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.frontend.ProfileController">
+<BorderPane prefHeight="1080.0" prefWidth="1520.0" styleClass="content-section" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.frontend.UserProfileController">
    <stylesheets>
       <URL value="@../css/profile.css" />
    </stylesheets>

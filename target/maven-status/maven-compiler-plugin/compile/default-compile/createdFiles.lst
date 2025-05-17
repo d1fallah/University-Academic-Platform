@@ -22,6 +22,7 @@ app\backend\models\StudentAnswer.class
 app\frontend\LoadingController.class
 app\frontend\QuizzesController.class
 app\frontend\MainController.class
+app\frontend\PracticalWorkSubmissionsController.class
 module-info.class
 app\frontend\ProfileController.class
 app\backend\services\CourseService.class
@@ -45,6 +46,7 @@ app\frontend\TeacherExercisesController.class
 app\frontend\SignupController.class
 app\frontend\TeachersCardsController.class
 app\backend\models\PracticalWork.class
+app\frontend\MyQuizzesController$2.class
 app\backend\services\QuizResultService.class
 app\backend\models\User.class
 app\frontend\LoginController.class
@@ -52,4 +54,5 @@ app\frontend\TeacherPracticalWorksController.class
 app\backend\services\AuthService.class
 app\frontend\MyCoursesController.class
 app\backend\models\Course.class
+app\frontend\MyQuizzesController$1.class
 app\backend\models\Exercise.class

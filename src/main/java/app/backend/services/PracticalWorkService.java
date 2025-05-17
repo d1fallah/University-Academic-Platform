@@ -37,16 +37,17 @@ public class PracticalWorkService {
     public static boolean updatePracticalWork(PracticalWork practicalWork) {
         Connection conn = DataBaseConnection.getConnection();
 
-        String sql = "UPDATE PracticalWork SET title = ?, description = ?, comment = ?, deadline = ?, pdf_path = ?, target_level = ? WHERE id = ?";
+        String sql = "UPDATE PracticalWork SET title = ?, description = ?, comment = ?, course_id = ?, deadline = ?, pdf_path = ?, target_level = ? WHERE id = ?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, practicalWork.getTitle());
             stmt.setString(2, practicalWork.getDescription());
             stmt.setString(3, practicalWork.getComment());
-            stmt.setDate(4, practicalWork.getDeadline());
-            stmt.setString(5, practicalWork.getPdfPath());
-            stmt.setString(6, practicalWork.getTargetLevel());
-            stmt.setInt(7, practicalWork.getId());
+            stmt.setInt(4, practicalWork.getCourseId());
+            stmt.setDate(5, practicalWork.getDeadline());
+            stmt.setString(6, practicalWork.getPdfPath());
+            stmt.setString(7, practicalWork.getTargetLevel());
+            stmt.setInt(8, practicalWork.getId());
 
             int rowsUpdated = stmt.executeUpdate();
             return rowsUpdated > 0;

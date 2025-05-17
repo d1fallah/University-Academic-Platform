@@ -19,7 +19,6 @@ import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.*;
@@ -34,6 +33,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
@@ -49,32 +49,56 @@ public class StudentPracticalWorksController implements Initializable {
     @FXML private Label practicalWorkDescriptionLabel;
     @FXML private Label deadlineLabel;
     @FXML private Label selectedFileLabel;
+    @FXML private Button selectFileButton;
     @FXML private StackPane dropArea;
+    @FXML private Label teacherNameLabel;
+    @FXML private ImageView teacherProfileImage;
     
     private User currentUser;
+    private User teacher;
     private ObservableList<PracticalWork> practicalWorksList = FXCollections.observableArrayList();
     private File selectedFile = null;
     private PracticalWork currentPracticalWork = null;
 
+    /**
+     * Sets the teacher for this view
+     * @param teacher The teacher user
+     */
+    public void setTeacher(User teacher) {
+        this.teacher = teacher;
+
+        // Update teacher name label
+        if (teacherNameLabel != null) {
+            teacherNameLabel.setText("Prof. " + teacher.getName());
+            teacherNameLabel.setStyle("-fx-font-size: 30px; -fx-font-weight: bold;");
+        }
+
+        // Set the teacher profile image
+        try {
+            Image profileImg = new Image(getClass().getResourceAsStream("/images/profilep.png"));
+            teacherProfileImage.setImage(profileImg);
+        } catch (Exception e) {
+            System.out.println("Failed to load teacher profile image");
+        }
+    }
+    
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         // Get current logged in user
-        currentUser = LoginController.getCurrentUser();
+        currentUser = AuthLoginController.getCurrentUser();
         
-        // Set up drag and drop for ZIP area
+        // Set up drag and drop for PDF area if available
         setupDragAndDrop();
         
-        // Only proceed with student-specific initialization if user is a student
-        if (currentUser != null && currentUser.getRole().equals("student")) {
+        // Only proceed with student-specific initialization if user is a student and required UI components exist
+        if (currentUser != null && currentUser.getRole().equals("student") && practicalWorkCardsContainer != null && searchField != null) {
             // Load all practical works
             loadPracticalWorks();
             
             // Setup search functionality
-            if (searchField != null) {
-                searchField.textProperty().addListener((observable, oldValue, newValue) -> {
-                    filterPracticalWorks(newValue);
-                });
-            }
+            searchField.textProperty().addListener((observable, oldValue, newValue) -> {
+                filterPracticalWorks(newValue);
+            });
         } else if (currentUser != null && !currentUser.getRole().equals("student")) {
             // If not a student and we have the container, show message or redirect
             if (practicalWorkCardsContainer != null) {
@@ -88,7 +112,7 @@ public class StudentPracticalWorksController implements Initializable {
     }
     
     /**
-     * Sets up drag and drop functionality for the ZIP upload area
+     * Sets up drag and drop functionality for the PDF upload area
      */
     private void setupDragAndDrop() {
         // Check if dropArea exists (it might not be in all views)
@@ -113,8 +137,6 @@ public class StudentPracticalWorksController implements Initializable {
                 if (isAcceptableFile(file)) {
                     handleFileSelected(file);
                     success = true;
-                } else {
-                    showAlert(Alert.AlertType.WARNING, "Invalid File Type", "Please select a ZIP or PDF file");
                 }
             }
             event.setDropCompleted(success);
@@ -122,50 +144,48 @@ public class StudentPracticalWorksController implements Initializable {
         });
     }
     
-    /**
-     * Checks if the file is a valid ZIP or PDF file
-     */
     private boolean isAcceptableFile(File file) {
         if (file == null || !file.exists()) {
             return false;
         }
         
         String fileName = file.getName().toLowerCase();
-        return fileName.endsWith(".zip") || fileName.endsWith(".pdf");
+        // Check if we're in the submission context - allow only ZIP files
+        if (submitPracticalWorkOverlay != null && submitPracticalWorkOverlay.isVisible()) {
+            return fileName.endsWith(".zip");
+        } 
+        // Otherwise, in other contexts, allow PDF files
+        else {
+            return fileName.endsWith(".pdf");
+        }
     }
     
-    /**
-     * Handles file selection from the file chooser
-     */
     @FXML
     private void handleSelectFile(ActionEvent event) {
-        // Check if submitPracticalWorkOverlay exists (it might not be in all views)
-        if (submitPracticalWorkOverlay == null) {
-            return; // Exit if submitPracticalWorkOverlay is not defined in the FXML
+        FileChooser fileChooser = new FileChooser();
+        
+        // Check if we're in the submission dialog
+        if (submitPracticalWorkOverlay != null && submitPracticalWorkOverlay.isVisible()) {
+            fileChooser.setTitle("Select ZIP File");
+            fileChooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("ZIP Files", "*.zip")
+            );
+        } else {
+            fileChooser.setTitle("Select PDF File");
+            fileChooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("PDF Files", "*.pdf")
+            );
         }
         
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Select Solution File");
-        fileChooser.getExtensionFilters().addAll(
-            new FileChooser.ExtensionFilter("Solution Files", "*.zip", "*.pdf"),
-            new FileChooser.ExtensionFilter("ZIP Files", "*.zip"),
-            new FileChooser.ExtensionFilter("PDF Files", "*.pdf"),
-            new FileChooser.ExtensionFilter("All Files", "*.*")
-        );
-        
-        File file = fileChooser.showOpenDialog(submitPracticalWorkOverlay.getScene().getWindow());
+        // Get the source of the event as a Node to get the window
+        javafx.scene.Node source = (javafx.scene.Node) event.getSource();
+        File file = fileChooser.showOpenDialog(source.getScene().getWindow());
+                
         if (file != null) {
-            if (isAcceptableFile(file)) {
-                handleFileSelected(file);
-            } else {
-                showAlert(Alert.AlertType.WARNING, "Invalid File Type", "Please select a ZIP or PDF file");
-            }
+            handleFileSelected(file);
         }
     }
     
-    /**
-     * Updates the UI when a file is selected
-     */
     private void handleFileSelected(File file) {
         if (selectedFileLabel == null) {
             return; // Exit if selectedFileLabel is not defined in the FXML
@@ -181,8 +201,6 @@ public class StudentPracticalWorksController implements Initializable {
      */
     private void loadPracticalWorks() {
         // Clear the container
-        if (practicalWorkCardsContainer == null) return;
-        
         practicalWorkCardsContainer.getChildren().clear();
         
         // Get all practical works from the service
@@ -222,7 +240,7 @@ public class StudentPracticalWorksController implements Initializable {
         
         return allWorks;
     }
-    
+
     /**
      * Creates a visual card representation for a practical work
      */
@@ -231,7 +249,7 @@ public class StudentPracticalWorksController implements Initializable {
         StackPane cardPane = new StackPane();
         cardPane.getStyleClass().add("course-card");
         cardPane.setPrefWidth(480);
-        cardPane.setPrefHeight(250);
+        cardPane.setPrefHeight(250); // Increased height for better spacing
 
         // Add background image to card
         ImageView cardBackground = new ImageView();
@@ -251,7 +269,7 @@ public class StudentPracticalWorksController implements Initializable {
         // Card layout container
         VBox cardContent = new VBox();
         cardContent.getStyleClass().add("card-content");
-        cardContent.setSpacing(15);
+        cardContent.setSpacing(15); // Reduced spacing for better layout
         cardContent.setPadding(new Insets(18, 20, 18, 20));
         cardContent.setPrefWidth(480);
         cardContent.setPrefHeight(250);
@@ -269,7 +287,7 @@ public class StudentPracticalWorksController implements Initializable {
         titleContainer.setPrefWidth(390);
         HBox.setHgrow(titleContainer, Priority.ALWAYS);
 
-        // Title on left side
+        // Title on left side - Set format as "Practical Work No. X"
         Label titleLabel = new Label(practicalWork.getTitle());
         titleLabel.getStyleClass().add("card-title");
         titleLabel.setWrapText(true);
@@ -329,14 +347,15 @@ public class StudentPracticalWorksController implements Initializable {
         courseBox.getChildren().addAll(courseLabel);
 
         // Add progress bar to show deadline progress
-        VBox progressBox = new VBox(3);
+        VBox progressBox = new VBox(3); // Reduced spacing
         progressBox.setAlignment(Pos.CENTER_LEFT);
-        progressBox.setPadding(new Insets(5, 0, 0, 0));
+        progressBox.setPadding(new Insets(5, 0, 0, 0)); // Add some top padding
 
         // Calculate progress percentage based on days passed vs total days
         int progressPercentage = 0;
         String timeStatus = "No deadline set";
         String progressColor = "#10b981"; // Default green
+        boolean deadlinePassed = false;
 
         if (practicalWork.getDeadline() != null) {
             // Get current date and time
@@ -354,6 +373,9 @@ public class StudentPracticalWorksController implements Initializable {
             long elapsedTime = currentTime - creationTime;
             // Calculate remaining time in milliseconds
             long remainingTime = deadlineTime - currentTime;
+
+            // Check if deadline is passed
+            deadlinePassed = remainingTime <= 0;
 
             // Calculate progress percentage
             if (totalDuration > 0) {
@@ -413,7 +435,7 @@ public class StudentPracticalWorksController implements Initializable {
         deadlineBar.setMaxHeight(10);
         deadlineBar.getStyleClass().add("performance-bar");
 
-        // Override any styles as needed
+        // Override any styles as needed to match the screenshot perfectly
         String barStyle = "-fx-accent: " + progressColor + ";" +
                 "-fx-background-color: #333333;" +
                 "-fx-background-radius: 5px;" +
@@ -462,10 +484,10 @@ public class StudentPracticalWorksController implements Initializable {
         dateBox.getChildren().addAll(calendarIcon, dateLabel);
 
         // Buttons section
-        HBox buttonBox = new HBox(10);
+        HBox buttonBox = new HBox(10); // Same spacing as exercise cards
         buttonBox.setAlignment(Pos.CENTER_RIGHT);
 
-        // Create View PW button
+        // Create View PW button styled exactly like the image
         Button viewButton = new Button("View PW");
         viewButton.getStyleClass().add("view-course-button");
         viewButton.setStyle("-fx-background-color: #d97706;");
@@ -473,13 +495,30 @@ public class StudentPracticalWorksController implements Initializable {
         viewButton.setPrefHeight(24);
         viewButton.setOnAction(e -> handleViewPracticalWork(practicalWork));
 
-        // Submit button
+        // Submit button styled to match the image
         Button submitButton = new Button("Submit");
         submitButton.getStyleClass().add("view-course-button");
         submitButton.setStyle("-fx-background-color: #059669;");
         submitButton.setPrefWidth(120);
         submitButton.setPrefHeight(24);
         submitButton.setOnAction(e -> handleSubmitPracticalWork(practicalWork));
+        
+        // Check if student has already submitted this practical work
+        boolean hasSubmitted = false;
+        if (currentUser != null && currentUser.getRole().equals("student")) {
+            hasSubmitted = PracticalWorkSubmissionService.hasStudentSubmitted(practicalWork.getId(), currentUser.getId());
+        }
+        
+        // Disable submit button if already submitted or deadline passed
+        if (hasSubmitted) {
+            submitButton.setDisable(true);
+            submitButton.setText("Submitted");
+            submitButton.setStyle("-fx-background-color: #6B7280;"); // Gray out the button
+        } else if (deadlinePassed) {
+            submitButton.setDisable(true);
+            submitButton.setText("Deadline Passed");
+            submitButton.setStyle("-fx-background-color: #f43f5e;"); // Red for deadline passed
+        }
 
         buttonBox.getChildren().addAll(viewButton, submitButton);
 
@@ -549,22 +588,49 @@ public class StudentPracticalWorksController implements Initializable {
             return;
         }
         
-        // Reset submission form
-        selectedFile = null;
-        selectedFileLabel.setText("No file selected");
-        selectedFileLabel.setStyle("-fx-text-fill: #888888;");
+        // Check if student has already submitted
+        if (currentUser != null && currentUser.getRole().equals("student") && 
+            PracticalWorkSubmissionService.hasStudentSubmitted(practicalWork.getId(), currentUser.getId())) {
+            showAlert(Alert.AlertType.INFORMATION, "Already Submitted", 
+                     "You have already submitted this practical work. You cannot submit again.");
+            return;
+        }
         
-        // Set the current practical work
-        currentPracticalWork = practicalWork;
+        // Check if deadline has passed
+        if (practicalWork.getDeadline() != null) {
+            java.util.Date currentDate = new java.util.Date();
+            if (currentDate.after(practicalWork.getDeadline())) {
+                showAlert(Alert.AlertType.WARNING, "Deadline Passed", 
+                         "The deadline for this practical work has passed. You can no longer submit.");
+                return;
+            }
+        }
         
-        // Update dialog labels
-        practicalWorkTitleLabel.setText(practicalWork.getTitle());
-        practicalWorkDescriptionLabel.setText(practicalWork.getDescription());
-        deadlineLabel.setText(practicalWork.getDeadline() != null ? 
-                              practicalWork.getDeadline().toString() : "No deadline");
+        // Show confirmation dialog
+        Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmAlert.setTitle("Confirm Submission");
+        confirmAlert.setHeaderText("You can only submit once");
+        confirmAlert.setContentText("You will not be able to submit this practical work again. Are you sure you want to continue?");
         
-        // Show the overlay
-        submitPracticalWorkOverlay.setVisible(true);
+        Optional<ButtonType> result = confirmAlert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            // Reset submission form
+            selectedFile = null;
+            selectedFileLabel.setText("No file selected");
+            selectedFileLabel.setStyle("-fx-text-fill: #888888;");
+            
+            // Set the current practical work
+            currentPracticalWork = practicalWork;
+            
+            // Update dialog labels
+            practicalWorkTitleLabel.setText(practicalWork.getTitle());
+            practicalWorkDescriptionLabel.setText(practicalWork.getDescription());
+            deadlineLabel.setText(practicalWork.getDeadline() != null ? 
+                                 practicalWork.getDeadline().toString() : "No deadline");
+            
+            // Show the overlay
+            submitPracticalWorkOverlay.setVisible(true);
+        }
     }
     
     /**
@@ -603,13 +669,13 @@ public class StudentPracticalWorksController implements Initializable {
         
         // Validate that a file is selected
         if (selectedFile == null) {
-            showAlert(Alert.AlertType.WARNING, "Validation Error", "Please select a ZIP or PDF file to submit.");
+            showAlert(Alert.AlertType.WARNING, "Validation Error", "Please select a ZIP file to submit.");
             return;
         }
         
-        // Validate file type again
-        if (!isAcceptableFile(selectedFile)) {
-            showAlert(Alert.AlertType.WARNING, "Invalid File Type", "Please select a ZIP or PDF file");
+        // Validate file type specifically for ZIP
+        if (!selectedFile.getName().toLowerCase().endsWith(".zip")) {
+            showAlert(Alert.AlertType.WARNING, "Invalid File Type", "Please select a ZIP file");
             return;
         }
         
@@ -656,11 +722,16 @@ public class StudentPracticalWorksController implements Initializable {
             // Hide dialog
             submitPracticalWorkOverlay.setVisible(false);
             
-            // Refresh the practical works list
-            loadPracticalWorks();
+            // Reset the file selection
+            selectedFile = null;
+            selectedFileLabel.setText("No file selected");
+            selectedFileLabel.setStyle("-fx-text-fill: #888888;");
             
             // Show success message
-            showAlert(Alert.AlertType.INFORMATION, "Success", "Your work has been submitted successfully!");
+            showAlert(Alert.AlertType.INFORMATION, "Success", "Your work has been submitted successfully! You cannot submit again for this practical work.");
+            
+            // Refresh practical works to show updated status
+            loadPracticalWorks();
         } else {
             showAlert(Alert.AlertType.ERROR, "Error", "Failed to submit your work.");
         }
@@ -683,13 +754,23 @@ public class StudentPracticalWorksController implements Initializable {
             Parent practicalWorkViewerParent = loader.load();
             
             // Set up the controller and pass the practical work
-            PracticalWorkViewerController controller = loader.getController();
+            ViewPracticalWorkController controller = loader.getController();
             
-            // Get the teacher for this practical work
-            User teacher = app.backend.services.AuthService.getUserById(practicalWork.getTeacherId());
-            
-            // Set practical work and teacher
-            controller.setPracticalWork(practicalWork, teacher, false);
+            // Check if viewing as teacher or student
+            User currentUser = AuthLoginController.getCurrentUser();
+            if (currentUser != null && currentUser.getRole().equals("teacher")) {
+                // If current user is the teacher who owns this content
+                if (teacher != null && teacher.getId() == currentUser.getId()) {
+                    // Teacher viewing their own content
+                    controller.setPracticalWork(practicalWork, teacher, true);
+                } else {
+                    // Teacher viewing another teacher's content
+                    controller.setPracticalWork(practicalWork, teacher, false);
+                }
+            } else {
+                // Student viewing teacher's content
+                controller.setPracticalWork(practicalWork, teacher, false);
+            }
             
             // Get the main layout's content area and set the practical work viewer
             StackPane contentArea = (StackPane) practicalWorkCardsContainer.getScene().lookup("#contentArea");
@@ -711,5 +792,25 @@ public class StudentPracticalWorksController implements Initializable {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    /**
+     * Handles the action when the back to teachers button is clicked
+     */
+    @FXML
+    private void handleBackToTeachers(ActionEvent event) {
+        try {
+            // Load the teachers view
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/teacher-practical-works.fxml"));
+            Parent teachersView = loader.load();
+            
+            // Get the main layout's content area and set the teachers view
+            StackPane contentArea = (StackPane) practicalWorkCardsContainer.getScene().lookup("#contentArea");
+            contentArea.getChildren().clear();
+            contentArea.getChildren().add(teachersView);
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Navigation Error", "Failed to navigate back to teachers view: " + e.getMessage());
+        }
     }
 } 

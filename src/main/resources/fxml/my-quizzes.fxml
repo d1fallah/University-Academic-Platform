@@ -21,7 +21,7 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<StackPane stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.frontend.MyQuizzesController">
+<StackPane stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.frontend.TeacherQuizzesController">
    <children>
       <BorderPane styleClass="content-container" stylesheets="@../css/main.css">
          <top>
@@ -105,7 +105,7 @@
                      <!-- Course Selection -->
                      <VBox spacing="10">
                         <Label text="Available Courses" styleClass="input-label" />
-                        <ComboBox fx:id="courseComboBox" maxWidth="1.7976931348623157E308" promptText="Select course..." styleClass="dialog-input-field" />
+                        <ComboBox fx:id="courseComboBox" maxWidth="1.7976931348623157E308" styleClass="dialog-input-field" />
                      </VBox>
                      <padding>
                         <Insets bottom="20.0" left="20.0" right="20.0" top="10.0" />

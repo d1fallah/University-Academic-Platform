@@ -1,0 +1,295 @@
+.root {
+  -fx-background-color: #1c1c1c;
+  -fx-min-height: 100%;
+}
+
+.quiz-viewer-container {
+  -fx-background-color: #1c1c1c;
+  -fx-background-radius: 15px;
+  -fx-border-color: #797979;
+  -fx-border-radius: 15px;
+  -fx-border-width: 2px;
+  -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.6), 10, 0, 0, 0);
+  -fx-max-width: 650px;
+  -fx-max-height: 450px;
+  -fx-min-height: 300px;
+  -fx-padding: 20;
+}
+
+.quiz-viewer-container-expanded {
+  -fx-max-height: 550px;
+}
+
+.quiz-header {
+  -fx-background-color: transparent;
+  -fx-background-radius: 15px 15px 0 0;
+  -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.3), 5, 0, 0, 2);
+  -fx-padding: 8px 20px 5px 20px;
+  -fx-spacing: 2;
+}
+
+.quiz-title {
+  -fx-font-size: 24px;
+  -fx-font-family: "Inter Bold";
+  -fx-text-fill: #ff7700;
+  -fx-font-weight: bold;
+}
+
+.quiz-course-name {
+  -fx-font-size: 16px;
+  -fx-font-family: "Inter";
+  -fx-text-fill: #b3b3b3;
+  -fx-padding: 0 0 2px 0;
+}
+
+.progress-label {
+  -fx-font-size: 14px;
+  -fx-font-family: "Inter Bold";
+  -fx-text-fill: white;
+  -fx-padding: 4px 10px;
+  -fx-background-color: rgba(255, 119, 0, 0.2);
+  -fx-background-radius: 15px;
+  -fx-alignment: center;
+  -fx-max-width: 110px;
+  -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.2), 3, 0, 0, 1);
+}
+
+.quiz-content {
+  -fx-background-color: #2d2d2d;
+  -fx-padding: 0;
+  -fx-min-height: 0;
+  -fx-pref-height: -1;
+  -fx-max-height: -1;
+  -fx-fit-to-height: true;
+}
+
+.quiz-content .viewport {
+  -fx-background-color: transparent;
+  -fx-padding: 0;
+}
+
+.quiz-content .scroll-bar:vertical {
+  -fx-background-color: transparent;
+  -fx-pref-width: 8px;
+}
+
+.quiz-content .scroll-bar:vertical .thumb {
+  -fx-background-color: rgba(255, 119, 0, 0.3);
+  -fx-background-radius: 4px;
+}
+
+.quiz-content .scroll-bar:vertical .thumb:hover {
+  -fx-background-color: rgba(255, 119, 0, 0.5);
+}
+
+.questions-container {
+  -fx-background-color: transparent;
+  -fx-padding: 10px;
+  -fx-spacing: 8;
+  -fx-alignment: center-left;
+}
+
+.question-box {
+  -fx-background-color: #333333;
+  -fx-background-radius: 10px;
+  -fx-padding: 12px;
+  -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.2), 6, 0, 0, 0);
+  -fx-border-color: transparent transparent transparent #ff7700;
+  -fx-border-width: 0 0 0 3px;
+  -fx-max-width: 580px;
+  -fx-min-width: 450px;
+  -fx-alignment: center-left;
+  -fx-spacing: 5;
+  -fx-min-height: 50px;
+  -fx-pref-height: -1;
+}
+
+.question-text {
+  -fx-font-size: 18px;
+  -fx-font-family: "Inter Bold";
+  -fx-font-weight: bold;
+  -fx-text-fill: white;
+  -fx-padding: 0 0 5px 0;
+  -fx-wrap-text: true;
+  -fx-text-alignment: left;
+}
+
+.answer-container {
+  -fx-padding: 2px 0 2px 5px;
+  -fx-spacing: 3;
+  -fx-alignment: center-left;
+  -fx-min-width: 400px;
+  -fx-pref-height: -1;
+}
+
+.primary-button {
+  -fx-background-color: #ff7700;
+  -fx-text-fill: white;
+  -fx-font-size: 14px;
+  -fx-font-weight: bold;
+  -fx-font-family: "Inter Bold";
+  -fx-background-radius: 20px;
+  -fx-padding: 7px 18px;
+  -fx-cursor: hand;
+  -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.3), 3, 0, 0, 1);
+}
+
+.primary-button:hover {
+  -fx-background-color: #ff8800;
+  -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.4), 5, 0, 0, 2);
+}
+
+.primary-button:pressed {
+  -fx-background-color: #e56a00;
+  -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.4), 2, 0, 0, 1);
+}
+
+.submit-button {
+  -fx-background-color: #2e8b57;
+}
+
+.submit-button:hover {
+  -fx-background-color: #3cb371;
+}
+
+.submit-button:pressed {
+  -fx-background-color: #2e7d32;
+}
+
+.secondary-button {
+  -fx-background-color: transparent;
+  -fx-text-fill: white;
+  -fx-font-size: 14px;
+  -fx-font-weight: bold;
+  -fx-font-family: "Inter";
+  -fx-border-color: #6c6c6c;
+  -fx-border-radius: 20px;
+  -fx-background-radius: 20px;
+  -fx-padding: 7px 18px;
+  -fx-cursor: hand;
+}
+
+.secondary-button:hover {
+  -fx-background-color: rgba(255, 255, 255, 0.1);
+  -fx-border-color: white;
+}
+
+.secondary-button:pressed {
+  -fx-background-color: rgba(255, 255, 255, 0.15);
+}
+
+.loading-message {
+  -fx-font-size: 16px;
+  -fx-font-family: "Inter";
+  -fx-text-fill: #999999;
+  -fx-alignment: center;
+}
+
+.error-container {
+  -fx-alignment: center;
+  -fx-padding: 20px;
+  -fx-spacing: 10;
+}
+
+.error-message {
+  -fx-font-size: 18px;
+  -fx-font-family: "Inter Bold";
+  -fx-text-fill: #ff5252;
+  -fx-text-alignment: center;
+  -fx-wrap-text: true;
+}
+
+.answer-radio {
+  -fx-text-fill: white;
+  -fx-font-size: 18px;
+  -fx-padding: 10px 0;
+  -fx-min-width: 20px;
+  -fx-pref-width: 20px;
+  -fx-max-width: 20px;
+}
+
+.answer-radio .radio {
+  -fx-background-color: #4d4d4d;
+  -fx-background-insets: 0;
+  -fx-border-color: #666666;
+  -fx-border-radius: 10px;
+  -fx-border-width: 1.5px;
+  -fx-padding: 6px;
+  -fx-min-width: 20px;
+  -fx-pref-width: 20px;
+  -fx-max-width: 20px;
+}
+
+.answer-radio:selected .radio {
+  -fx-background-color: #333333;
+  -fx-border-color: #ff7700;
+  -fx-border-width: 2px;
+}
+
+.answer-radio .dot {
+  -fx-background-color: transparent;
+  -fx-background-insets: 0;
+  -fx-padding: 4px;
+}
+
+.answer-radio:selected .dot {
+  -fx-background-color: #ff7700;
+}
+
+#addQuestionOverlay {
+  -fx-background-color: rgba(0, 0, 0, 0.7);
+}
+
+.quiz-course-label {
+  -fx-font-size: 20px;
+  -fx-font-family: "Inter Bold";
+  -fx-text-fill: white;
+  -fx-padding: 5px 0;
+}
+
+.quiz-progress-label {
+  -fx-font-size: 20px;
+  -fx-font-family: "Inter Bold";
+  -fx-text-fill: #ff7700;
+  -fx-background-color: rgba(255, 119, 0, 0.15);
+  -fx-background-radius: 15px;
+  -fx-padding: 8px 16px;
+  -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.3), 5, 0, 0, 2);
+}
+
+.question-header-label {
+  -fx-font-size: 24px;
+  -fx-font-family: "Inter Bold";
+  -fx-text-fill: #ff7700;
+  -fx-font-weight: bold;
+  -fx-padding: 5px 0;
+}
+
+.question-text-label {
+  -fx-font-size: 22px;
+  -fx-font-family: "Inter Bold";
+  -fx-text-fill: white;
+  -fx-background-color: rgba(50, 50, 50, 0.7);
+  -fx-background-radius: 8px;
+  -fx-padding: 16px;
+  -fx-wrap-text: true;
+  -fx-border-color: rgba(255, 119, 0, 0.6);
+  -fx-border-width: 2px;
+  -fx-border-radius: 8px;
+  -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.4), 8, 0, 0, 4);
+}
+
+.input-label {
+  -fx-font-size: 22px;
+  -fx-font-family: "Inter Bold";
+  -fx-text-fill: #ff7700;
+  -fx-font-weight: bold;
+  -fx-padding: 5px 0;
+}
+
+.dialog-title {
+  -fx-font-size: 32px;
+  -fx-font-family: "Inter Bold";
+  -fx-text-fill: white;
+  -fx-font-weight: bold;
+}

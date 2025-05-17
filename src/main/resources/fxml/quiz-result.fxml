@@ -14,7 +14,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<StackPane styleClass="root" stylesheets="@../css/quizResult.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.frontend.QuizResultController">
+<StackPane styleClass="root" stylesheets="@../css/quizResult.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.frontend.ViewQuizResultController">
     <children>
         <!-- Background Image -->
         <ImageView fitHeight="1080.0" fitWidth="1520.0" preserveRatio="false">

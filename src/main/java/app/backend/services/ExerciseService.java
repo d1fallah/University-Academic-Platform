@@ -37,15 +37,16 @@ public class ExerciseService {
     public static boolean updateExercise(Exercise exercise) {
         Connection conn = DataBaseConnection.getConnection();
 
-        String sql = "UPDATE exercice SET title = ?, description = ?, comment = ?, pdf_path = ?, target_level = ? WHERE id = ?";
+        String sql = "UPDATE exercice SET title = ?, description = ?, comment = ?, course_id = ?, pdf_path = ?, target_level = ? WHERE id = ?";
 
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, exercise.getTitle());
             stmt.setString(2, exercise.getDescription());
             stmt.setString(3, exercise.getComment());
-            stmt.setString(4, exercise.getPdfPath());
-            stmt.setString(5, exercise.getTargetLevel());
-            stmt.setInt(6, exercise.getId());
+            stmt.setInt(4, exercise.getCourseId());
+            stmt.setString(5, exercise.getPdfPath());
+            stmt.setString(6, exercise.getTargetLevel());
+            stmt.setInt(7, exercise.getId());
 
             int rowsUpdated = stmt.executeUpdate();
             return rowsUpdated > 0;

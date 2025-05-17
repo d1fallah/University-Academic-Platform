@@ -85,4 +85,31 @@ public class PracticalWorkSubmissionService {
 
         return submissions;
     }
+    
+    /**
+     * Check if a student has already submitted a practical work
+     * @param practicalWorkId The ID of the practical work
+     * @param studentId The ID of the student
+     * @return true if the student has already submitted this practical work, false otherwise
+     */
+    public static boolean hasStudentSubmitted(int practicalWorkId, int studentId) {
+        Connection conn = DataBaseConnection.getConnection();
+        
+        String sql = "SELECT COUNT(*) FROM PracticalWorkSubmission WHERE practical_work_id = ? AND student_id = ?";
+        
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, practicalWorkId);
+            stmt.setInt(2, studentId);
+            
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                int count = rs.getInt(1);
+                return count > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return false;
+    }
 }

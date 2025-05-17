@@ -19,7 +19,7 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.text.Font?>
 
-<StackPane fx:id="practicalWorksContainer" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.frontend.TeacherPracticalWorksController" stylesheets="@../css/main.css,@../css/dialog.css">
+<StackPane fx:id="practicalWorksContainer" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.frontend.TeacherDirectoryController" stylesheets="@../css/main.css,@../css/dialog.css">
    <children>
       <BorderPane styleClass="content-container" prefHeight="720.0" prefWidth="1280.0">
          <top>

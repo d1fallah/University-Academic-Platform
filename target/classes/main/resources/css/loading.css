@@ -1,0 +1,38 @@
+.root {
+    -fx-background-color: #1C1C1C;
+    -fx-font-family: "InterRegular";
+}
+
+.loading-container {
+    -fx-background-color: #222222;
+    -fx-background-radius: 30;
+    -fx-border-color: #797979;
+    -fx-border-radius: 30px;
+    -fx-border-width: 2px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 10, 0, 0, 0);
+    -fx-spacing: 30;
+    -fx-padding: 40;
+}
+
+.logo-container {
+    -fx-padding: 10;
+}
+
+.status-text {
+    -fx-font-size: 34px;
+    -fx-text-fill: #797979;
+    -fx-font-family: "Inter";
+}
+
+.progress-bar {
+    -fx-accent: #ff7700;
+}
+
+.progress-bar > .track {
+    -fx-background-color: #444444;
+    -fx-background-radius: 5;
+}
+
+.progress-bar > .bar {
+    -fx-background-radius: 5;
+}

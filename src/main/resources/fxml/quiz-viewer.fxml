@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.VBox?>
 
 <?import javafx.scene.control.ToggleGroup?>
-<StackPane stylesheets="@../css/quizViewer.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.frontend.QuizViewerController" styleClass="root">
+<StackPane stylesheets="@../css/quizViewer.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.frontend.ViewQuizController" styleClass="root">
    <children>
       <!-- Background Image -->
       <ImageView fitHeight="1080.0" fitWidth="1520.0" preserveRatio="false">

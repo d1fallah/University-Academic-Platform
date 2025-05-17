@@ -2,7 +2,6 @@ package app.frontend;
 
 import app.backend.models.User;
 import app.backend.services.AuthService;
-import app.backend.services.CourseService;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -15,9 +14,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.TextAlignment;
@@ -50,7 +46,7 @@ public class TeachersCardsController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         // Get current logged in user
-        currentUser = LoginController.getCurrentUser();
+        currentUser = AuthLoginController.getCurrentUser();
         
         // Load all teachers
         loadAllTeachers();
@@ -292,7 +288,7 @@ public class TeachersCardsController implements Initializable {
             Parent exercisesView = loader.load();
             
             // Get the controller and set the teacher
-            TeacherExercisesController controller = loader.getController();
+            StudentExercisesController controller = loader.getController();
             controller.setTeacher(teacher);
             
             // Store the last viewed teacher
@@ -332,16 +328,16 @@ public class TeachersCardsController implements Initializable {
             
             // Set the teacher in the controller
             if (isExerciseView) {
-                TeacherExercisesController controller = loader.getController();
+                StudentExercisesController controller = loader.getController();
                 controller.setTeacher(teacher);
             } else if (isQuizView) {
-                TeacherQuizzesController controller = loader.getController();
+                StudentQuizzesController controller = loader.getController();
                 controller.setTeacher(teacher);
             } else if (isPracticalWorkView) {
-                TeacherPracticalWorksViewController controller = loader.getController();
+                StudentPracticalWorksController controller = loader.getController();
                 controller.setTeacher(teacher);
             } else {
-                TeacherCoursesController controller = loader.getController();
+                StudentCoursesController controller = loader.getController();
                 controller.setTeacher(teacher);
             }
             
@@ -368,7 +364,7 @@ public class TeachersCardsController implements Initializable {
             Parent quizzesView = loader.load();
             
             // Get the controller and set the teacher
-            TeacherQuizzesController controller = loader.getController();
+            StudentQuizzesController controller = loader.getController();
             controller.setTeacher(teacher);
             
             // Get the main layout's content area and set the quizzes view
