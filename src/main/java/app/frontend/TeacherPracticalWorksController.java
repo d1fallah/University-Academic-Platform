@@ -37,36 +37,69 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
+/**
+ * Controller class for managing teacher practical works interface.
+ * Allows teachers to create, view, edit, and delete practical works,
+ * as well as view student submissions.
+ * 
+ * @author Sellami Mohamed Odai
+ */
 public class TeacherPracticalWorksController implements Initializable {
 
+    /** Container for practical work cards */
     @FXML private FlowPane practicalWorkCardsContainer;
+    /** Search field for filtering practical works */
     @FXML private TextField searchField;
+    /** Button to add new practical work */
     @FXML private Button addPracticalWorkButton;
     
-    // Dialog overlay components
+    /** Main overlay for add/edit practical work dialog */
     @FXML private StackPane addPracticalWorkOverlay;
+    /** Container for the dialog content */
     @FXML private BorderPane dialogContainer;
+    /** Dialog title label */
     @FXML private Label dialogTitleLabel;
+    /** Field for practical work name input */
     @FXML private TextField practicalWorkNameField;
+    /** Field for practical work description input */
     @FXML private TextArea practicalWorkDescriptionField;
+    /** Dropdown for course selection */
     @FXML private ComboBox<String> courseComboBox;
+    /** Dropdown for education level selection */
     @FXML private ComboBox<String> levelComboBox;
+    /** Date picker for deadline selection */
     @FXML private DatePicker deadlinePicker;
+    /** Label showing selected file name */
     @FXML private Label selectedFileLabel;
+    /** Button to select PDF file */
     @FXML private Button selectFileButton;
+    /** Area for drag and drop file upload */
     @FXML private StackPane dropArea;
     
+    /** Current logged-in user */
     private User currentUser;
+    /** List of practical works for the current teacher */
     private ObservableList<PracticalWork> practicalWorksList = FXCollections.observableArrayList();
+    /** List of courses for the current teacher */
     private ObservableList<Course> coursesList = FXCollections.observableArrayList();
+    /** Currently selected file for upload */
     private File selectedFile = null;
+    /** Filename for the practical work PDF */
     private String practicalWorkFileName = null;
+    /** Flag indicating if in edit mode */
     private boolean isEditMode = false;
+    /** ID of the practical work being edited */
     private int editingPracticalWorkId = -1;
 
+    /**
+     * Initializes the controller class.
+     * Sets up the UI components, loads data, and verifies user access rights.
+     * 
+     * @param location The location used to resolve relative paths for root object
+     * @param resources The resources used to localize the root object
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Get current logged in user
         currentUser = AuthLoginController.getCurrentUser();
         
         if (currentUser == null || !currentUser.getRole().equals("teacher")) {
@@ -74,31 +107,23 @@ public class TeacherPracticalWorksController implements Initializable {
             return;
         }
         
-        // Set up drag and drop for file
         setupDragAndDrop();
-        
-        // Load the teacher's practical works
         loadTeacherPracticalWorks();
-        
-        // Load courses for combo box
         loadTeacherCourses();
-        
-        // Style and set up the date picker
         setupDatePicker();
     }
     
     /**
-     * Loads all courses created by the current teacher
+     * Loads all courses created by the current teacher and 
+     * populates the course combo box with their titles.
      */
     private void loadTeacherCourses() {
-        // Get courses for this teacher to populate the combo box
         if (currentUser != null) {
             coursesList.clear();
             List<Course> teacherCourses = CourseService.getCoursesByTeacherId(currentUser.getId());
             if (teacherCourses != null) {
                 coursesList.addAll(teacherCourses);
                 
-                // Populate the course combo box
                 if (courseComboBox != null) {
                     courseComboBox.getItems().clear();
                     for (Course course : coursesList) {
@@ -110,24 +135,21 @@ public class TeacherPracticalWorksController implements Initializable {
     }
     
     /**
-     * Loads all practical works created by the current teacher
+     * Loads all practical works created by the current teacher and displays them
+     * as cards in the container. Shows a message if no practical works exist.
      */
     private void loadTeacherPracticalWorks() {
-        // Clear the container
         practicalWorkCardsContainer.getChildren().clear();
         
-        // Get all practical works from the service for this teacher
         List<PracticalWork> teacherPracticalWorks = PracticalWorkService.getPracticalWorksByTeacherId(currentUser.getId());
         practicalWorksList.setAll(teacherPracticalWorks);
         
-        // If no practical works, show a message
         if (practicalWorksList.isEmpty()) {
             Label noPracticalWorksLabel = new Label("You haven't created any practical works yet. Click the 'Add new practical work +' button to get started!");
             noPracticalWorksLabel.getStyleClass().add("no-courses-message");
             noPracticalWorksLabel.setPadding(new Insets(50, 0, 0, 0));
             practicalWorkCardsContainer.getChildren().add(noPracticalWorksLabel);
         } else {
-            // Create and add a card for each practical work
             for (PracticalWork practicalWork : practicalWorksList) {
                 practicalWorkCardsContainer.getChildren().add(createPracticalWorkCard(practicalWork));
             }
@@ -135,16 +157,18 @@ public class TeacherPracticalWorksController implements Initializable {
     }
 
     /**
-     * Creates a visual card representation for a practical work with edit/delete options
+     * Creates a visual card representation for a practical work that includes title,
+     * description, deadline progress, and action buttons for viewing, editing, and deletion.
+     * 
+     * @param practicalWork The practical work to display as a card
+     * @return A StackPane containing the practical work card UI
      */
     private StackPane createPracticalWorkCard(PracticalWork practicalWork) {
-        // Main card container
         StackPane cardPane = new StackPane();
         cardPane.getStyleClass().add("course-card");
         cardPane.setPrefWidth(480);
-        cardPane.setPrefHeight(250); // Increased height for better spacing
+        cardPane.setPrefHeight(250);
 
-        // Add background image to card
         ImageView cardBackground = new ImageView();
         try {
             Image bgImage = new Image(getClass().getResourceAsStream("/images/courseCardBackground.png"));
@@ -155,32 +179,27 @@ public class TeacherPracticalWorksController implements Initializable {
             cardBackground.setOpacity(0.7);
         } catch (Exception e) {
             System.out.println("Failed to load background image for practical work card");
-            // Set a fallback background color
             cardPane.setStyle("-fx-background-color: #353535;");
         }
 
-        // Card layout container
         VBox cardContent = new VBox();
         cardContent.getStyleClass().add("card-content");
-        cardContent.setSpacing(15); // Reduced spacing for better layout
+        cardContent.setSpacing(15);
         cardContent.setPadding(new Insets(18, 20, 18, 20));
         cardContent.setPrefWidth(480);
         cardContent.setPrefHeight(250);
 
-        // Top section with practical work title and logo
         HBox headerBox = new HBox();
         headerBox.getStyleClass().add("card-header");
         headerBox.setAlignment(Pos.TOP_LEFT);
         headerBox.setPrefWidth(480);
         headerBox.setSpacing(20);
 
-        // Create container for title
         VBox titleContainer = new VBox();
         titleContainer.setAlignment(Pos.TOP_LEFT);
         titleContainer.setPrefWidth(390);
         HBox.setHgrow(titleContainer, Priority.ALWAYS);
 
-        // Title on left side - Set format as "Practical Work No. X"
         Label titleLabel = new Label(practicalWork.getTitle());
         titleLabel.getStyleClass().add("card-title");
         titleLabel.setWrapText(true);
@@ -188,7 +207,6 @@ public class TeacherPracticalWorksController implements Initializable {
 
         titleContainer.getChildren().add(titleLabel);
 
-        // Practical work logo/icon
         StackPane logoContainer = new StackPane();
         logoContainer.setMinWidth(50);
         logoContainer.setMaxWidth(50);
@@ -208,11 +226,8 @@ public class TeacherPracticalWorksController implements Initializable {
         practicalWorkIcon.getStyleClass().add("practical-work-icon");
 
         logoContainer.getChildren().add(practicalWorkIcon);
-
-        // Add title and logo to header box
         headerBox.getChildren().addAll(titleContainer, logoContainer);
 
-        // Practical work description
         String description = practicalWork.getDescription();
         if (description == null || description.isEmpty()) {
             description = "No description available";
@@ -245,53 +260,41 @@ public class TeacherPracticalWorksController implements Initializable {
         
         courseBox.getChildren().addAll(courseLabel);
         
-        // Add progress bar to show deadline progress
-        VBox progressBox = new VBox(3); // Reduced spacing
+        VBox progressBox = new VBox(3);
         progressBox.setAlignment(Pos.CENTER_LEFT);
-        progressBox.setPadding(new Insets(5, 0, 0, 0)); // Add some top padding
+        progressBox.setPadding(new Insets(5, 0, 0, 0));
         
-        // Calculate progress percentage based on days passed vs total days
         int progressPercentage = 0;
         String timeStatus = "No deadline set";
-        String progressColor = "#10b981"; // Default green
+        String progressColor = "#10b981";
         
         if (practicalWork.getDeadline() != null) {
-            // Get current date and time
             java.util.Date currentDate = new java.util.Date();
             
-            // Calculate the total duration and elapsed time
             long creationTime = practicalWork.getCreatedAt() != null ? 
                 practicalWork.getCreatedAt().getTime() : currentDate.getTime();
             long deadlineTime = practicalWork.getDeadline().getTime();
             long currentTime = currentDate.getTime();
             
-            // Calculate total duration in milliseconds
             long totalDuration = deadlineTime - creationTime;
-            // Calculate elapsed time in milliseconds
             long elapsedTime = currentTime - creationTime;
-            // Calculate remaining time in milliseconds
             long remainingTime = deadlineTime - currentTime;
             
-            // Calculate progress percentage
             if (totalDuration > 0) {
                 progressPercentage = (int)((elapsedTime * 100) / totalDuration);
                 
-                // Cap progress at 100%
                 if (progressPercentage > 100) {
                     progressPercentage = 100;
-                    timeStatus = "Deadline passed";
-                    progressColor = "#f43f5e"; // Red for overdue
+                    timeStatus = "Finished";
+                    progressColor = "#f43f5e";
                 } else {
-                    // Create dynamic countdown display
                     if (remainingTime > 0) {
-                        // Calculate days, hours, minutes
                         long days = remainingTime / (1000 * 60 * 60 * 24);
                         long hours = (remainingTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60);
                         
                         if (days > 0) {
                             timeStatus = days + (days == 1 ? " day " : " days ") + hours + (hours == 1 ? " hour" : " hours") + " remaining";
                         } else {
-                            // Less than a day remaining
                             long minutes = (remainingTime % (1000 * 60 * 60)) / (1000 * 60);
                             if (hours > 0) {
                                 timeStatus = hours + (hours == 1 ? " hour " : " hours ") + minutes + (minutes == 1 ? " minute" : " minutes") + " remaining";
@@ -301,20 +304,17 @@ public class TeacherPracticalWorksController implements Initializable {
                         }
                     }
                     
-                    // Set color based on progress
                     if (progressPercentage >= 75) {
-                        progressColor = "#f43f5e"; // Red for near deadline
+                        progressColor = "#f43f5e";
                     } else if (progressPercentage >= 50) {
-                        progressColor = "#f59e0b"; // Orange/Yellow for approaching deadline
+                        progressColor = "#f59e0b";
                     } else {
-                        progressColor = "#10b981"; // Green for good time
+                        progressColor = "#10b981";
                     }
                 }
             }
         }
         
-        // Create progress bar styled like the one in the screenshot
-        // Add progress percentage label
         HBox progressLabelBox = new HBox();
         progressLabelBox.setAlignment(Pos.CENTER_LEFT);
         
@@ -330,7 +330,6 @@ public class TeacherPracticalWorksController implements Initializable {
         deadlineBar.setMaxHeight(10);
         deadlineBar.getStyleClass().add("performance-bar");
         
-        // Override any styles as needed to match the screenshot perfectly
         String barStyle = "-fx-accent: " + progressColor + ";" +
                           "-fx-background-color: #333333;" +
                           "-fx-background-radius: 5px;" + 
@@ -340,7 +339,6 @@ public class TeacherPracticalWorksController implements Initializable {
         deadlineBar.setStyle(barStyle);
         HBox.setHgrow(deadlineBar, Priority.ALWAYS);
         
-        // Add both the label and progress bar
         progressBox.getChildren().addAll(progressLabelBox, deadlineBar);
 
         Region spacer = new Region();
@@ -476,12 +474,12 @@ public class TeacherPracticalWorksController implements Initializable {
     }
     
     /**
-     * Sets up file drag and drop functionality
+     * Sets up file drag and drop functionality for PDF uploads.
+     * Configures event handlers for handling file dragging and dropping.
      */
     private void setupDragAndDrop() {
         if (dropArea == null) return;
         
-        // Handle drag over event
         dropArea.setOnDragOver(event -> {
             if (event.getGestureSource() != dropArea && event.getDragboard().hasFiles()) {
                 event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
@@ -528,7 +526,10 @@ public class TeacherPracticalWorksController implements Initializable {
     }
 
     /**
-     * Handles the search action
+     * Handles the search action by filtering practical works based on search text.
+     * Displays all works if search field is empty, or filters by title and description.
+     * 
+     * @param event The action event triggered by the search button
      */
     @FXML
     private void handleSearch(ActionEvent event) {
@@ -560,7 +561,10 @@ public class TeacherPracticalWorksController implements Initializable {
     }
 
     /**
-     * Handles the add new practical work button click
+     * Handles the add new practical work button click.
+     * Opens the dialog overlay in create mode with empty fields.
+     * 
+     * @param event The action event triggered by the add button
      */
     @FXML
     private void handleAddNewPracticalWork(ActionEvent event) {
@@ -578,7 +582,10 @@ public class TeacherPracticalWorksController implements Initializable {
     }
     
     /**
-     * Handles the select file button click
+     * Handles the select file button click to open a file chooser dialog.
+     * Allows user to select a PDF file for the practical work.
+     * 
+     * @param event The action event triggered by the select file button
      */
     @FXML
     private void handleSelectFile(ActionEvent event) {
@@ -599,7 +606,10 @@ public class TeacherPracticalWorksController implements Initializable {
     }
     
     /**
-     * Handles the cancel button click
+     * Handles the cancel button click in the dialog overlay.
+     * Hides the overlay and clears all input fields.
+     * 
+     * @param event The action event triggered by the cancel button
      */
     @FXML
     private void handleCancel(ActionEvent event) {
@@ -611,7 +621,10 @@ public class TeacherPracticalWorksController implements Initializable {
     }
     
     /**
-     * Handles the save button click
+     * Handles the save button click in the dialog overlay.
+     * Validates inputs and either creates a new practical work or updates an existing one.
+     * 
+     * @param event The action event triggered by the save button
      */
     @FXML
     private void handleSave(ActionEvent event) {
@@ -704,7 +717,10 @@ public class TeacherPracticalWorksController implements Initializable {
     }
     
     /**
-     * Handles editing an existing practical work
+     * Handles editing an existing practical work.
+     * Opens the dialog overlay in edit mode and populates fields with existing data.
+     * 
+     * @param practicalWork The practical work to be edited
      */
     private void handleEditPracticalWork(PracticalWork practicalWork) {
         isEditMode = true;
@@ -754,7 +770,11 @@ public class TeacherPracticalWorksController implements Initializable {
     }
     
     /**
-     * Updates an existing practical work
+     * Updates an existing practical work with new values from the form.
+     * Also handles file uploads and database updates.
+     * 
+     * @param practicalWorkId The ID of the practical work to update
+     * @param courseId The ID of the course associated with this practical work
      */
     private void handleUpdatePracticalWork(int practicalWorkId, int courseId) {
         // Validate inputs (with special handling for PDF file which might not be changed)
@@ -840,7 +860,10 @@ public class TeacherPracticalWorksController implements Initializable {
     }
     
     /**
-     * Handles deleting a practical work
+     * Handles deleting a practical work after confirmation.
+     * Shows a confirmation dialog and removes the practical work if confirmed.
+     * 
+     * @param practicalWork The practical work to delete
      */
     private void handleDeletePracticalWork(PracticalWork practicalWork) {
         Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -850,13 +873,10 @@ public class TeacherPracticalWorksController implements Initializable {
         
         confirmAlert.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
-                // Delete the practical work
                 boolean success = PracticalWorkService.deletePracticalWork(practicalWork.getId());
                 
                 if (success) {
                     showAlert(Alert.AlertType.INFORMATION, "Success", "Practical work deleted successfully!");
-                    
-                    // Reload practical works
                     loadTeacherPracticalWorks();
                 } else {
                     showAlert(Alert.AlertType.ERROR, "Error", "Failed to delete practical work.");
@@ -866,26 +886,25 @@ public class TeacherPracticalWorksController implements Initializable {
     }
     
     /**
-     * Handles viewing a practical work
+     * Handles viewing a practical work's PDF content.
+     * Navigates to the PDF viewer screen with the selected practical work.
+     * 
+     * @param practicalWork The practical work to view
      */
     private void handleViewPracticalWork(PracticalWork practicalWork) {
         try {
-            // Check if the practical work has a PDF file
             if (practicalWork.getPdfPath() == null || practicalWork.getPdfPath().isEmpty()) {
                 showAlert(Alert.AlertType.WARNING, "No PDF Available", 
                     "This practical work does not have a PDF file attached.");
                 return;
             }
             
-            // Load the practical work viewer view
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/practical-work-viewer.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/PdfPracticalWorkViewer.fxml"));
             Parent practicalWorkViewerParent = loader.load();
             
-            // Set up the controller and pass the practical work
             ViewPracticalWorkController controller = loader.getController();
             controller.setPracticalWork(practicalWork);
             
-            // Get the main layout's content area and set the practical work viewer
             StackPane contentArea = (StackPane) practicalWorkCardsContainer.getScene().lookup("#contentArea");
             contentArea.getChildren().clear();
             contentArea.getChildren().add(practicalWorkViewerParent);
@@ -897,12 +916,15 @@ public class TeacherPracticalWorksController implements Initializable {
     }
     
     /**
-     * Handles viewing submissions for a practical work
+     * Handles viewing student submissions for a practical work.
+     * Navigates to the submissions view screen with the selected practical work.
+     * 
+     * @param practicalWork The practical work to view submissions for
      */
     private void handleViewSubmissions(PracticalWork practicalWork) {
         try {
             // Load the submissions view
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/practical-work-submissions.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/TeacherPracticalWorkSubmissions.fxml"));
             Parent submissionsView = loader.load();
             
             // Set up the controller and pass the practical work
@@ -921,7 +943,11 @@ public class TeacherPracticalWorksController implements Initializable {
     }
     
     /**
-     * Helper function to extract the course ID from the combobox selection
+     * Helper function to extract the course ID from the combobox selection.
+     * Looks up the course ID by matching the course title.
+     * 
+     * @param courseTitle The title of the course to look up
+     * @return The ID of the course, or -1 if not found
      */
     private int extractCourseId(String courseTitle) {
         // Find the course with the matching title
@@ -940,7 +966,8 @@ public class TeacherPracticalWorksController implements Initializable {
     }
     
     /**
-     * Clears all input fields
+     * Clears all input fields in the practical work form.
+     * Resets the form to its initial state.
      */
     private void clearInputFields() {
         practicalWorkNameField.clear();
@@ -953,7 +980,10 @@ public class TeacherPracticalWorksController implements Initializable {
     }
     
     /**
-     * Validates all inputs before saving
+     * Validates all inputs before saving a practical work.
+     * Checks if required fields are filled out correctly.
+     * 
+     * @return true if all inputs are valid, false otherwise
      */
     private boolean validateInputs() {
         if (practicalWorkNameField.getText() == null || practicalWorkNameField.getText().trim().isEmpty()) {
@@ -975,7 +1005,11 @@ public class TeacherPracticalWorksController implements Initializable {
     }
     
     /**
-     * Helper method to show alerts
+     * Helper method to show alerts with the specified type, title, and content.
+     * 
+     * @param type The type of alert (information, warning, error, etc.)
+     * @param title The title of the alert dialog
+     * @param content The content message of the alert dialog
      */
     private void showAlert(Alert.AlertType type, String title, String content) {
         Alert alert = new Alert(type);
@@ -986,7 +1020,11 @@ public class TeacherPracticalWorksController implements Initializable {
     }
 
     /**
-     * Helper function to get the course level from course ID
+     * Helper function to get the education level from a course ID.
+     * Looks up the course by ID and returns its education level.
+     * 
+     * @param courseId The ID of the course to look up
+     * @return The education level of the course, or "Unknown" if not found
      */
     private String getCourseLevel(int courseId) {
         for (Course course : coursesList) {
@@ -998,7 +1036,8 @@ public class TeacherPracticalWorksController implements Initializable {
     }
 
     /**
-     * Sets up and styles the date picker
+     * Sets up and styles the date picker for deadline selection.
+     * Configures default date values and disables past dates.
      */
     private void setupDatePicker() {
         if (deadlinePicker != null) {

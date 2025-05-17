@@ -31,61 +31,82 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
+/**
+ * Controller class for managing the student exercises view.
+ * This class handles displaying exercises from a specific teacher,
+ * filtering exercises, and navigating to exercise content.
+ *
+ * @author Sellami Mohamed Odai
+ */
 public class StudentExercisesController implements Initializable {
 
+    /** Flow pane container for displaying exercise cards */
     @FXML private FlowPane exercisesFlowPane;
+    
+    /** Label for displaying teacher name */
     @FXML private Label teacherNameLabel;
+    
+    /** Button for returning to teacher list */
     @FXML private Button backButton;
+    
+    /** Text field for searching exercises */
     @FXML private TextField searchField;
+    
+    /** Image view for teacher profile image */
     @FXML private ImageView teacherProfileImage;
     
+    /** Current teacher whose exercises are being displayed */
     private User teacher;
+    
+    /** Currently logged-in user */
     private User currentUser;
+    
+    /** List of exercises belonging to the current teacher */
     private List<Exercise> teacherExercises = new ArrayList<>();
 
+    /**
+     * Initializes the controller class. This method is automatically called
+     * after the FXML file has been loaded.
+     * 
+     * @param location The location used to resolve relative paths for the root object
+     * @param resources The resources used to localize the root object
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Get current logged in user
         currentUser = AuthLoginController.getCurrentUser();
-        
-        // Set up back button
         backButton.setOnAction(e -> handleBackToTeachers());
-        
-        // Set up search field listener
-        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
-            filterExercises(newValue);
-        });
+        searchField.textProperty().addListener((observable, oldValue, newValue) -> filterExercises(newValue));
     }
     
     /**
      * Sets the teacher whose exercises will be displayed
+     * 
+     * @param teacher The teacher user object
      */
     public void setTeacher(User teacher) {
         this.teacher = teacher;
         
-        // Update teacher name label
         if (teacherNameLabel != null) {
             teacherNameLabel.setText("Prof. " + teacher.getName());
             teacherNameLabel.setStyle("-fx-font-size: 30px; -fx-font-weight: bold;");
         }
         
-        // Set the teacher profile image
         try {
             Image profileImg = new Image(getClass().getResourceAsStream("/images/profilep.png"));
             teacherProfileImage.setImage(profileImg);
         } catch (Exception e) {
-            System.out.println("Failed to load teacher profile image");
+            System.err.println("Failed to load teacher profile image: " + e.getMessage());
         }
         
-        // Load exercises for this teacher
         loadTeacherExercises();
     }
     
     /**
-     * Sets the teacher ID directly
+     * Sets the teacher by ID and loads their information
+     * 
+     * @param teacherId The ID of the teacher to display exercises for
      */
     public void setTeacherId(int teacherId) {
-        // Fetch the teacher from the database
         User teacher = AuthService.getUserById(teacherId);
         if (teacher != null) {
             setTeacher(teacher);
@@ -95,7 +116,7 @@ public class StudentExercisesController implements Initializable {
     }
     
     /**
-     * Loads exercises from the specified teacher
+     * Loads exercises from the specified teacher based on user role and level
      */
     private void loadTeacherExercises() {
         if (teacher == null) {
@@ -103,33 +124,28 @@ public class StudentExercisesController implements Initializable {
             return;
         }
         
-        // Get exercises filtered by teacher ID and student enrollment level
         if (currentUser != null && currentUser.getRole().equals("student")) {
-            // For students, filter by their level
             String studentLevel = currentUser.getEnrollmentLevel();
             if (studentLevel == null || studentLevel.isEmpty()) {
-                studentLevel = "L1"; // Default level if not set
+                studentLevel = "L1";
             }
             teacherExercises = ExerciseService.getExercisesByTeacherAndLevel(teacher.getId(), studentLevel);
         } else {
-            // For teachers or admins, show all
             teacherExercises = ExerciseService.getExercisesByTeacherId(teacher.getId());
         }
         
-        // Display the exercises
         displayExercises(teacherExercises);
     }
     
     /**
-     * Displays the provided list of exercises as cards
+     * Displays the provided list of exercises as cards in the flow pane
+     * 
+     * @param exercises The list of exercises to display
      */
     private void displayExercises(List<Exercise> exercises) {
-        // Clear the container
         exercisesFlowPane.getChildren().clear();
         
-        // Create and add a card for each exercise
         if (exercises.isEmpty()) {
-            // Display "No exercises available" message
             Label noExercisesLabel = new Label("No exercises available for your enrollment level from this teacher yet.");
             noExercisesLabel.getStyleClass().add("no-courses-message");
             noExercisesLabel.setPrefWidth(exercisesFlowPane.getPrefWidth());
@@ -139,33 +155,38 @@ public class StudentExercisesController implements Initializable {
             
             exercisesFlowPane.getChildren().add(noExercisesLabel);
         } else {
-            for (Exercise exercise : exercises) {
-                exercisesFlowPane.getChildren().add(createExerciseCard(exercise));
-            }
+            exercises.forEach(exercise -> 
+                exercisesFlowPane.getChildren().add(createExerciseCard(exercise))
+            );
         }
     }
     
     /**
-     * Filters exercises by title based on search text
+     * Filters exercises by title or description based on search text
+     * 
+     * @param searchText The text to search for
      */
     private void filterExercises(String searchText) {
         if (searchText == null || searchText.isEmpty()) {
-            // If search is empty, show all teacher's exercises
             displayExercises(teacherExercises);
-        } else {
-            // Filter exercises based on title or description containing search text
-            List<Exercise> filteredExercises = teacherExercises.stream()
-                .filter(exercise -> 
-                    exercise.getTitle().toLowerCase().contains(searchText.toLowerCase()) ||
-                    (exercise.getDescription() != null && exercise.getDescription().toLowerCase().contains(searchText.toLowerCase())))
-                .collect(Collectors.toList());
-            
-            displayExercises(filteredExercises);
+            return;
         }
+        
+        String searchLower = searchText.toLowerCase();
+        List<Exercise> filteredExercises = teacherExercises.stream()
+            .filter(exercise -> 
+                exercise.getTitle().toLowerCase().contains(searchLower) ||
+                (exercise.getDescription() != null && 
+                 exercise.getDescription().toLowerCase().contains(searchLower)))
+            .collect(Collectors.toList());
+        
+        displayExercises(filteredExercises);
     }
     
     /**
      * Handles the search action when Enter is pressed
+     * 
+     * @param event The action event
      */
     @FXML
     private void handleSearch(ActionEvent event) {
@@ -174,98 +195,159 @@ public class StudentExercisesController implements Initializable {
     
     /**
      * Creates a visual card representation for an exercise
+     * 
+     * @param exercise The exercise to create a card for
+     * @return A StackPane containing the styled exercise card
      */
     private StackPane createExerciseCard(Exercise exercise) {
+        // Card dimensions
+        final int CARD_WIDTH = 480;
+        final int CARD_HEIGHT = 230;
+        
         // Main card container
         StackPane cardPane = new StackPane();
         cardPane.getStyleClass().add("course-card");
-        cardPane.setPrefWidth(480);
-        cardPane.setPrefHeight(230);
-
-        // Add background image to card
+        cardPane.setPrefWidth(CARD_WIDTH);
+        cardPane.setPrefHeight(CARD_HEIGHT);
+        
+        // Create background
+        ImageView cardBackground = createCardBackground(CARD_WIDTH);
+        
+        // Create content container
+        VBox cardContent = createCardContentContainer(CARD_WIDTH, CARD_HEIGHT);
+        
+        // Create header with title and icon
+        HBox headerBox = createHeaderWithTitle(exercise, CARD_WIDTH);
+        
+        // Create description
+        Label descriptionLabel = createDescriptionLabel(exercise);
+        
+        // Create course info
+        HBox courseBox = createCourseInfoBox(exercise);
+        
+        // Space filler
+        Region spacer = new Region();
+        VBox.setVgrow(spacer, Priority.ALWAYS);
+        
+        // Create footer with teacher info and view button
+        HBox footerBox = createFooterWithButton(exercise, CARD_WIDTH);
+        
+        // Assemble card
+        cardContent.getChildren().addAll(headerBox, descriptionLabel, courseBox, spacer, footerBox);
+        cardPane.getChildren().addAll(cardBackground, cardContent);
+        
+        // Make the entire card clickable
+        cardPane.setOnMouseClicked(e -> openExerciseViewer(exercise));
+        
+        return cardPane;
+    }
+    
+    /**
+     * Creates the card background with image
+     */
+    private ImageView createCardBackground(int width) {
         ImageView cardBackground = new ImageView();
         try {
             Image bgImage = new Image(getClass().getResourceAsStream("/images/courseCardBackground.png"));
             cardBackground.setImage(bgImage);
-            cardBackground.setFitWidth(480);
+            cardBackground.setFitWidth(width);
             cardBackground.setFitHeight(270);
             cardBackground.setPreserveRatio(false);
             cardBackground.setOpacity(0.7);
         } catch (Exception e) {
-            System.out.println("Failed to load background image for exercise card");
+            System.err.println("Failed to load background image for exercise card: " + e.getMessage());
         }
-
-        // Card layout container
+        return cardBackground;
+    }
+    
+    /**
+     * Creates the main content container for the card
+     */
+    private VBox createCardContentContainer(int width, int height) {
         VBox cardContent = new VBox();
         cardContent.getStyleClass().add("card-content");
         cardContent.setSpacing(20);
-        cardContent.setPadding(new Insets(20, 20, 20, 20));
-        cardContent.setPrefWidth(480);
-        cardContent.setPrefHeight(230);
-
-        // Top section with exercise title and logo
+        cardContent.setPadding(new Insets(20));
+        cardContent.setPrefWidth(width);
+        cardContent.setPrefHeight(height);
+        return cardContent;
+    }
+    
+    /**
+     * Creates the header box with title and icon
+     */
+    private HBox createHeaderWithTitle(Exercise exercise, int width) {
         HBox headerBox = new HBox();
         headerBox.getStyleClass().add("card-header");
         headerBox.setAlignment(Pos.TOP_LEFT);
-        headerBox.setPrefWidth(480);
+        headerBox.setPrefWidth(width);
         headerBox.setSpacing(20);
-
-        // Create container for title
+        
+        // Title container
         VBox titleContainer = new VBox();
         titleContainer.setAlignment(Pos.TOP_LEFT);
-        titleContainer.setPrefWidth(390);
+        titleContainer.setPrefWidth(width - 90);
         HBox.setHgrow(titleContainer, Priority.ALWAYS);
-
-        // Title on left side
+        
+        // Title
         Label titleLabel = new Label(exercise.getTitle());
         titleLabel.getStyleClass().add("card-title");
         titleLabel.setWrapText(true);
         titleLabel.setMinHeight(Region.USE_PREF_SIZE);
-
         titleContainer.getChildren().add(titleLabel);
-
-        // Exercise logo/icon
+        
+        // Exercise icon
         StackPane logoContainer = new StackPane();
         logoContainer.setMinWidth(50);
         logoContainer.setMaxWidth(50);
         logoContainer.setPrefHeight(50);
         logoContainer.setAlignment(Pos.TOP_CENTER);
         logoContainer.getStyleClass().add("logo-container");
-
+        
         ImageView exerciseIcon = new ImageView();
         try {
             Image logo = new Image(getClass().getResourceAsStream("/images/Ruler Cross Pen.png"));
             exerciseIcon.setImage(logo);
+            exerciseIcon.setFitWidth(50);
+            exerciseIcon.setFitHeight(50);
+            exerciseIcon.getStyleClass().add("course-icon");
         } catch (Exception e) {
-            System.out.println("Failed to load logo for exercise: " + exercise.getTitle());
+            System.err.println("Failed to load logo for exercise: " + e.getMessage());
         }
-        exerciseIcon.setFitWidth(50);
-        exerciseIcon.setFitHeight(50);
-        exerciseIcon.getStyleClass().add("course-icon");
-
+        
         logoContainer.getChildren().add(exerciseIcon);
-
-        // Add title and logo to header box
         headerBox.getChildren().addAll(titleContainer, logoContainer);
-
-        // Exercise description
+        
+        return headerBox;
+    }
+    
+    /**
+     * Creates the description label for the exercise
+     */
+    private Label createDescriptionLabel(Exercise exercise) {
         String description = exercise.getDescription();
         if (description == null || description.isEmpty()) {
             description = "No description available";
         } else if (description.length() > 100) {
             description = description.substring(0, 97) + "...";
         }
+        
         Label descriptionLabel = new Label(description);
         descriptionLabel.getStyleClass().add("card-description");
         descriptionLabel.setWrapText(true);
         descriptionLabel.setMinHeight(Region.USE_PREF_SIZE);
-
-        // Course info instead of level
+        
+        return descriptionLabel;
+    }
+    
+    /**
+     * Creates the course info box
+     */
+    private HBox createCourseInfoBox(Exercise exercise) {
         HBox courseBox = new HBox();
         courseBox.setAlignment(Pos.CENTER_LEFT);
         courseBox.setSpacing(5);
         
-        // Get course name from course ID
         String courseName = "Unknown Course";
         try {
             app.backend.models.Course course = app.backend.services.CourseService.getCourseById(exercise.getCourseId());
@@ -273,7 +355,7 @@ public class StudentExercisesController implements Initializable {
                 courseName = course.getTitle();
             }
         } catch (Exception e) {
-            System.out.println("Failed to get course info: " + e.getMessage());
+            System.err.println("Failed to get course info: " + e.getMessage());
         }
         
         Label courseLabel = new Label("Course: " + courseName);
@@ -281,23 +363,25 @@ public class StudentExercisesController implements Initializable {
         courseLabel.setStyle("-fx-text-fill: white;");
         
         courseBox.getChildren().add(courseLabel);
-
-        Region spacer = new Region();
-        VBox.setVgrow(spacer, Priority.ALWAYS);
-
-        // Footer section with instructor info and button
+        return courseBox;
+    }
+    
+    /**
+     * Creates the footer with instructor info and view button
+     */
+    private HBox createFooterWithButton(Exercise exercise, int width) {
         HBox footerBox = new HBox();
         footerBox.setAlignment(Pos.BOTTOM_LEFT);
-        footerBox.setPrefWidth(480);
-
-        // Instructor info section - now showing the teacher's name
+        footerBox.setPrefWidth(width);
+        
+        // Instructor info
         HBox instructorBox = new HBox();
         instructorBox.getStyleClass().add("card-instructor");
         instructorBox.setAlignment(Pos.CENTER_LEFT);
         instructorBox.setPrefHeight(30);
         instructorBox.setSpacing(10);
         HBox.setHgrow(instructorBox, Priority.ALWAYS);
-
+        
         // Instructor icon
         ImageView instructorIcon = new ImageView();
         try {
@@ -307,63 +391,49 @@ public class StudentExercisesController implements Initializable {
             instructorIcon.setFitWidth(20);
             instructorIcon.setPreserveRatio(true);
         } catch (Exception e) {
-            System.out.println("Failed to load instructor icon");
+            System.err.println("Failed to load instructor icon: " + e.getMessage());
         }
         
         Label instructorLabel = new Label("Prof. " + teacher.getName());
         instructorLabel.getStyleClass().add("instructor-name");
-
         instructorBox.getChildren().addAll(instructorIcon, instructorLabel);
-
-        // Button section
+        
+        // Button
         HBox buttonBox = new HBox();
         buttonBox.setAlignment(Pos.CENTER_RIGHT);
-
+        
         Button viewButton = new Button("View Exercise");
         viewButton.getStyleClass().add("view-course-button");
         viewButton.setStyle("-fx-background-color: #be123c;");
         viewButton.setPrefWidth(120);
         viewButton.setPrefHeight(24);
         viewButton.setOnAction(e -> openExerciseViewer(exercise));
-
+        
         buttonBox.getChildren().add(viewButton);
-
-        // Add instructor and button to footer
         footerBox.getChildren().addAll(instructorBox, buttonBox);
-
-        // Add all sections to the card
-        cardContent.getChildren().addAll(headerBox, descriptionLabel, courseBox, spacer, footerBox);
-
-        // Stack the background and content
-        cardPane.getChildren().addAll(cardBackground, cardContent);
-
-        // Make the entire card clickable
-        cardPane.setOnMouseClicked(e -> openExerciseViewer(exercise));
-
-        return cardPane;
+        
+        return footerBox;
     }
     
     /**
      * Opens the exercise viewer for a specific exercise
+     * 
+     * @param exercise The exercise to view
      */
     private void openExerciseViewer(Exercise exercise) {
         try {
-            // Check if the exercise has a PDF file
             if (exercise.getPdfPath() == null || exercise.getPdfPath().isEmpty()) {
                 showAlert(Alert.AlertType.WARNING, "No PDF Available", 
                     "This exercise does not have a PDF file attached.");
                 return;
             }
             
-            // Load the exercise viewer view
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/ExerciseViewer.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/PdfExerciseViewer.fxml"));
             Parent exerciseViewerParent = loader.load();
             
-            // Set up the controller and pass the exercise
             ViewExerciseController controller = loader.getController();
             controller.setExercise(exercise);
             
-            // Get the main layout's content area and set the exercise viewer
             StackPane contentArea = (StackPane) exercisesFlowPane.getScene().lookup("#contentArea");
             contentArea.getChildren().clear();
             contentArea.getChildren().add(exerciseViewerParent);
@@ -379,15 +449,17 @@ public class StudentExercisesController implements Initializable {
      */
     private void handleBackToTeachers() {
         try {
-            // Load the teachers cards view
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/teachers-cards.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/TeachersCards.fxml"));
             Parent teachersView = loader.load();
             
-            // Get the controller and set exercise view
             TeachersCardsController controller = loader.getController();
             controller.setIsExerciseView(true);
             
-            // Get the main layout's content area and set the teachers view
+            if (currentUser != null && currentUser.getRole().equals("teacher")) {
+                controller.setExcludeCurrentTeacher(true);
+                controller.setShowManageCourseButton(true);
+            }
+            
             StackPane contentArea = (StackPane) exercisesFlowPane.getScene().lookup("#contentArea");
             contentArea.getChildren().clear();
             contentArea.getChildren().add(teachersView);
@@ -399,7 +471,11 @@ public class StudentExercisesController implements Initializable {
     }
     
     /**
-     * Helper method to show alerts
+     * Helper method to show alerts to the user
+     * 
+     * @param type The alert type (e.g., ERROR, WARNING, INFORMATION)
+     * @param title The title of the alert
+     * @param content The content message of the alert
      */
     private void showAlert(Alert.AlertType type, String title, String content) {
         Alert alert = new Alert(type);

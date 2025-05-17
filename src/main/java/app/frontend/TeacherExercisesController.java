@@ -766,7 +766,7 @@ public class TeacherExercisesController implements Initializable {
             }
             
             // Load the exercise viewer view
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/ExerciseViewer.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/PdfExerciseViewer.fxml"));
             Parent exerciseViewerParent = loader.load();
             
             // Set up the controller and pass the exercise

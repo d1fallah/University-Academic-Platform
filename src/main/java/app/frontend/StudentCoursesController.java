@@ -27,44 +27,49 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
+/**
+ * Controller for the student courses view that displays a teacher's courses.
+ * This view allows students to browse courses offered by a specific teacher,
+ * search for courses, and navigate to view individual course details.
+ *
+ * @author Sellami Mohamed Odai
+ */
 public class StudentCoursesController implements Initializable {
 
     @FXML private FlowPane courseCardsContainer;
     @FXML private Label teacherNameLabel;
     @FXML private TextField searchField;
     @FXML private ImageView teacherProfileImage;
-    @FXML private TextField searchTextField;
-    @FXML private Button showAllButton;
-    @FXML private Button showMyCoursesButton;
     
     private User currentUser;
     private User teacher;
     private List<Course> teacherCourses = new ArrayList<>();
-
-    private Button backToTeachersButton;
     
+    /**
+     * Initializes the controller.
+     * Sets up the current user and search field listener.
+     *
+     * @param location The location used to resolve relative paths for the root object
+     * @param resources The resources used to localize the root object
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Get current logged in user
         currentUser = AuthLoginController.getCurrentUser();
-        
-        // Set up search field listener
-        searchField.textProperty().addListener((observable, oldValue, newValue) -> {
-            filterCourses(newValue);
-        });
+        searchField.textProperty().addListener((observable, oldValue, newValue) -> filterCourses(newValue));
     }
     
     /**
-     * Set the teacher and load their courses
+     * Sets the teacher and loads their courses.
+     * Updates the UI with teacher information and loads courses appropriate for the student's level.
+     *
+     * @param teacher The teacher whose courses to display
      */
     public void setTeacher(User teacher) {
         this.teacher = teacher;
 
-        // Update the UI with teacher information
         teacherNameLabel.setText("Prof. " + teacher.getName());
         teacherNameLabel.setStyle("-fx-font-size: 30px; -fx-font-weight: bold;");
         
-        // Set the teacher profile image
         try {
             Image profileImg = new Image(getClass().getResourceAsStream("/images/profilep.png"));
             teacherProfileImage.setImage(profileImg);
@@ -72,35 +77,33 @@ public class StudentCoursesController implements Initializable {
             System.out.println("Failed to load teacher profile image");
         }
         
-        // Load courses for this teacher filtered by student level
         loadTeacherCourses();
     }
     
     /**
-     * Loads courses for this teacher filtered by student level
+     * Loads courses for this teacher filtered by student level.
+     * Retrieves courses based on teacher ID and student enrollment level.
      */
     private void loadTeacherCourses() {
-        // Get courses filtered by teacher ID and student enrollment level
         if (currentUser != null && currentUser.getRole().equals("student")) {
             teacherCourses = CourseService.getCoursesByTeacherAndLevel(teacher.getId(), currentUser.getEnrollmentLevel());
         } else {
             teacherCourses = CourseService.getCoursesByTeacherId(teacher.getId());
         }
         
-        // Display the courses
         displayCourses(teacherCourses);
     }
     
     /**
-     * Displays the provided list of courses as cards
+     * Displays the provided list of courses as cards.
+     * If no courses are available, displays a message instead.
+     *
+     * @param courses The list of courses to display
      */
     private void displayCourses(List<Course> courses) {
-        // Clear the container
         courseCardsContainer.getChildren().clear();
         
-        // Create and add a card for each course
         if (courses.isEmpty()) {
-            // Display "No courses available" message
             Label noCoursesLabel = new Label("No courses available for your enrollment level from this teacher yet.");
             noCoursesLabel.getStyleClass().add("no-courses-message");
             noCoursesLabel.setPrefWidth(courseCardsContainer.getPrefWidth());
@@ -117,14 +120,14 @@ public class StudentCoursesController implements Initializable {
     }
     
     /**
-     * Filters courses by title based on search text
+     * Filters courses by title or description based on search text.
+     *
+     * @param searchText The text to search for in course titles and descriptions
      */
     private void filterCourses(String searchText) {
         if (searchText == null || searchText.isEmpty()) {
-            // If search is empty, show all teacher's courses
             displayCourses(teacherCourses);
         } else {
-            // Filter courses based on title or description containing search text
             List<Course> filteredCourses = teacherCourses.stream()
                 .filter(course -> 
                     course.getTitle().toLowerCase().contains(searchText.toLowerCase()) ||
@@ -136,7 +139,9 @@ public class StudentCoursesController implements Initializable {
     }
     
     /**
-     * Handles the search action when Enter is pressed
+     * Handles the search action when Enter is pressed.
+     *
+     * @param event The action event
      */
     @FXML
     private void handleSearch(ActionEvent event) {
@@ -144,16 +149,18 @@ public class StudentCoursesController implements Initializable {
     }
     
     /**
-     * Creates a visual card representation for a course
+     * Creates a visual card representation for a course.
+     * The card includes title, description, teacher information, and a button to view details.
+     *
+     * @param course The course to create a card for
+     * @return A StackPane containing the course card UI
      */
     private StackPane createCourseCard(Course course) {
-        // Main card container
         StackPane cardPane = new StackPane();
         cardPane.getStyleClass().add("course-card");
         cardPane.setPrefWidth(480);
         cardPane.setPrefHeight(230);
 
-        // Add background image to card
         ImageView cardBackground = new ImageView();
         try {
             Image bgImage = new Image(getClass().getResourceAsStream("/images/courseCardBackground.png"));
@@ -166,7 +173,6 @@ public class StudentCoursesController implements Initializable {
             System.out.println("Failed to load background image for course card");
         }
 
-        // Card layout container
         VBox cardContent = new VBox();
         cardContent.getStyleClass().add("card-content");
         cardContent.setSpacing(20);
@@ -174,28 +180,51 @@ public class StudentCoursesController implements Initializable {
         cardContent.setPrefWidth(480);
         cardContent.setPrefHeight(230);
 
-        // Top section with course title and logo
+        // Header with title and logo
+        HBox headerBox = createHeaderBox(course);
+
+        // Course description
+        Label descriptionLabel = createDescriptionLabel(course);
+
+        Region spacer = new Region();
+        VBox.setVgrow(spacer, Priority.ALWAYS);
+
+        // Footer with instructor info and button
+        HBox footerBox = createFooterBox(course);
+
+        cardContent.getChildren().addAll(headerBox, descriptionLabel, spacer, footerBox);
+        cardPane.getChildren().addAll(cardBackground, cardContent);
+        cardPane.setOnMouseClicked(e -> handleViewCourseDetails(course));
+
+        return cardPane;
+    }
+    
+    /**
+     * Creates the header box for a course card.
+     *
+     * @param course The course to create the header for
+     * @return An HBox containing the course title and logo
+     */
+    private HBox createHeaderBox(Course course) {
         HBox headerBox = new HBox();
         headerBox.getStyleClass().add("card-header");
         headerBox.setAlignment(Pos.TOP_LEFT);
         headerBox.setPrefWidth(480);
         headerBox.setSpacing(20);
 
-        // Create container for title
+        // Title container
         VBox titleContainer = new VBox();
         titleContainer.setAlignment(Pos.TOP_LEFT);
         titleContainer.setPrefWidth(390);
         HBox.setHgrow(titleContainer, Priority.ALWAYS);
 
-        // Title on left side
         Label titleLabel = new Label(course.getTitle());
         titleLabel.getStyleClass().add("card-title");
         titleLabel.setWrapText(true);
         titleLabel.setMinHeight(Region.USE_PREF_SIZE);
-
         titleContainer.getChildren().add(titleLabel);
 
-        // Course logo/icon
+        // Logo container
         StackPane logoContainer = new StackPane();
         logoContainer.setMinWidth(50);
         logoContainer.setMaxWidth(50);
@@ -213,31 +242,44 @@ public class StudentCoursesController implements Initializable {
         courseIcon.setFitWidth(50);
         courseIcon.setFitHeight(50);
         courseIcon.getStyleClass().add("course-icon");
-
         logoContainer.getChildren().add(courseIcon);
 
-        // Add title and logo to header box
         headerBox.getChildren().addAll(titleContainer, logoContainer);
+        return headerBox;
+    }
 
-        // Course description
+    /**
+     * Creates the description label for a course card.
+     *
+     * @param course The course to create the description for
+     * @return A Label containing the course description
+     */
+    private Label createDescriptionLabel(Course course) {
         String description = course.getDescription();
         if (description == null || description.isEmpty()) {
             description = "No description available";
         }
+        
         Label descriptionLabel = new Label(description);
         descriptionLabel.getStyleClass().add("card-description");
         descriptionLabel.setWrapText(true);
         descriptionLabel.setMinHeight(Region.USE_PREF_SIZE);
+        
+        return descriptionLabel;
+    }
 
-        Region spacer = new Region();
-        VBox.setVgrow(spacer, Priority.ALWAYS);
-
-        // Footer section with instructor info and button
+    /**
+     * Creates the footer box for a course card.
+     *
+     * @param course The course to create the footer for
+     * @return An HBox containing the instructor info and view button
+     */
+    private HBox createFooterBox(Course course) {
         HBox footerBox = new HBox();
         footerBox.setAlignment(Pos.BOTTOM_LEFT);
         footerBox.setPrefWidth(480);
 
-        // Instructor info section - now showing the teacher's name
+        // Instructor info
         HBox instructorBox = new HBox();
         instructorBox.getStyleClass().add("card-instructor");
         instructorBox.setAlignment(Pos.CENTER_LEFT);
@@ -245,7 +287,6 @@ public class StudentCoursesController implements Initializable {
         instructorBox.setSpacing(10);
         HBox.setHgrow(instructorBox, Priority.ALWAYS);
 
-        // Instructor icon
         ImageView instructorIcon = new ImageView();
         try {
             Image instructorImg = new Image(getClass().getResourceAsStream("/images/Case.png"));
@@ -259,7 +300,6 @@ public class StudentCoursesController implements Initializable {
         
         Label instructorLabel = new Label("Prof. " + teacher.getName());
         instructorLabel.getStyleClass().add("instructor-name");
-
         instructorBox.getChildren().addAll(instructorIcon, instructorLabel);
 
         // Button section
@@ -272,45 +312,32 @@ public class StudentCoursesController implements Initializable {
         viewButton.setPrefWidth(110);
         viewButton.setPrefHeight(24);
         viewButton.setOnAction(e -> handleViewCourseDetails(course));
-
         buttonBox.getChildren().add(viewButton);
 
-        // Add instructor and button to footer
         footerBox.getChildren().addAll(instructorBox, buttonBox);
-
-        // Add all sections to the card
-        cardContent.getChildren().addAll(headerBox, descriptionLabel, spacer, footerBox);
-
-        // Stack the background and content
-        cardPane.getChildren().addAll(cardBackground, cardContent);
-
-        // Make the entire card clickable
-        cardPane.setOnMouseClicked(e -> handleViewCourseDetails(course));
-
-        return cardPane;
+        return footerBox;
     }
     
     /**
-     * Handles the action when a user clicks on a course card to view details
+     * Handles the action when a user clicks on a course card to view details.
+     * Checks if the course has a PDF file and loads the appropriate viewer.
+     *
+     * @param course The course to view details for
      */
     private void handleViewCourseDetails(Course course) {
         try {
-            // Check if the course has a PDF file
             if (course.getPdfPath() == null || course.getPdfPath().isEmpty()) {
                 showAlert(Alert.AlertType.WARNING, "No PDF Available", 
                     "This course does not have a PDF file attached.");
                 return;
             }
             
-            // Load the course viewer view
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/CourseViewer.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/PdfCourseViewer.fxml"));
             Parent courseViewerParent = loader.load();
             
-            // Get the controller and set the course
             ViewCourseController controller = loader.getController();
             controller.setCourse(course);
             
-            // Get the main layout's content area and set the course viewer
             StackPane contentArea = (StackPane) teacherNameLabel.getScene().lookup("#contentArea");
             contentArea.getChildren().clear();
             contentArea.getChildren().add(courseViewerParent);
@@ -322,41 +349,23 @@ public class StudentCoursesController implements Initializable {
     }
     
     /**
-     * Navigate back to the teachers view
+     * Navigate back to the teachers view.
+     * Loads the TeachersCards view and sets appropriate flags based on user role.
+     *
+     * @param event The action event
      */
     @FXML
     private void handleBackToTeachers(ActionEvent event) {
         try {
-            // Load the teachers cards view
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/teachers-cards.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/TeachersCards.fxml"));
             Parent teachersView = loader.load();
             
-            // Get the controller and set flag to exclude current teacher if user is a teacher
             TeachersCardsController controller = loader.getController();
             if (currentUser != null && currentUser.getRole().equals("teacher")) {
                 controller.setExcludeCurrentTeacher(true);
                 controller.setShowManageCourseButton(true);
             }
-            
-            // Check if we're in the Exercises section by looking at the viewTitleLabel's text or URL
-            boolean isExerciseSection = false;
-            try {
-                Label viewTitle = (Label) teacherNameLabel.getScene().lookup("#viewTitleLabel");
-                if (viewTitle != null && viewTitle.getText().contains("Exercises")) {
-                    isExerciseSection = true;
-                }
-            } catch (Exception e) {
-                // Fallback to checking the URL in case the label lookup fails
-                String url = teacherNameLabel.getScene().getWindow().toString();
-                isExerciseSection = url != null && url.contains("exercise");
-            }
-            
-            // Set appropriate view flag
-            if (isExerciseSection) {
-                controller.setIsExerciseView(true);
-            }
-            
-            // Get the main layout's content area and set the teachers view
+             
             StackPane contentArea = (StackPane) teacherNameLabel.getScene().lookup("#contentArea");
             contentArea.getChildren().clear();
             contentArea.getChildren().add(teachersView);
@@ -368,7 +377,11 @@ public class StudentCoursesController implements Initializable {
     }
     
     /**
-     * Helper method to show alerts
+     * Helper method to show alerts.
+     *
+     * @param alertType The type of alert (e.g., ERROR, WARNING)
+     * @param title The title of the alert
+     * @param message The message to display in the alert
      */
     private void showAlert(Alert.AlertType alertType, String title, String message) {
         Alert alert = new Alert(alertType);

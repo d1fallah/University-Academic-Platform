@@ -25,8 +25,15 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * Controller responsible for displaying PDF exercises in the application.
+ * This class handles loading, rendering, and navigating PDF files
+ * with zoom capabilities and appropriate navigation between different views.
+ *
+ * @author Sellami Mohamed Odai
+ */
 public class ViewExerciseController implements Initializable {
-
+    /** UI Components */
     @FXML private BorderPane pdfViewerContainer;
     @FXML private Label titleLabel;
     @FXML private Label pageLabel;
@@ -40,41 +47,55 @@ public class ViewExerciseController implements Initializable {
     @FXML private Label errorMessage;
     @FXML private HBox controlsContainer;
 
+    /** PDF rendering properties */
     private PDDocument document;
     private PDFRenderer renderer;
     private int currentPage = 0;
     private int totalPages = 0;
     private float zoomFactor = 1.0f;
+    
+    /** Exercise navigation properties */
     private Exercise currentExercise;
     private int teacherId = -1;
 
+    /**
+     * Initializes the controller, setting up button actions and default UI state.
+     * 
+     * @param location The location used to resolve relative paths for resources
+     * @param resources The resources used to localize the root object
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Initialize buttons
         prevButton.setOnAction(e -> showPreviousPage());
         nextButton.setOnAction(e -> showNextPage());
         zoomInButton.setOnAction(e -> zoomIn());
         zoomOutButton.setOnAction(e -> zoomOut());
         returnButton.setOnAction(e -> returnToExercises());
         
-        // Hide error container by default
         errorContainer.setVisible(false);
-        errorContainer.setManaged(false);
-    }
-
+        errorContainer.setManaged(false);    }
+    
+    /**
+     * Sets the exercise to be displayed and loads its PDF content.
+     * 
+     * @param exercise The exercise object to display
+     */
     public void setExercise(Exercise exercise) {
         this.currentExercise = exercise;
         titleLabel.setText(exercise.getTitle());
         
-        // Store the teacher ID
         if (exercise.getTeacherId() > 0) {
             this.teacherId = exercise.getTeacherId();
         }
         
-        // Load the PDF
         loadPdf(exercise.getPdfPath());
     }
     
+    /**
+     * Loads an exercise from its ID and displays it.
+     * 
+     * @param exerciseId ID of the exercise to load
+     */
     public void setExercise(int exerciseId) {
         Exercise exercise = ExerciseService.getExerciseById(exerciseId);
         if (exercise != null) {
@@ -84,14 +105,23 @@ public class ViewExerciseController implements Initializable {
         }
     }
     
-    // Set exercise with explicit teacher ID for proper navigation
+    /**
+     * Sets the exercise with an explicit teacher ID for proper navigation.
+     * 
+     * @param exercise The exercise to display
+     * @param teacherId The ID of the teacher who created the exercise
+     */
     public void setExercise(Exercise exercise, int teacherId) {
         this.teacherId = teacherId;
         setExercise(exercise);
     }
-    
+      
+    /**
+     * Attempts to load a PDF file from the given path using various fallback methods.
+     * 
+     * @param pdfPath Path to the PDF file
+     */
     private void loadPdf(String pdfPath) {
-        // Close any previous document
         closeDocument();
         
         if (pdfPath == null || pdfPath.isEmpty()) {
@@ -100,32 +130,13 @@ public class ViewExerciseController implements Initializable {
         }
         
         try {
-            // Try multiple approaches to find the PDF file
             File file = new File(pdfPath);
             
-            // If file doesn't exist with direct path, try different approaches
             if (!file.exists()) {
-                // Try to find the file in the exercises directory
-                String filename = new File(pdfPath).getName();
-                File exercisesDir = new File("exercises");
-                if (exercisesDir.exists() && exercisesDir.isDirectory()) {
-                    File[] matchingFiles = exercisesDir.listFiles((dir, name) -> name.equals(filename));
-                    if (matchingFiles != null && matchingFiles.length > 0) {
-                        file = matchingFiles[0];
-                    }
-                }
+                file = findPdfFile(pdfPath);
                 
-                // If still not found, look for a file with similar timestamp prefix
-                if (!file.exists() && filename.contains("_")) {
-                    final String searchPattern = filename.substring(filename.indexOf("_"));
-                    File[] matchingFiles = exercisesDir.listFiles((dir, name) -> name.contains(searchPattern));
-                    if (matchingFiles != null && matchingFiles.length > 0) {
-                        file = matchingFiles[0];
-                    }
-                }
-                
-                // If still not found, show detailed error
                 if (!file.exists()) {
+                    String filename = new File(pdfPath).getName();
                     showError("PDF file not found: " + pdfPath + "\n\n" +
                               "Please ensure the PDF file exists and check the path in the database.\n" +
                               "Try placing the PDF in the 'exercises' folder with name: " + filename);
@@ -135,19 +146,14 @@ public class ViewExerciseController implements Initializable {
             
             System.out.println("Loading PDF from: " + file.getAbsolutePath());
             
-            // Load the document and create renderer
             document = PDDocument.load(file);
             renderer = new PDFRenderer(document);
             totalPages = document.getNumberOfPages();
             
-            // Reset current page and update UI
             currentPage = 0;
             updatePageLabel();
-            
-            // Show the first page
             renderCurrentPage();
             
-            // Show controls and hide error
             controlsContainer.setVisible(true);
             controlsContainer.setManaged(true);
             errorContainer.setVisible(false);
@@ -159,6 +165,40 @@ public class ViewExerciseController implements Initializable {
         }
     }
     
+    /**
+     * Attempts to find a PDF file using different search strategies.
+     * 
+     * @param pdfPath Original path that failed to load
+     * @return File object of found PDF or original file if not found
+     */
+    private File findPdfFile(String pdfPath) {
+        String filename = new File(pdfPath).getName();
+        File file = new File(pdfPath);
+        File exercisesDir = new File("exercises");
+        
+        if (exercisesDir.exists() && exercisesDir.isDirectory()) {
+            // Try exact filename match first
+            File[] matchingFiles = exercisesDir.listFiles((dir, name) -> name.equals(filename));
+            if (matchingFiles != null && matchingFiles.length > 0) {
+                return matchingFiles[0];
+            }
+            
+            // Try timestamp suffix matching
+            if (filename.contains("_")) {
+                final String searchPattern = filename.substring(filename.indexOf("_"));
+                matchingFiles = exercisesDir.listFiles((dir, name) -> name.contains(searchPattern));
+                if (matchingFiles != null && matchingFiles.length > 0) {
+                    return matchingFiles[0];
+                }
+            }
+        }
+        
+        return file;
+    }
+      
+    /**
+     * Navigates to the previous page if available.
+     */
     private void showPreviousPage() {
         if (currentPage > 0) {
             currentPage--;
@@ -167,6 +207,9 @@ public class ViewExerciseController implements Initializable {
         }
     }
     
+    /**
+     * Navigates to the next page if available.
+     */
     private void showNextPage() {
         if (currentPage < totalPages - 1) {
             currentPage++;
@@ -175,11 +218,17 @@ public class ViewExerciseController implements Initializable {
         }
     }
     
+    /**
+     * Increases the zoom level by 0.25 factor.
+     */
     private void zoomIn() {
         zoomFactor += 0.25f;
         renderCurrentPage();
     }
     
+    /**
+     * Decreases the zoom level by 0.25 factor with a minimum limit of 0.5.
+     */
     private void zoomOut() {
         if (zoomFactor > 0.5f) {
             zoomFactor -= 0.25f;
@@ -187,30 +236,35 @@ public class ViewExerciseController implements Initializable {
         }
     }
     
+    /**
+     * Renders the current page with the current zoom factor.
+     */
     private void renderCurrentPage() {
         if (document == null || renderer == null) return;
         
         try {
-            // Render the current page
             BufferedImage image = renderer.renderImage(currentPage, zoomFactor);
             Image fxImage = SwingFXUtils.toFXImage(image, null);
-            
-            // Set the image in the ImageView
             pdfImageView.setImage(fxImage);
-            
-            // Adjust the fit width/height if needed
             pdfImageView.setPreserveRatio(true);
-            
         } catch (IOException e) {
             e.printStackTrace();
             showError("Failed to render page: " + e.getMessage());
         }
     }
     
+    /**
+     * Updates the page label to show current page number and total pages.
+     */
     private void updatePageLabel() {
         pageLabel.setText(String.format("Page %d of %d", currentPage + 1, totalPages));
     }
     
+    /**
+     * Displays an error message and hides the controls container.
+     * 
+     * @param message The error message to display
+     */
     private void showError(String message) {
         errorMessage.setText(message);
         errorContainer.setVisible(true);
@@ -219,6 +273,9 @@ public class ViewExerciseController implements Initializable {
         controlsContainer.setManaged(false);
     }
     
+    /**
+     * Closes the current PDF document and releases resources.
+     */
     private void closeDocument() {
         try {
             if (document != null) {
@@ -231,65 +288,40 @@ public class ViewExerciseController implements Initializable {
         }
     }
     
-    // Call this method when the controller is being destroyed
+    /**
+     * Cleans up resources before the controller is destroyed.
+     * Should be called when navigating away from this view.
+     */
     public void cleanup() {
         closeDocument();
-    }
-
+    }    
+    
     /**
-     * Returns to the specific teacher's exercises page or general exercises view
+     * Returns to the appropriate exercises view based on user role and context.
+     * Will navigate to one of:
+     * 1. Teacher's own exercises view
+     * 2. Specific teacher's exercises view (for students)
+     * 3. Default teachers listing view
      */
     private void returnToExercises() {
         try {
-            // Clean up resources before returning
             cleanup();
             
-            // Get the content area from the main layout
             StackPane contentArea = (StackPane) pdfViewerContainer.getScene().lookup("#contentArea");
-            
             User currentUser = AuthLoginController.getCurrentUser();
             boolean isTeacher = currentUser != null && currentUser.getRole().equals("teacher");
             
-            // Check if we came from a teacher's My Exercises page
             if (currentExercise != null && isTeacher && currentExercise.getTeacherId() == currentUser.getId()) {
-                System.out.println("Teacher viewing their own exercise - returning to my-exercises.fxml");
-                
-                // This is a teacher viewing their own exercise, return to my-exercises
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/my-exercises.fxml"));
-                Parent myExercises = loader.load();
-                contentArea.getChildren().clear();
-                contentArea.getChildren().add(myExercises);
+                navigateToTeacherExercises(contentArea);
                 return;
             }
             
-            // If we have a teacher ID and it's not the current user, go to that teacher's exercises
             if (teacherId > 0 && (!isTeacher || teacherId != currentUser.getId())) {
-                // Get the teacher user object from the teacher ID
-                User teacher = app.backend.services.AuthService.getUserById(teacherId);
-                
-                if (teacher != null) {
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/teacher-exercises.fxml"));
-                    Parent teacherExercisesView = loader.load();
-                    
-                    // Get the controller and set the teacher
-                    StudentExercisesController controller = loader.getController();
-                    controller.setTeacher(teacher);
-                    
-                    contentArea.getChildren().clear();
-                    contentArea.getChildren().add(teacherExercisesView);
-                } else {
-                    // Fallback if the teacher can't be found
-                    loadDefaultView(contentArea);
-                }
+                navigateToSpecificTeacherExercises(contentArea);
             } 
-            // If the user is a teacher, go to my-exercises (if we didn't already handle it above)
             else if (isTeacher) {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/my-exercises.fxml"));
-                Parent myExercises = loader.load();
-                contentArea.getChildren().clear();
-                contentArea.getChildren().add(myExercises);
+                navigateToTeacherExercises(contentArea);
             } 
-            // Otherwise go to the default exercises view
             else {
                 loadDefaultView(contentArea);
             }
@@ -300,13 +332,51 @@ public class ViewExerciseController implements Initializable {
     }
     
     /**
-     * Helper method to load the default exercises view (teachers-cards)
+     * Navigates to the teacher's own exercises view.
+     * 
+     * @param contentArea The content area to load the view into
+     * @throws IOException If loading the view fails
+     */
+    private void navigateToTeacherExercises(StackPane contentArea) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/TeacherExercises.fxml"));
+        Parent myExercises = loader.load();
+        contentArea.getChildren().clear();
+        contentArea.getChildren().add(myExercises);
+    }
+    
+    /**
+     * Navigates to a specific teacher's exercises view for students.
+     * 
+     * @param contentArea The content area to load the view into
+     * @throws IOException If loading the view fails
+     */
+    private void navigateToSpecificTeacherExercises(StackPane contentArea) throws IOException {
+        User teacher = app.backend.services.AuthService.getUserById(teacherId);
+        
+        if (teacher != null) {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/StudentExercises.fxml"));
+            Parent teacherExercisesView = loader.load();
+            
+            StudentExercisesController controller = loader.getController();
+            controller.setTeacher(teacher);
+            
+            contentArea.getChildren().clear();
+            contentArea.getChildren().add(teacherExercisesView);
+        } else {
+            loadDefaultView(contentArea);
+        }
+    }
+    
+    /**
+     * Loads the default teachers listing view with exercise view flag set.
+     * 
+     * @param contentArea The content area to load the view into
+     * @throws IOException If loading the view fails
      */
     private void loadDefaultView(StackPane contentArea) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/teachers-cards.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/TeachersCards.fxml"));
         Parent teachersView = loader.load();
         
-        // Get the controller and set the exercise view flag
         TeachersCardsController controller = loader.getController();
         controller.setIsExerciseView(true);
         

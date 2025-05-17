@@ -108,6 +108,8 @@
 .profile-container {
   -fx-min-height: 90px;
   -fx-alignment: center-left;
+  -fx-spacing: 10;
+  -fx-padding: 15px 30px;
 }
 
 .avatar-circle {
@@ -117,16 +119,20 @@
 }
 
 .user-name {
-  -fx-font-size: 15px;
+  -fx-font-size: 14px;
   -fx-font-weight: bold;
   -fx-text-fill: white;
+  -fx-wrap-text: false;
+  -fx-max-width: 200px;
+  -fx-cursor: hand;
 }
 
 .user-email {
   -fx-font-size: 15px;
   -fx-text-fill: rgba(255, 255, 255, 0.6);
   -fx-wrap-text: true;
-  -fx-max-width: 220px;
+  -fx-max-width: 170px;
+  -fx-text-overflow: ellipsis;
 }
 
 .user-role-badge {
@@ -811,3 +817,289 @@
 .transparent-scroll-pane .corner {
   -fx-background-color: transparent;
 }
+
+/* Dashboard Styles */
+.welcome-box {
+  -fx-background-color: #292929;
+  -fx-background-radius: 12px;
+  -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.2), 8, 0, 0, 0);
+}
+
+.welcome-title {
+  -fx-text-fill: #ff7801;
+  -fx-font-size: 22px;
+  -fx-font-weight: bold;
+}
+
+.welcome-subtitle {
+  -fx-text-fill: rgba(255, 255, 255, 0.8);
+  -fx-font-size: 14px;
+}
+
+.page-header {
+  -fx-background-color: #212121;
+  -fx-border-color: transparent transparent #333333 transparent;
+  -fx-border-width: 0 0 1px 0;
+}
+
+.page-title {
+  -fx-text-fill: white;
+  -fx-font-weight: bold;
+  -fx-font-size: 24px;
+}
+
+.date-time {
+  -fx-text-fill: rgba(255, 255, 255, 0.6);
+  -fx-font-size: 14px;
+}
+
+.dashboard-card {
+  -fx-background-color: #292929;
+  -fx-background-radius: 16px;
+  -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.2), 8, 0, 0, 0);
+  -fx-cursor: hand;
+}
+
+.dashboard-card:hover {
+  -fx-background-color: #2d2d2d;
+  -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.4), 10, 0, 0, 0);
+}
+
+.stat-number {
+  -fx-text-fill: #ff7801;
+  -fx-font-size: 36px;
+  -fx-font-weight: bold;
+}
+
+.stat-label {
+  -fx-text-fill: rgba(255, 255, 255, 0.8);
+  -fx-font-size: 16px;
+}
+
+.content-section {
+  -fx-background-color: #292929;
+  -fx-background-radius: 12px;
+  -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.2), 8, 0, 0, 0);
+}
+
+.section-title {
+  -fx-text-fill: white;
+  -fx-font-size: 18px;
+  -fx-font-weight: bold;
+}
+
+.view-all-link {
+  -fx-text-fill: #ff7801;
+  -fx-font-size: 14px;
+  -fx-cursor: hand;
+}
+
+.view-all-link:hover {
+  -fx-text-fill: derive(#ff7801, 20%);
+  -fx-underline: true;
+}
+
+.activity-item {
+  -fx-background-color: #333333;
+  -fx-background-radius: 8px;
+  -fx-cursor: hand;
+}
+
+.activity-item:hover {
+  -fx-background-color: #3a3a3a;
+}
+
+.activity-title {
+  -fx-text-fill: white;
+  -fx-font-size: 14px;
+  -fx-font-weight: bold;
+}
+
+.activity-description {
+  -fx-text-fill: rgba(255, 255, 255, 0.7);
+  -fx-font-size: 12px;
+}
+
+.activity-time {
+  -fx-text-fill: rgba(255, 255, 255, 0.5);
+  -fx-font-size: 12px;
+}
+
+.quick-access-tile {
+  -fx-background-color: #333333;
+  -fx-background-radius: 12px;
+  -fx-min-width: 250px;
+  -fx-pref-width: -1;
+  -fx-max-width: Infinity;
+  -fx-min-height: 220px;
+  -fx-pref-height: 250px;
+  -fx-max-height: 300px;
+  -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.2), 8, 0, 0, 0);
+  -fx-cursor: hand;
+}
+
+.quick-access-tile:hover {
+  -fx-background-color: #3a3a3a;
+  -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.4), 12, 0, 0, 0);
+  -fx-scale-x: 1.02;
+  -fx-scale-y: 1.02;
+}
+
+.tile-title {
+  -fx-text-fill: white;
+  -fx-font-size: 20px;
+  -fx-font-weight: bold;
+  -fx-text-alignment: center;
+}
+
+.tile-subtitle {
+  -fx-text-fill: rgba(255, 255, 255, 0.7);
+  -fx-font-size: 16px;
+  -fx-text-alignment: center;
+  -fx-wrap-text: true;
+}
+
+/* Dashboard Styles */
+.dashboard-title {
+    -fx-font-family: 'Inter';
+    -fx-font-size: 36px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #fff;
+}
+
+.date-label {
+    -fx-font-family: 'Inter';
+    -fx-font-size: 20px;
+    -fx-text-fill: #cccccc;
+}
+
+.welcome-container {
+    -fx-background-color: #2C2C2C;
+    -fx-background-radius: 10px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 10);
+}
+
+.welcome-title {
+    -fx-font-family: 'Inter';
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #FFF;
+}
+
+.welcome-subtitle {
+    -fx-font-family: 'Inter';
+    -fx-font-size: 16px;
+    -fx-text-fill: #AAA;
+}
+
+.section-container {
+    -fx-background-color: #2C2C2C;
+    -fx-background-radius: 10px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 10);
+}
+
+.section-title {
+    -fx-font-family: 'Inter';
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #FFF;
+}
+
+.stat-container {
+    -fx-background-color: #2C2C2C;
+    -fx-background-radius: 10px;
+    -fx-alignment: center;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 10);
+    -fx-cursor: hand;
+    -fx-transition: -fx-background-color 0.2s, -fx-effect 0.2s;
+}
+
+.stat-container:hover {
+    -fx-background-color: #353535;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 12, 0, 0, 10);
+}
+
+.stat-number {
+    -fx-font-family: 'Inter';
+    -fx-font-size: 36px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #FFF;
+}
+
+.stat-label {
+    -fx-font-family: 'Inter';
+    -fx-font-size: 16px;
+    -fx-text-fill: #AAA;
+}
+
+.quick-access-item {
+    -fx-background-color: #2C2C2C;
+    -fx-background-radius: 10px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 10);
+}
+
+.quick-access-item:hover {
+    -fx-background-color: #353535;
+}
+
+.quick-access-title {
+    -fx-font-family: 'Inter';
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #FFF;
+}
+
+.quick-access-subtitle {
+    -fx-font-family: 'Inter';
+    -fx-font-size: 14px;
+    -fx-text-fill: #AAA;
+}
+
+.teacher-name {
+    -fx-font-family: 'Inter';
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ff7801;
+}
+
+.welcome-text {
+    -fx-font-family: 'Inter';
+    -fx-font-size: 28px;
+    -fx-text-fill: white;
+}
+
+.teacher-card {
+  -fx-background-color: rgba(40, 40, 40, 0.7);
+  -fx-background-radius: 16px;
+  -fx-border-radius: 16px;
+  -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.4), 10, 0, 0, 0);
+  -fx-cursor: hand;
+}
+
+.teacher-card:hover {
+  -fx-background-color: rgba(60, 60, 60, 0.7);
+  -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.6), 12, 0, 0, 0);
+}
+
+.teacher-card-name {
+  -fx-font-size: 20px;
+  -fx-font-weight: bold;
+  -fx-text-fill: white;
+  -fx-text-alignment: center;
+}
+
+.view-exercises-button {
+  -fx-background-color: #65558f;
+  -fx-text-fill: white;
+  -fx-font-size: 14px;
+  -fx-font-weight: bold;
+  -fx-background-radius: 20px;
+  -fx-padding: 10px 15px;
+  -fx-cursor: hand;
+}
+
+.view-exercises-button:hover {
+  -fx-background-color: #7a699f;
+}
+

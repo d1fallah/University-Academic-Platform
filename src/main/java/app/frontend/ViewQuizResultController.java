@@ -14,6 +14,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.control.Button;
+import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
@@ -31,95 +32,104 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-public class ViewQuizResultController implements Initializable {
-
+/**
+ * Controller for displaying quiz results to students and teachers.
+ * This class manages the UI for showing quiz scores, correct/incorrect answers,
+ * and detailed feedback on each question.
+ *
+ * @author Sellami Mohamed Odai
+ */
+public class ViewQuizResultController implements Initializable {    
+    
+    /** Title label for the quiz result */
     @FXML private Label resultTitleLabel;
+    
+    /** Label displaying the course name */
     @FXML private Label courseNameLabel;
+    
+    /** Label displaying the percentage score */
     @FXML private Label percentageLabel;
+    
+    /** Label displaying the raw score (correct/total) */
     @FXML private Label scoreTextLabel;
+    
+    /** Label showing number of correct answers */
     @FXML private Label correctAnswersLabel;
+    
+    /** Label showing number of incorrect answers */
     @FXML private Label incorrectAnswersLabel;
+    
+    /** Label showing total number of questions */
     @FXML private Label totalQuestionsLabel;
+    
+    /** Label showing performance percentage */
     @FXML private Label performancePercentLabel;
+    
+    /** Label showing performance feedback message */
     @FXML private Label performanceMessage;
+    
+    /** Progress bar visualizing the performance */
     @FXML private ProgressBar performanceBar;
+    
+    /** Container for displaying question review details */
     @FXML private VBox questionsReviewContainer;
-    @FXML private Button retakeButton;
+    
+    /** Button to return to previous screen */
     @FXML private Button returnButton;
+    
+    /** Tab pane for organizing different views */
     @FXML private TabPane tabPane;
-    @FXML private Button retakeQuizButton;
 
+    /** List of questions in the quiz */
     private List<Question> questions;
+    
+    /** List of user answer IDs corresponding to questions */
     private List<Integer> userAnswers;
+    
+    /** List of correct answers for the questions */
     private List<Answer> correctAnswers;
+    
+    /** Teacher object if viewing as or for a teacher */
     private User teacher;
+    
+    /** ID of the quiz being viewed */
     private int quizId;
     
-    // Store user answers text for display
-    private Map<Integer, String> userAnswerTexts = new HashMap<>();
-
+    /** Map storing user answer text by question ID */
+    private Map<Integer, String> userAnswerTexts = new HashMap<>();    /**
+     * Initializes the controller after FXML fields are injected.
+     * Sets up event handlers for UI components.
+     *
+     * @param location The location used to resolve relative paths
+     * @param resources The resources used to localize the root object
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Set up button actions
-        retakeButton.setOnAction(e -> handleRetakeQuiz());
         returnButton.setOnAction(e -> handleReturn());
-        
-        // Always disable retake button since we don't want students to retake quizzes
-        disableRetakeQuiz();
-        
-        // Also hide the main retake button if it exists
-        if (retakeButton != null) {
-            retakeButton.setVisible(false);
-            retakeButton.setManaged(false);
-        }
     }
 
+    /**
+     * Sets the quiz result data and updates the UI accordingly.
+     *
+     * @param correctAnswersCount Number of correct answers
+     * @param totalQuestions Total number of questions
+     * @param correctCount Number of correctly answered questions
+     * @param incorrectCount Number of incorrectly answered questions
+     * @param timeTaken Time taken to complete the quiz
+     * @param questions List of questions in the quiz
+     * @param userAnswers List of user's answer IDs
+     * @param correctAnswers List of correct answers
+     */
     public void setResultData(int correctAnswersCount, int totalQuestions, int correctCount, int incorrectCount, 
                             String timeTaken, List<Question> questions, List<Integer> userAnswers, 
                             List<Answer> correctAnswers) {
-        // Store the data
         this.questions = questions;
         this.userAnswers = userAnswers;
         this.correctAnswers = correctAnswers;
         
-        // Prepare user answer texts
-        for (int i = 0; i < questions.size(); i++) {
-            Question question = questions.get(i);
-            Integer userAnswerId = userAnswers.get(i);
-            
-            if (userAnswerId != null && userAnswerId != -1) {
-                // Get all answers for this question to find the selected one
-                List<Answer> answers = AnswerService.getAnswersByQuestionId(question.getId());
-                for (Answer answer : answers) {
-                    if (answer.getId() == userAnswerId) {
-                        userAnswerTexts.put(question.getId(), answer.getAnswerText());
-                        break;
-                    }
-                }
-            }
-        }
-
-        // Store quiz ID if questions exist
-        if (questions != null && !questions.isEmpty()) {
-            this.quizId = questions.get(0).getQuizId();
-            
-            // Get quiz info
-            Quiz quiz = QuizService.getQuizById(quizId);
-            if (quiz != null) {
-                // Set quiz title in the header
-                resultTitleLabel.setText("Quiz Results");
-                
-                // Get course info
-                Course course = CourseService.getCourseById(quiz.getCourseId());
-                if (course != null) {
-                    // Set course name
-                    courseNameLabel.setText(course.getTitle());
-                    
-                    // Get teacher
-                    this.teacher = AuthService.getUserById(course.getTeacherId());
-                }
-            }
-        }
+        prepareUserAnswerTexts();
+        loadQuizData();
+        updateReturnButtonForRole();
 
         // Calculate and display percentage
         int percentage = (correctAnswersCount * 100) / totalQuestions;
@@ -131,42 +141,54 @@ public class ViewQuizResultController implements Initializable {
         incorrectAnswersLabel.setText(String.valueOf(incorrectCount));
         totalQuestionsLabel.setText(String.valueOf(totalQuestions));
         
-        // Set performance bar and text
+        updatePerformanceIndicators(percentage);
+
+        // Populate questions review
+        populateQuestionsReview();
+    }
+
+    /**
+     * Updates the performance indicators (progress bar and messages) based on performance percentage.
+     *
+     * @param percentage The percentage score to display
+     */
+    private void updatePerformanceIndicators(int percentage) {
         performancePercentLabel.setText(percentage + "%");
         performanceBar.setProgress((double) percentage / 100);
         
-        // Set progress bar color based on score
         String barColor;
         String message;
+        
         if (percentage >= 70) {
-            // Green for good performance
             barColor = "#10b981"; 
             message = "Great job!";
         } else if (percentage >= 40) {
-            // Yellow/Orange for medium performance
             barColor = "#f59e0b"; 
             message = "Good effort, keep practicing!";
         } else {
-            // Red for needs improvement
             barColor = "#f43f5e"; 
             message = "Keep studying, you'll improve!";
         }
         
         performanceBar.setStyle("-fx-accent: " + barColor + ";");
         performanceMessage.setText(message);
-
-        // Populate questions review
-        populateQuestionsReview();
     }
 
+    /**
+     * Sets the teacher for this quiz result view.
+     *
+     * @param teacher The teacher user object
+     */
     public void setTeacher(User teacher) {
         this.teacher = teacher;
-    }
-
+        updateReturnButtonForRole();
+    }    
+    
+    /**
+     * Populates the questions review container with each question and its answers.
+     */
     private void populateQuestionsReview() {
         questionsReviewContainer.getChildren().clear();
-        
-        // Set constraints on container
         questionsReviewContainer.setMaxWidth(700);
         questionsReviewContainer.setPrefWidth(700);
 
@@ -175,204 +197,302 @@ public class ViewQuizResultController implements Initializable {
             Integer userAnswerId = userAnswers.get(i);
             Answer correctAnswer = correctAnswers.get(i);
 
-            // Determine if answer is correct
             boolean answered = (userAnswerId != null && userAnswerId != -1);
             boolean correct = answered && (userAnswerId == correctAnswer.getId());
             
-            // Create question container
-            VBox questionBox = new VBox(10);
-            questionBox.getStyleClass().add("question-item");
-            // Add appropriate style class based on correctness
-            if (correct) {
-                questionBox.getStyleClass().add("correct");
-            } else {
-                questionBox.getStyleClass().add("incorrect");
-            }
-
-            // Question header with number and badge
-            HBox questionHeader = new HBox();
-            questionHeader.setAlignment(Pos.CENTER_LEFT);
-            questionHeader.setSpacing(10);
-            
-            // Question text with number
-            Label questionText = new Label((i + 1) + ". " + question.getQuestionText());
-            questionText.getStyleClass().add("question-text");
-            questionText.setWrapText(true);
-            questionText.setMinHeight(Label.USE_PREF_SIZE);
-            HBox.setHgrow(questionText, Priority.ALWAYS);
-            
-            // Add status badge
-            Label statusBadge = new Label(correct ? "Correct" : "Incorrect");
-            statusBadge.getStyleClass().addAll("status-badge", correct ? "correct-badge" : "incorrect-badge");
-            
-            questionHeader.getChildren().addAll(questionText, statusBadge);
-            questionBox.getChildren().add(questionHeader);
-            
-            if (answered) {
-                // Show user's answer if they answered
-                HBox userAnswerBox = new HBox(5);
-                userAnswerBox.setAlignment(Pos.CENTER_LEFT);
-                userAnswerBox.getStyleClass().add("answer-box");
-                
-                Label userAnswerLabel = new Label("Your answer:");
-                userAnswerLabel.getStyleClass().add("answer-label");
-                userAnswerLabel.setMinWidth(100);
-                
-                // Get answer text from the map we populated earlier
-                String answerText = userAnswerTexts.getOrDefault(question.getId(), "Unknown answer");
-                
-                Label userAnswerText = new Label(answerText);
-                userAnswerText.setWrapText(true);
-                userAnswerText.getStyleClass().add(correct ? "correct-answer" : "incorrect-answer");
-                userAnswerText.setMinHeight(Label.USE_PREF_SIZE);
-                
-                HBox.setHgrow(userAnswerText, Priority.ALWAYS);
-                
-                userAnswerBox.getChildren().addAll(userAnswerLabel, userAnswerText);
-                questionBox.getChildren().add(userAnswerBox);
-            } else {
-                // Show that the question was not answered
-                HBox noAnswerBox = new HBox();
-                noAnswerBox.getStyleClass().add("answer-box");
-                
-                Label noAnswerLabel = new Label("You did not answer this question");
-                noAnswerLabel.getStyleClass().add("no-answer-text");
-                
-                noAnswerBox.getChildren().add(noAnswerLabel);
-                questionBox.getChildren().add(noAnswerBox);
-            }
-
-            // Show correct answer if user was wrong or didn't answer
-            if (!correct) {
-                HBox correctAnswerBox = new HBox(5);
-                correctAnswerBox.setAlignment(Pos.CENTER_LEFT);
-                correctAnswerBox.getStyleClass().add("answer-box");
-                
-                Label correctAnswerLabel = new Label("Correct answer:");
-                correctAnswerLabel.getStyleClass().add("answer-label");
-                correctAnswerLabel.setMinWidth(100);
-                
-                Label correctAnswerText = new Label(correctAnswer.getAnswerText());
-                correctAnswerText.setWrapText(true);
-                correctAnswerText.getStyleClass().add("correct-answer");
-                correctAnswerText.setMinHeight(Label.USE_PREF_SIZE);
-                
-                HBox.setHgrow(correctAnswerText, Priority.ALWAYS);
-                
-                correctAnswerBox.getChildren().addAll(correctAnswerLabel, correctAnswerText);
-                questionBox.getChildren().add(correctAnswerBox);
-            }
-            
-            // Add padding to ensure consistent spacing
-            questionBox.setPadding(new Insets(12));
-            
+            VBox questionBox = createQuestionBox(i, question, answered, correct, correctAnswer);
             questionsReviewContainer.getChildren().add(questionBox);
         }
     }
-
-    private void handleRetakeQuiz() {
-        if (quizId > 0) {
-            try {
-                // Load the quiz viewer
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/quiz-viewer.fxml"));
-                Parent quizViewer = loader.load();
-                
-                // Set the quiz to view
-                ViewQuizController controller = loader.getController();
-                controller.setQuiz(QuizService.getQuizById(quizId));
-                
-                // Get the content area and update it
-                StackPane contentArea = (StackPane) returnButton.getScene().lookup("#contentArea");
-                if (contentArea != null) {
-                    contentArea.getChildren().clear();
-                    contentArea.getChildren().add(quizViewer);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+    
+    /**
+     * Creates a question box with all necessary UI elements for review.
+     * 
+     * @param index The index of the question
+     * @param question The question object
+     * @param answered Whether the user answered this question
+     * @param correct Whether the answer was correct
+     * @param correctAnswer The correct answer object
+     * @return A VBox containing the formatted question review
+     */
+    private VBox createQuestionBox(int index, Question question, boolean answered, boolean correct, Answer correctAnswer) {
+        VBox questionBox = new VBox(10);
+        questionBox.getStyleClass().add("question-item");
+        questionBox.getStyleClass().add(correct ? "correct" : "incorrect");
+        
+        HBox questionHeader = createQuestionHeader(index, question, correct);
+        questionBox.getChildren().add(questionHeader);
+        
+        if (answered) {
+            HBox userAnswerBox = createAnswerBox("Your answer:", 
+                userAnswerTexts.getOrDefault(question.getId(), "Unknown answer"), 
+                correct ? "correct-answer" : "incorrect-answer");
+            questionBox.getChildren().add(userAnswerBox);
+        } else {
+            HBox noAnswerBox = new HBox();
+            noAnswerBox.getStyleClass().add("answer-box");
+            
+            Label noAnswerLabel = new Label("You did not answer this question");
+            noAnswerLabel.getStyleClass().add("no-answer-text");
+            
+            noAnswerBox.getChildren().add(noAnswerLabel);
+            questionBox.getChildren().add(noAnswerBox);
         }
-    }
 
+        if (!correct) {
+            HBox correctAnswerBox = createAnswerBox("Correct answer:", 
+                correctAnswer.getAnswerText(), "correct-answer");
+            questionBox.getChildren().add(correctAnswerBox);
+        }
+        
+        questionBox.setPadding(new Insets(12));
+        return questionBox;
+    }
+    
+    /**
+     * Creates the question header containing the question text and status badge.
+     * 
+     * @param index The question number (0-based)
+     * @param question The question object
+     * @param correct Whether the answer was correct
+     * @return An HBox containing the question text and status badge
+     */
+    private HBox createQuestionHeader(int index, Question question, boolean correct) {
+        HBox questionHeader = new HBox();
+        questionHeader.setAlignment(Pos.TOP_LEFT);
+        questionHeader.setSpacing(10);
+        questionHeader.setPrefWidth(Control.USE_COMPUTED_SIZE);
+        questionHeader.setMinWidth(Control.USE_COMPUTED_SIZE);
+        
+        VBox questionTextContainer = new VBox();
+        questionTextContainer.setPrefWidth(550);
+        questionTextContainer.setMaxWidth(550);
+        HBox.setHgrow(questionTextContainer, Priority.ALWAYS);
+        
+        Label questionText = new Label((index + 1) + ". " + question.getQuestionText());
+        questionText.getStyleClass().add("question-text");
+        questionText.setWrapText(true);
+        questionText.setMinHeight(Label.USE_PREF_SIZE);
+        
+        questionTextContainer.getChildren().add(questionText);
+        
+        Label statusBadge = new Label(correct ? "Correct" : "Incorrect");
+        statusBadge.getStyleClass().addAll("status-badge", correct ? "correct-badge" : "incorrect-badge");
+        statusBadge.setMinWidth(100);
+        statusBadge.setPrefWidth(100);
+        statusBadge.setAlignment(Pos.CENTER);
+        
+        questionHeader.getChildren().addAll(questionTextContainer, statusBadge);
+        return questionHeader;
+    }
+    
+    /**
+     * Creates an answer box with label and text.
+     * 
+     * @param labelText The label text (e.g., "Your answer:", "Correct answer:")
+     * @param answerText The actual answer text
+     * @param styleClass The style class to apply to the answer text
+     * @return An HBox containing the formatted answer
+     */
+    private HBox createAnswerBox(String labelText, String answerText, String styleClass) {
+        HBox answerBox = new HBox(5);
+        answerBox.setAlignment(Pos.CENTER_LEFT);
+        answerBox.getStyleClass().add("answer-box");
+        
+        Label answerLabel = new Label(labelText);
+        answerLabel.getStyleClass().add("answer-label");
+        answerLabel.setMinWidth(100);
+        
+        Label answerTextLabel = new Label(answerText);
+        answerTextLabel.setWrapText(true);
+        answerTextLabel.getStyleClass().add(styleClass);
+        answerTextLabel.setMinHeight(Label.USE_PREF_SIZE);
+        
+        HBox.setHgrow(answerTextLabel, Priority.ALWAYS);
+        
+        answerBox.getChildren().addAll(answerLabel, answerTextLabel);
+        return answerBox;
+    }    
+    
+    /**
+     * Handles the return button action, navigating to the appropriate screen
+     * based on the user's role and context.
+     */
     private void handleReturn() {
         try {
-            if (teacher != null) {
-                // Navigate back to teacher quizzes view
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/teacher-quizzes.fxml"));
-                Parent teacherQuizzes = loader.load();
-                
-                // Set the teacher in the controller
-                StudentQuizzesController controller = loader.getController();
-                controller.setTeacher(teacher);
-                
-                // Try different methods to find the content area
-                StackPane contentArea = null;
-                
-                // Method 1: Try through the scene directly if available
-                if (returnButton != null && returnButton.getScene() != null) {
-                    contentArea = (StackPane) returnButton.getScene().lookup("#contentArea");
-                }
-                
-                // Method 2: Try through the parent hierarchy
-                if (contentArea == null && returnButton != null) {
-                    Parent parent = returnButton.getParent();
-                    while (parent != null && contentArea == null) {
-                        if (parent instanceof StackPane && parent.getId() != null && parent.getId().equals("contentArea")) {
-                            contentArea = (StackPane) parent;
-                            break;
-                        }
-                        parent = parent.getParent();
-                    }
-                }
-                
-                // If content area was found, update the UI
-                if (contentArea != null) {
-                    contentArea.getChildren().clear();
-                    contentArea.getChildren().add(teacherQuizzes);
-                    return;
-                }
+            User currentUser = AuthLoginController.getCurrentUser();
+            
+            // Try navigating in this priority order:
+            // 1. Teacher quiz results (if user is a teacher)
+            // 2. Student quizzes (if teacher info is available)
+            // 3. Default quizzes view (fallback)
+            if (navigateToTeacherQuizResults(currentUser)) {
+                return;
             }
             
-            // Fall back to regular quizzes view if teacher is null or content area not found
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/quizzes.fxml"));
-            Parent quizzesView = loader.load();
-            
-            // Try different methods to find the content area
-            StackPane contentArea = null;
-            
-            // Method 1: Try through the scene directly
-            if (returnButton != null && returnButton.getScene() != null) {
-                contentArea = (StackPane) returnButton.getScene().lookup("#contentArea");
+            if (navigateToStudentQuizzes()) {
+                return;
             }
             
-            // Method 2: Try through the parent hierarchy
-            if (contentArea == null && returnButton != null) {
-                Parent parent = returnButton.getParent();
-                while (parent != null && contentArea == null) {
-                    if (parent instanceof StackPane && parent.getId() != null && parent.getId().equals("contentArea")) {
-                        contentArea = (StackPane) parent;
-                        break;
-                    }
-                    parent = parent.getParent();
-                }
-            }
+            navigateToDefaultQuizzesView();
             
-            // Update UI if content area was found
-            if (contentArea != null) {
-                contentArea.getChildren().clear();
-                contentArea.getChildren().add(quizzesView);
-            }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
+    
     /**
-     * Disables the retake quiz button when a student has already taken the quiz
+     * Attempts to navigate to the teacher quiz results view.
+     * 
+     * @param currentUser The current logged-in user
+     * @return True if navigation was successful, false otherwise
+     * @throws IOException If loading the FXML fails
      */
-    public void disableRetakeQuiz() {
-        if (retakeQuizButton != null) {
-            retakeQuizButton.setVisible(false);
-            retakeQuizButton.setManaged(false);
+    private boolean navigateToTeacherQuizResults(User currentUser) throws IOException {
+        if (currentUser != null && currentUser.getRole().equals("teacher") && quizId > 0) {
+            Quiz quiz = QuizService.getQuizById(quizId);
+            if (quiz != null) {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/TeacherQuizResults.fxml"));
+                Parent quizResultsView = loader.load();
+                
+                TeacherQuizResultsController controller = loader.getController();
+                controller.setQuiz(quiz);
+                
+                StackPane contentArea = findContentArea();
+                if (contentArea != null) {
+                    contentArea.getChildren().clear();
+                    contentArea.getChildren().add(quizResultsView);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Attempts to navigate to the student quizzes view.
+     * 
+     * @return True if navigation was successful, false otherwise
+     * @throws IOException If loading the FXML fails
+     */
+    private boolean navigateToStudentQuizzes() throws IOException {
+        if (teacher != null) {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/StudentQuizzes.fxml"));
+            Parent teacherQuizzes = loader.load();
+            
+            StudentQuizzesController controller = loader.getController();
+            controller.setTeacher(teacher);
+            
+            StackPane contentArea = findContentArea();
+            if (contentArea != null) {
+                contentArea.getChildren().clear();
+                contentArea.getChildren().add(teacherQuizzes);
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Navigates to the default quizzes view as fallback.
+     * 
+     * @throws IOException If loading the FXML fails
+     */
+    private void navigateToDefaultQuizzesView() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/quizzes.fxml"));
+        Parent quizzesView = loader.load();
+        
+        StackPane contentArea = findContentArea();
+        if (contentArea != null) {
+            contentArea.getChildren().clear();
+            contentArea.getChildren().add(quizzesView);
         }
     }
-} 
+    
+    /**
+     * Finds the content area in the scene graph using multiple strategies.
+     * 
+     * @return The StackPane content area, or null if not found
+     */
+    private StackPane findContentArea() {
+        StackPane contentArea = null;
+        
+        // Try direct scene lookup
+        if (returnButton != null && returnButton.getScene() != null) {
+            contentArea = (StackPane) returnButton.getScene().lookup("#contentArea");
+        }
+        
+        // Try parent hierarchy if direct lookup failed
+        if (contentArea == null && returnButton != null) {
+            Parent parent = returnButton.getParent();
+            while (parent != null && contentArea == null) {
+                if (parent instanceof StackPane && parent.getId() != null && parent.getId().equals("contentArea")) {
+                    contentArea = (StackPane) parent;
+                    break;
+                }
+                parent = parent.getParent();
+            }
+        }
+        
+        return contentArea;
+    }    
+    
+    /**
+     * Empty method to maintain compatibility with existing code.
+     * This is a placeholder for functionality that may be implemented in the future
+     * or is handled elsewhere in the application.
+     */
+    public void disableRetakeQuiz() {
+        // This method is intentionally empty
+    }
+
+    /**
+     * Prepares user answer texts by matching answer IDs to their text content.
+     */
+    private void prepareUserAnswerTexts() {
+        for (int i = 0; i < questions.size(); i++) {
+            Question question = questions.get(i);
+            Integer userAnswerId = userAnswers.get(i);
+            
+            if (userAnswerId != null && userAnswerId != -1) {
+                List<Answer> answers = AnswerService.getAnswersByQuestionId(question.getId());
+                for (Answer answer : answers) {
+                    if (answer.getId() == userAnswerId) {
+                        userAnswerTexts.put(question.getId(), answer.getAnswerText());
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    
+    /**
+     * Loads quiz data and related information (course, teacher).
+     */
+    private void loadQuizData() {
+        if (questions != null && !questions.isEmpty()) {
+            this.quizId = questions.get(0).getQuizId();
+            
+            Quiz quiz = QuizService.getQuizById(quizId);
+            if (quiz != null) {
+                resultTitleLabel.setText("Quiz Results");
+                
+                Course course = CourseService.getCourseById(quiz.getCourseId());
+                if (course != null) {
+                    courseNameLabel.setText(course.getTitle());
+                    this.teacher = AuthService.getUserById(course.getTeacherId());
+                }
+            }
+        }
+    }
+    
+    /**
+     * Updates the return button text based on the user's role.
+     */
+    private void updateReturnButtonForRole() {
+        User currentUser = AuthLoginController.getCurrentUser();
+        if (currentUser != null && currentUser.getRole().equals("teacher") && returnButton != null) {
+            returnButton.setText("Back to Results List");
+        }
+    }
+}

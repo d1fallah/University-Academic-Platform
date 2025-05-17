@@ -18,7 +18,7 @@ public class Main extends Application {
             DatabaseInitializer.initializeDatabase();
 
             // Load fxml file
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/login.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/AuthLogin.fxml"));
             Parent root = loader.load();
 
             // Create the scene

@@ -18,7 +18,15 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.regex.Pattern;
 
+/**
+ * Controller class for the signup view of the application.
+ * Handles user registration functionality including form validation
+ * and toggle password visibility.
+ *
+ * @author Sellami Mohamed Odai
+ */
 public class AuthSignupController implements Initializable {
 
     @FXML private TextField nameField;
@@ -32,137 +40,128 @@ public class AuthSignupController implements Initializable {
     private TextField confirmPasswordTextField;
     private boolean passwordVisible = false;
     private boolean confirmPasswordVisible = false;
-
+    
+    // Password validation pattern: minimum 8 characters, at least one uppercase letter,
+    // one lowercase letter, one digit, and one special character
+    private static final Pattern PASSWORD_PATTERN = 
+                                Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$");    
+        
+    /**
+     * Initializes the controller after its root element has been completely processed.
+     * Sets up password toggling and ensures proper layout calculation.
+     * 
+     * @param url The location used to resolve relative paths for the root object
+     * @param resourceBundle The resources used to localize the root object
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        // Initialize the password toggle functionality
         setupPasswordToggling();
         
-        // Ensure the container layout is properly calculated
         Platform.runLater(() -> {
             Parent root = nameField.getScene().getRoot();
             root.requestLayout();
         });
     }
     
+    /**
+     * Sets up the password toggle functionality by creating text fields
+     * that can be swapped with password fields to show/hide passwords.
+     */
     private void setupPasswordToggling() {
-        // Setup for the password field
-        passwordTextField = new TextField();
-        passwordTextField.getStyleClass().add("text-field");
-        passwordTextField.setPromptText("Password");
-        passwordTextField.setManaged(false);
-        passwordTextField.setVisible(false);
-        
-        HBox.setMargin(passwordTextField, new Insets(0, 0, 0, 5));
-        passwordContainer.getChildren().add(2, passwordTextField);
-        
-        // Setup for the confirm password field
-        confirmPasswordTextField = new TextField();
-        confirmPasswordTextField.getStyleClass().add("text-field");
-        confirmPasswordTextField.setPromptText("Confirm Password");
-        confirmPasswordTextField.setManaged(false);
-        confirmPasswordTextField.setVisible(false);
-        
-        HBox.setMargin(confirmPasswordTextField, new Insets(0, 0, 0, 5));
-        confirmPasswordContainer.getChildren().add(2, confirmPasswordTextField);
+        configureTextField(passwordTextField = new TextField(), "Password", passwordContainer);
+        configureTextField(confirmPasswordTextField = new TextField(), "Confirm Password", confirmPasswordContainer);
     }
-
+    
+    /**
+     * Configures a text field for password visibility toggling.
+     * 
+     * @param textField The text field to configure
+     * @param promptText The prompt text to display
+     * @param container The container to add the text field to
+     */
+    private void configureTextField(TextField textField, String promptText, HBox container) {
+        textField.getStyleClass().add("text-field");
+        textField.setPromptText(promptText);
+        textField.setManaged(false);
+        textField.setVisible(false);
+        
+        HBox.setMargin(textField, new Insets(0, 0, 0, 5));
+        container.getChildren().add(2, textField);
+    }    
+    
+    /**
+     * Toggles the visibility of the password field.
+     * Switches between the password field and text field to show/hide the password.
+     */
     @FXML
     public void togglePasswordVisibility() {
         passwordVisible = !passwordVisible;
-
-        if (passwordVisible) {
-            // Show password
-            passwordTextField.setText(passwordField.getText());
-            passwordTextField.setManaged(true);
-            passwordTextField.setVisible(true);
-            passwordField.setManaged(false);
-            passwordField.setVisible(false);
-
-            // Ensure the eye icon stays at the end
-            HBox.setHgrow(passwordTextField, javafx.scene.layout.Priority.ALWAYS);
-        } else {
-            // Hide password
-            passwordField.setText(passwordTextField.getText());
-            passwordField.setManaged(true);
-            passwordField.setVisible(true);
-            passwordTextField.setManaged(false);
-            passwordTextField.setVisible(false);
-
-            // Ensure the eye icon stays at the end
-            HBox.setHgrow(passwordField, javafx.scene.layout.Priority.ALWAYS);
-        }
+        toggleFieldVisibility(passwordVisible, passwordField, passwordTextField);
     }
     
+    /**
+     * Toggles the visibility of the confirm password field.
+     * Switches between the password field and text field to show/hide the password.
+     */
     @FXML
     public void toggleConfirmPasswordVisibility() {
         confirmPasswordVisible = !confirmPasswordVisible;
-
-        if (confirmPasswordVisible) {
-            // Show password
-            confirmPasswordTextField.setText(confirmPasswordField.getText());
-            confirmPasswordTextField.setManaged(true);
-            confirmPasswordTextField.setVisible(true);
-            confirmPasswordField.setManaged(false);
-            confirmPasswordField.setVisible(false);
-
-            // Ensure the eye icon stays at the end
-            HBox.setHgrow(confirmPasswordTextField, javafx.scene.layout.Priority.ALWAYS);
-        } else {
-            // Hide password
-            confirmPasswordField.setText(confirmPasswordTextField.getText());
-            confirmPasswordField.setManaged(true);
-            confirmPasswordField.setVisible(true);
-            confirmPasswordTextField.setManaged(false);
-            confirmPasswordTextField.setVisible(false);
-
-            // Ensure the eye icon stays at the end
-            HBox.setHgrow(confirmPasswordField, javafx.scene.layout.Priority.ALWAYS);
-        }
+        toggleFieldVisibility(confirmPasswordVisible, confirmPasswordField, confirmPasswordTextField);
     }
-
+    
+    /**
+     * Helper method to toggle field visibility between password and text fields.
+     * 
+     * @param showText Whether to show the text field (true) or password field (false)
+     * @param passwordField The password field to toggle
+     * @param textField The text field to toggle
+     */
+    private void toggleFieldVisibility(boolean showText, PasswordField passwordField, TextField textField) {
+        if (showText) {
+            textField.setText(passwordField.getText());
+            textField.setManaged(true);
+            textField.setVisible(true);
+            passwordField.setManaged(false);
+            passwordField.setVisible(false);
+            HBox.setHgrow(textField, javafx.scene.layout.Priority.ALWAYS);
+        } else {
+            passwordField.setText(textField.getText());
+            passwordField.setManaged(true);
+            passwordField.setVisible(true);
+            textField.setManaged(false);
+            textField.setVisible(false);
+            HBox.setHgrow(passwordField, javafx.scene.layout.Priority.ALWAYS);
+        }
+    }    
+    
+    /**
+     * Handles the signup process when the signup button is clicked.
+     * Validates inputs, creates a new user, and attempts registration.
+     * 
+     * @param event The action event triggered by the signup button
+     */
     @FXML
     public void handleSignup(ActionEvent event) {
-        // Get the input values
         String name = nameField.getText().trim();
         String matricule = matriculeField.getText().trim();
         String password = passwordVisible ? passwordTextField.getText() : passwordField.getText();
         String confirmPassword = confirmPasswordVisible ? confirmPasswordTextField.getText() : confirmPasswordField.getText();
         
-        // Determine role based on matricule prefix using the new format
+        // Determine role based on matricule prefix
         String role = matricule.toUpperCase().startsWith("UNST") ? "student" : 
                       matricule.toUpperCase().startsWith("UNTS") ? "teacher" : "";
         
-        // Validate all inputs
-        if (name.isEmpty() || matricule.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
-            showAlert(Alert.AlertType.ERROR, "Signup Error", "Please fill in all fields.");
+        if (!validateInputFields(name, matricule, password, confirmPassword)) {
             return;
         }
         
-        // Validate matricule format
-        if (!matricule.toUpperCase().startsWith("UNST") && !matricule.toUpperCase().startsWith("UNTS")) {
-            showAlert(Alert.AlertType.ERROR, "Signup Error", 
-                    "Invalid matricule format. Student IDs must start with 'UNST' and teacher IDs must start with 'UNTS'.");
-            return;
-        }
-        
-        // Validate password match
-        if (!password.equals(confirmPassword)) {
-            showAlert(Alert.AlertType.ERROR, "Signup Error", "Passwords do not match.");
-            return;
-        }
-        
-        // Check database connection
         if (!DataBaseConnection.isDatabaseConnected()) {
             showAlert(Alert.AlertType.ERROR, "Database Error", 
                     "Unable to connect to the database. Please make sure MySQL is running and properly configured.");
             return;
         }
         
-        // Create a new user object
         User newUser = new User(name, password, matricule, role, null, null);
-        
-        // Attempt signup using AuthService
         boolean signupSuccess = AuthService.signup(newUser);
         
         if (signupSuccess) {
@@ -175,32 +174,76 @@ public class AuthSignupController implements Initializable {
         }
     }
     
+    /**
+     * Validates all input fields for signup form.
+     * 
+     * @param name User's full name
+     * @param matricule User's matricule/ID
+     * @param password User's password
+     * @param confirmPassword Password confirmation
+     * @return true if all inputs are valid, false otherwise
+     */
+    private boolean validateInputFields(String name, String matricule, String password, String confirmPassword) {
+        if (name.isEmpty() || matricule.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
+            showAlert(Alert.AlertType.ERROR, "Signup Error", "Please fill in all fields.");
+            return false;
+        }
+        
+        if (!matricule.toUpperCase().startsWith("UNST") && !matricule.toUpperCase().startsWith("UNTS")) {
+            showAlert(Alert.AlertType.ERROR, "Signup Error", 
+                    "Invalid matricule format. Student IDs must start with 'UNST' and teacher IDs must start with 'UNTS'.");
+            return false;
+        }
+        
+        if (!password.equals(confirmPassword)) {
+            showAlert(Alert.AlertType.ERROR, "Signup Error", "Passwords do not match.");
+            return false;
+        }
+        
+        if (!PASSWORD_PATTERN.matcher(password).matches()) {
+            showAlert(Alert.AlertType.ERROR, "Password Error", 
+                    "Password must be at least 8 characters long and include:\n" +
+                    "• At least one uppercase letter\n" +
+                    "• At least one lowercase letter\n" +
+                    "• At least one digit\n" +
+                    "• At least one special character (@$!%*?&)");
+            return false;
+        }
+        
+        return true;
+    }
+    
+    /**
+     * Navigates to the login screen after successful signup or when 
+     * the user clicks the login link.
+     * 
+     * @param event The action event that triggered the navigation
+     */
     @FXML
     public void navigateToLogin(ActionEvent event) {
         try {
-            // Load the login view
-            Parent loginView = FXMLLoader.load(getClass().getResource("/fxml/login.fxml"));
+            Parent loginView = FXMLLoader.load(getClass().getResource("/fxml/AuthLogin.fxml"));
             Scene loginScene = new Scene(loginView, 1920, 1080);
             
-            // Get current stage
             Stage stage = (Stage) nameField.getScene().getWindow();
-            
-            // Set new Scene
             stage.setScene(loginScene);
             stage.setTitle("AOPFE Login");
-            
-            // Ensure it stays maximized
             stage.setMaximized(true);
             
             loginView.requestLayout();
-            
         } catch (IOException e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Navigation Error", "Failed to navigate to the login page.");
         }
     }
     
-    // Helper method to show alerts
+    /**
+     * Displays an alert dialog with the specified type, title, and message.
+     * 
+     * @param alertType The type of alert to display
+     * @param title The title of the alert
+     * @param message The message to display in the alert
+     */
     private void showAlert(Alert.AlertType alertType, String title, String message) {
         Alert alert = new Alert(alertType);
         alert.setTitle(title);

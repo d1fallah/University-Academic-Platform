@@ -22,11 +22,20 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ListCell;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Controller for the teacher quizzes interface.
+ * Manages the creation, editing, and deletion of quizzes and their questions.
+ * 
+ * @author Sellami Mohamed Odai
+ */
 public class TeacherQuizzesController implements Initializable {
 
     @FXML private FlowPane quizCardsContainer;
@@ -91,39 +100,38 @@ public class TeacherQuizzesController implements Initializable {
     private Map<Integer, List<Answer>> questionAnswers = new HashMap<>();
     private Quiz quizBeingEdited;
 
+    /**
+     * Initializes the controller by loading teacher quizzes and setting up listeners.
+     * Access is restricted to users with the teacher role.
+     * 
+     * @param location The location used to resolve relative paths
+     * @param resources The resources used to localize the root object
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Get current logged in user
         currentUser = AuthLoginController.getCurrentUser();
         
-        // Ensure user is a teacher
         if (currentUser != null && currentUser.getRole().equals("teacher")) {
-            // Load the teacher's quizzes
             loadTeacherQuizzes();
             
-            // Setup search functionality
-            searchField.textProperty().addListener((observable, oldValue, newValue) -> {
-                filterQuizzes(newValue);
-            });
+            searchField.textProperty().addListener((observable, oldValue, newValue) -> 
+                filterQuizzes(newValue));
             
-            // Setup dialog components
             if (courseComboBox != null) {
-                // Add a listener to update the selected course ID when selection changes
-                courseComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-                    updateSelectedCourseId(newValue);
-                });
+                courseComboBox.getSelectionModel().selectedItemProperty().addListener(
+                    (observable, oldValue, newValue) -> updateSelectedCourseId(newValue));
                 
-                // Load teacher's courses for the course combo box (but don't populate combo box yet)
                 loadTeacherCoursesForComboBox();
             }
         } else {
-            // If not a teacher, show message or redirect
             showAlert(AlertType.WARNING, "Access Denied", "Only teachers can access this page.");
         }
     }
     
     /**
-     * Updates the selected course ID based on the course name selection
+     * Updates the selected course ID based on the course name.
+     * 
+     * @param courseName The name of the selected course
      */
     private void updateSelectedCourseId(String courseName) {
         if (courseName == null || courseName.isEmpty() || courseName.equals("Select a course")) {
@@ -131,7 +139,6 @@ public class TeacherQuizzesController implements Initializable {
             return;
         }
         
-        // Find the course by name
         for (Course course : coursesList) {
             if (course.getTitle().equals(courseName)) {
                 selectedCourseId = course.getId();
@@ -141,67 +148,56 @@ public class TeacherQuizzesController implements Initializable {
     }
     
     /**
-     * Loads all quizzes created by the current teacher and displays them as cards
+     * Loads quizzes created by the current teacher and displays them as cards.
      */
     private void loadTeacherQuizzes() {
-        // Clear the container
         quizCardsContainer.getChildren().clear();
         
-        // Get all quizzes from the service for this teacher
         List<Quiz> teacherQuizzes = QuizService.getQuizzesByTeacherId(currentUser.getId());
         quizzesList.setAll(teacherQuizzes);
         
-        // If no quizzes, show a message
         if (quizzesList.isEmpty()) {
             Label noQuizzesLabel = new Label("You haven't created any quizzes yet. Click the 'Add new quiz +' button to get started!");
             noQuizzesLabel.getStyleClass().add("no-courses-message");
             noQuizzesLabel.setPadding(new Insets(50, 0, 0, 0));
             quizCardsContainer.getChildren().add(noQuizzesLabel);
         } else {
-            // Create and add a card for each quiz
-            for (Quiz quiz : quizzesList) {
-                quizCardsContainer.getChildren().add(createQuizCard(quiz));
-            }
+            quizzesList.forEach(quiz -> 
+                quizCardsContainer.getChildren().add(createQuizCard(quiz)));
         }
     }
     
     /**
-     * Loads the teacher's courses for the course selection combo box
+     * Loads the teacher's courses for the course selection combo box.
+     * Disables the combo box if no courses are available.
      */
     private void loadTeacherCoursesForComboBox() {
-        // Get all courses from the service for this teacher
         List<Course> courses = CourseService.getCoursesByTeacherId(currentUser.getId());
         coursesList.setAll(courses);
         
-        // Clear existing items
         courseNamesForComboBox.clear();
         
-        // Set the items in the combo box
         if (!courses.isEmpty()) {
-            // Store course titles for later use
-            for (Course course : coursesList) {
-                courseNamesForComboBox.add(course.getTitle());
-            }
+            coursesList.forEach(course -> courseNamesForComboBox.add(course.getTitle()));
         } else {
-            // If no courses, add a default option 
             courseComboBox.setItems(FXCollections.observableArrayList("No courses available"));
             courseComboBox.getSelectionModel().select(0);
-            // Disable the combo box if there are no courses
             courseComboBox.setDisable(true);
         }
     }
 
     /**
-     * Creates a visual card representation for a quiz with edit/delete options
+     * Creates a visual card representation for a quiz with edit/delete options.
+     * 
+     * @param quiz The quiz to create a card for
+     * @return StackPane containing the quiz card UI
      */
     private StackPane createQuizCard(Quiz quiz) {
-        // Main card container
         StackPane cardPane = new StackPane();
         cardPane.getStyleClass().add("course-card");
         cardPane.setPrefWidth(480);
         cardPane.setPrefHeight(230);
 
-        // Add background image to card
         ImageView cardBackground = new ImageView();
         try {
             Image bgImage = new Image(getClass().getResourceAsStream("/images/courseCardBackground.png"));
@@ -214,7 +210,6 @@ public class TeacherQuizzesController implements Initializable {
             System.out.println("Failed to load background image for quiz card");
         }
 
-        // Card layout container
         VBox cardContent = new VBox();
         cardContent.getStyleClass().add("card-content");
         cardContent.setSpacing(20);
@@ -222,20 +217,17 @@ public class TeacherQuizzesController implements Initializable {
         cardContent.setPrefWidth(480);
         cardContent.setPrefHeight(230);
 
-        // Top section with quiz title and icon
         HBox headerBox = new HBox();
         headerBox.getStyleClass().add("card-header");
         headerBox.setAlignment(Pos.TOP_LEFT);
         headerBox.setPrefWidth(480);
         headerBox.setSpacing(20);
 
-        // Create container for title
         VBox titleContainer = new VBox();
         titleContainer.setAlignment(Pos.TOP_LEFT);
         titleContainer.setPrefWidth(390);
         HBox.setHgrow(titleContainer, Priority.ALWAYS);
 
-        // Title on left side
         Label titleLabel = new Label(quiz.getTitle());
         titleLabel.getStyleClass().add("card-title");
         titleLabel.setWrapText(true);
@@ -243,7 +235,6 @@ public class TeacherQuizzesController implements Initializable {
 
         titleContainer.getChildren().add(titleLabel);
 
-        // Quiz logo/icon
         StackPane logoContainer = new StackPane();
         logoContainer.setMinWidth(50);
         logoContainer.setMaxWidth(50);
@@ -264,10 +255,8 @@ public class TeacherQuizzesController implements Initializable {
 
         logoContainer.getChildren().add(quizIcon);
 
-        // Add title and logo to header box
         headerBox.getChildren().addAll(titleContainer, logoContainer);
 
-        // Quiz description
         String description = quiz.getDescription();
         if (description == null || description.isEmpty()) {
             description = "No description available";
@@ -277,7 +266,6 @@ public class TeacherQuizzesController implements Initializable {
         descriptionLabel.setWrapText(true);
         descriptionLabel.setMinHeight(Region.USE_PREF_SIZE);
 
-        // Get associated course
         Course course = CourseService.getCourseById(quiz.getCourseId());
         Label courseLabel = new Label("Course: " + (course != null ? course.getTitle() : "Unknown"));
         courseLabel.getStyleClass().add("card-instructor");
@@ -286,13 +274,11 @@ public class TeacherQuizzesController implements Initializable {
         Region spacer = new Region();
         VBox.setVgrow(spacer, Priority.ALWAYS);
 
-        // Footer section with creation date and buttons
         HBox footerBox = new HBox();
         footerBox.setAlignment(Pos.BOTTOM_LEFT);
         footerBox.setPrefWidth(480);
         footerBox.setPrefHeight(30);
         
-        // Creation date info
         HBox dateBox = new HBox();
         dateBox.getStyleClass().add("card-date");
         dateBox.setAlignment(Pos.CENTER_LEFT);
@@ -300,7 +286,6 @@ public class TeacherQuizzesController implements Initializable {
         dateBox.setSpacing(10);
         HBox.setHgrow(dateBox, Priority.ALWAYS);
 
-        // Date icon
         ImageView calendarIcon = new ImageView();
         try {
             Image calendarImg = new Image(getClass().getResourceAsStream("/images/Case.png"));
@@ -313,24 +298,21 @@ public class TeacherQuizzesController implements Initializable {
         }
 
         String createdAt = "Created: " + (quiz.getCreatedAt() != null ? 
-                           quiz.getCreatedAt().toString().substring(0, 10) : "Unknown");
+                         quiz.getCreatedAt().toString().substring(0, 10) : "Unknown");
         Label dateLabel = new Label(createdAt);
         dateLabel.getStyleClass().add("date-label");
 
         dateBox.getChildren().addAll(calendarIcon, dateLabel);
 
-        // Buttons section
-        HBox buttonBox = new HBox(8); // Spacing between buttons
+        HBox buttonBox = new HBox(8);
         buttonBox.setAlignment(Pos.CENTER_RIGHT);
 
-        // Edit button - with icon
         Button editButton = new Button();
         editButton.getStyleClass().add("icon-button");
         editButton.setPrefWidth(24);
         editButton.setPrefHeight(24);
         editButton.setOnAction(e -> handleEditQuiz(quiz));
         
-        // Edit icon
         ImageView editIcon = new ImageView();
         try {
             Image penImage = new Image(getClass().getResourceAsStream("/images/Pen.png"));
@@ -343,14 +325,12 @@ public class TeacherQuizzesController implements Initializable {
         }
         editButton.setGraphic(editIcon);
 
-        // Delete button - with icon
         Button deleteButton = new Button();
         deleteButton.getStyleClass().add("icon-button");
         deleteButton.setPrefWidth(24);
         deleteButton.setPrefHeight(24);
         deleteButton.setOnAction(e -> handleDeleteQuiz(quiz));
         
-        // Delete icon
         ImageView deleteIcon = new ImageView();
         try {
             Image trashImage = new Image(getClass().getResourceAsStream("/images/Trash.png"));
@@ -362,33 +342,48 @@ public class TeacherQuizzesController implements Initializable {
             System.out.println("Failed to load trash icon");
         }
         deleteButton.setGraphic(deleteIcon);
+        
+        Button resultsButton = new Button();
+        resultsButton.getStyleClass().add("icon-button");
+        resultsButton.setPrefWidth(24);
+        resultsButton.setPrefHeight(24);
+        resultsButton.setOnAction(e -> handleViewResults(quiz));
+        
+        ImageView resultsIcon = new ImageView();
+        try {
+            Image chartImage = new Image(getClass().getResourceAsStream("/images/Chart.png"));
+            resultsIcon.setImage(chartImage);
+            resultsIcon.setFitWidth(15);
+            resultsIcon.setFitHeight(15);
+            resultsIcon.setPreserveRatio(true);
+        } catch (Exception e) {
+            System.out.println("Failed to load chart icon");
+            resultsButton.setText("📊");
+        }
+        resultsButton.setGraphic(resultsIcon);
 
-        buttonBox.getChildren().addAll(editButton, deleteButton);
+        buttonBox.getChildren().addAll(resultsButton, editButton, deleteButton);
 
-        // Add date and buttons to footer
         footerBox.getChildren().addAll(dateBox, buttonBox);
 
-        // Add all sections to the card
         cardContent.getChildren().addAll(headerBox, descriptionLabel, courseLabel, spacer, footerBox);
 
-        // Stack the background and content
         cardPane.getChildren().addAll(cardBackground, cardContent);
 
-        // Add accessibility features
         cardPane.setAccessibleText("Quiz: " + quiz.getTitle() + ", " + description);
 
         return cardPane;
     }
     
     /**
-     * Filters quizzes based on search query
+     * Filters quizzes based on search query.
+     * 
+     * @param query The search term to filter quizzes
      */
     private void filterQuizzes(String query) {
         if (query == null || query.isEmpty()) {
-            // If query is empty, show all quizzes
             loadTeacherQuizzes();
         } else {
-            // Filter quizzes based on query
             query = query.toLowerCase();
             final String searchQuery = query;
             
@@ -414,22 +409,20 @@ public class TeacherQuizzesController implements Initializable {
     }
     
     /**
-     * Handles the action when the Add New Quiz button is clicked
+     * Handles the action when the Add New Quiz button is clicked.
+     * Sets up and displays the course selection dialog.
+     * 
+     * @param event The ActionEvent
      */
     @FXML
     private void handleAddNewQuiz(ActionEvent event) {
-        // Clear the current items and add a placeholder item
         courseComboBox.getItems().clear();
-        
-        // Add a default "Select a course" item
         courseComboBox.getItems().add("Select a course");
         
-        // Add the actual courses
         for (Course course : coursesList) {
             courseComboBox.getItems().add(course.getTitle());
         }
         
-        // Create a custom cell factory to disable the first item
         courseComboBox.setCellFactory(listView -> new ListCell<String>() {
             @Override
             protected void updateItem(String item, boolean empty) {
@@ -440,7 +433,6 @@ public class TeacherQuizzesController implements Initializable {
                 } else {
                     setText(item);
                     
-                    // Disable the "Select a course" item
                     if (item.equals("Select a course")) {
                         setDisable(true);
                         setStyle("-fx-opacity: 0.7;");
@@ -452,7 +444,6 @@ public class TeacherQuizzesController implements Initializable {
             }
         });
         
-        // Create a custom button cell to show the placeholder when nothing is selected
         courseComboBox.setButtonCell(new ListCell<String>() {
             @Override
             protected void updateItem(String item, boolean empty) {
@@ -468,14 +459,11 @@ public class TeacherQuizzesController implements Initializable {
             }
         });
         
-        // Select the first item (which is the placeholder)
         courseComboBox.getSelectionModel().select(0);
         selectedCourseId = -1;
         
-        // Show the overlay
         addQuizOverlay.setVisible(true);
         
-        // Use Platform.runLater to ensure UI is updated after dialog is shown
         javafx.application.Platform.runLater(() -> {
             courseComboBox.requestFocus();
             System.out.println("ComboBox items: " + courseComboBox.getItems());
@@ -483,28 +471,29 @@ public class TeacherQuizzesController implements Initializable {
     }
     
     /**
-     * Handles the cancel button action in the dialog
+     * Handles the cancel button action in the dialog.
+     * Hides the overlay and clears selections.
+     * 
+     * @param event The ActionEvent
      */
     @FXML
     private void handleCancel(ActionEvent event) {
-        // Hide the overlay
         addQuizOverlay.setVisible(false);
-        
-        // Clear the combo box entries
         courseComboBox.getItems().clear();
     }
     
     /**
-     * Handles the save button action in the dialog
+     * Handles the save button action in the dialog.
+     * Validates inputs and creates a temporary quiz for question entry.
+     * 
+     * @param event The ActionEvent
      */
     @FXML
     private void handleSave(ActionEvent event) {
-        // Validate inputs
         if (!validateInputs()) {
             return;
         }
         
-        // Get the selected course
         Course selectedCourseObj = null;
         for (Course course : coursesList) {
             if (course.getId() == selectedCourseId) {
@@ -518,45 +507,43 @@ public class TeacherQuizzesController implements Initializable {
             return;
         }
         
-        // Create temporary quiz object (not saved to database yet)
         Quiz tempQuiz = new Quiz();
-        // Use course title as quiz title
         tempQuiz.setTitle("Quiz for " + selectedCourseObj.getTitle());
-        tempQuiz.setDescription(""); // Empty description
-        tempQuiz.setComment(""); // Not using comment field
+        tempQuiz.setDescription("");
+        tempQuiz.setComment("");
         tempQuiz.setCourseId(selectedCourseId);
         
-        // Clear the combo box entries
         courseComboBox.getItems().clear();
         selectedCourseId = -1;
         
-        // Hide the course selection dialog
         addQuizOverlay.setVisible(false);
         
-        // Show the question entry form for the new quiz without saving it to the database yet
         openQuestionEntryForm(tempQuiz, true);
     }
     
     /**
-     * Opens the question entry form for a specific quiz
+     * Opens the question entry form for a specific quiz.
+     * 
      * @param quiz The quiz to add questions to
      * @param isNewQuiz Flag indicating if this is a new quiz (not yet saved to database)
      */
     private void openQuestionEntryForm(Quiz quiz, boolean isNewQuiz) {
         try {
-            // Call our own showAddQuestionDialog method with the quiz
             showAddQuestionDialog(quiz, isNewQuiz);
         } catch (Exception e) {
             e.printStackTrace();
             showAlert(AlertType.ERROR, "Error", "Failed to open question entry form: " + e.getMessage());
             
-            // Fall back to just refreshing the quizzes list
             loadTeacherQuizzes();
         }
     }
     
+    /**
+     * Validates the input fields in the add quiz dialog.
+     * 
+     * @return true if all inputs are valid, false otherwise
+     */
     private boolean validateInputs() {
-        // Validate course selection
         if (courseComboBox.getSelectionModel().getSelectedItem() == null || 
             courseComboBox.getSelectionModel().getSelectedItem().equals("No courses available") ||
             courseComboBox.getSelectionModel().getSelectedItem().equals("Select a course") ||
@@ -569,46 +556,43 @@ public class TeacherQuizzesController implements Initializable {
     }
     
     /**
-     * Handles editing a quiz
+     * Handles editing an existing quiz.
+     * Loads all questions and answers for the selected quiz.
+     * 
+     * @param quiz The quiz to edit
      */
     private void handleEditQuiz(Quiz quiz) {
-        // Load all questions and answers for this quiz for editing
         loadQuizForEditing(quiz);
     }
 
     /**
-     * Loads a quiz for editing with all of its questions and answers
+     * Loads a quiz for editing with all of its questions and answers.
+     * Sets up the edit dialog with the quiz data.
+     * 
+     * @param quiz The quiz to be edited
      */
     private void loadQuizForEditing(Quiz quiz) {
         try {
-            // Store the quiz being edited
             quizBeingEdited = quiz;
             
-            // Set the quiz title in the dialog
             editQuizTitleLabel.setText("Edit: " + quiz.getTitle());
             
-            // Get the course name
             Course course = CourseService.getCourseById(quiz.getCourseId());
             editCourseNameLabel.setText("Course: " + (course != null ? course.getTitle() : "Unknown"));
             
-            // Get all questions for this quiz
             List<Question> questions = QuestionService.getQuestionsByQuizId(quiz.getId());
             
-            // If there are no questions, show message
             if (questions == null || questions.isEmpty()) {
                 showAlert(AlertType.WARNING, "No Questions", "This quiz doesn't have any questions yet.");
                 return;
             }
             
-            // Clear any previous data
             editingQuestions.clear();
             questionAnswers.clear();
             currentQuestionIndex = 0;
             
-            // Store questions for editing
             editingQuestions.addAll(questions);
             
-            // Load answers for each question
             for (Question question : editingQuestions) {
                 List<Answer> answers = AnswerService.getAnswersByQuestionId(question.getId());
                 if (answers != null) {
@@ -616,13 +600,10 @@ public class TeacherQuizzesController implements Initializable {
                 }
             }
             
-            // Show the first question
             showQuestionForEditing(currentQuestionIndex);
             
-            // Set up the delete question button handler
             deleteQuestionButton.setOnAction(e -> handleDeleteQuestion());
             
-            // Show the edit dialog
             editQuizOverlay.setVisible(true);
             
         } catch (Exception e) {
@@ -632,34 +613,31 @@ public class TeacherQuizzesController implements Initializable {
     }
     
     /**
-     * Shows a specific question for editing
+     * Shows a specific question for editing in the edit dialog.
+     * Loads question text and answers into the form.
+     * 
+     * @param index The index of the question to show
      */
     private void showQuestionForEditing(int index) {
         if (index < 0 || index >= editingQuestions.size()) {
             return;
         }
         
-        // Get the question at the specified index
         Question question = editingQuestions.get(index);
         
-        // Update progress label
         editProgressLabel.setText("Question " + (index + 1) + "/" + editingQuestions.size());
         
-        // Set question text
         editQuestionTextArea.setText(question.getQuestionText());
         
-        // Clear answer fields and radio selections
         editAnswerField1.clear();
         editAnswerField2.clear();
         editAnswerField3.clear();
         editAnswerField4.clear();
         editCorrectAnswerGroup.selectToggle(null);
         
-        // Get answers for this question
         List<Answer> answers = questionAnswers.get(question.getId());
         
         if (answers != null && !answers.isEmpty()) {
-            // Fill in answer fields (up to 4 answers)
             int answerCount = Math.min(answers.size(), 4);
             
             for (int i = 0; i < answerCount; i++) {
@@ -694,10 +672,8 @@ public class TeacherQuizzesController implements Initializable {
             }
         }
         
-        // Update button states based on position
         prevQuestionButton.setDisable(index == 0);
         
-        // Check if this is the last question
         if (index == editingQuestions.size() - 1) {
             nextQuestionButton.setText("Add Question");
             nextQuestionButton.setOnAction(e -> handleAddNewQuestion());
@@ -708,11 +684,11 @@ public class TeacherQuizzesController implements Initializable {
     }
     
     /**
-     * Handles moving to the previous question
+     * Handles moving to the previous question.
+     * Saves current question changes if valid.
      */
     @FXML
     private void handlePrevQuestion() {
-        // Save current question changes
         if (validateEditQuestionForm()) {
             saveCurrentEditQuestion();
             currentQuestionIndex--;
@@ -721,11 +697,11 @@ public class TeacherQuizzesController implements Initializable {
     }
     
     /**
-     * Handles moving to the next question
+     * Handles moving to the next question.
+     * Saves current question changes if valid.
      */
     @FXML
     private void handleNextQuestion() {
-        // Save current question changes
         if (validateEditQuestionForm()) {
             saveCurrentEditQuestion();
             currentQuestionIndex++;
@@ -734,22 +710,21 @@ public class TeacherQuizzesController implements Initializable {
     }
     
     /**
-     * Validates the edit question form
+     * Validates the question form in the edit dialog.
+     * 
+     * @return true if all inputs are valid, false otherwise
      */
     private boolean validateEditQuestionForm() {
-        // Check question text
         if (editQuestionTextArea.getText() == null || editQuestionTextArea.getText().trim().isEmpty()) {
             showAlert(AlertType.WARNING, "Validation Error", "Please enter a question.");
             return false;
         }
         
-        // Check that at least 2 answers are provided
         if (editAnswerField1.getText().trim().isEmpty() || editAnswerField2.getText().trim().isEmpty()) {
             showAlert(AlertType.WARNING, "Validation Error", "Please provide at least two answer options.");
             return false;
         }
         
-        // Check that a correct answer is selected
         if (editCorrectAnswerGroup.getSelectedToggle() == null) {
             showAlert(AlertType.WARNING, "Validation Error", "Please select the correct answer.");
             return false;
@@ -759,123 +734,16 @@ public class TeacherQuizzesController implements Initializable {
     }
     
     /**
-     * Saves changes to the current question being edited
+     * Handles deleting the current question.
+     * Shows a confirmation dialog before deletion.
      */
-    private void saveCurrentEditQuestion() {
-        try {
-            // Get the current question
-            Question question = editingQuestions.get(currentQuestionIndex);
-            
-            // Update question text
-            question.setQuestionText(editQuestionTextArea.getText().trim());
-            
-            // Update in database
-            QuestionService.updateQuestion(question);
-            
-            // Determine which radio button is selected
-            RadioButton selectedRadio = (RadioButton) editCorrectAnswerGroup.getSelectedToggle();
-            
-            // Get existing answers
-            List<Answer> existingAnswers = questionAnswers.get(question.getId());
-            if (existingAnswers == null) {
-                existingAnswers = new ArrayList<>();
-            }
-            
-            // Create new answers list for this question
-            List<Answer> updatedAnswers = new ArrayList<>();
-            
-            // Process answer 1
-            if (!editAnswerField1.getText().trim().isEmpty()) {
-                Answer answer = findOrCreateAnswer(existingAnswers, 0);
-                answer.setQuestionId(question.getId());
-                answer.setAnswerText(editAnswerField1.getText().trim());
-                answer.setCorrect(selectedRadio == editRadioAnswer1);
-                updatedAnswers.add(answer);
-            }
-            
-            // Process answer 2
-            if (!editAnswerField2.getText().trim().isEmpty()) {
-                Answer answer = findOrCreateAnswer(existingAnswers, 1);
-                answer.setQuestionId(question.getId());
-                answer.setAnswerText(editAnswerField2.getText().trim());
-                answer.setCorrect(selectedRadio == editRadioAnswer2);
-                updatedAnswers.add(answer);
-            }
-            
-            // Process answer 3
-            if (!editAnswerField3.getText().trim().isEmpty()) {
-                Answer answer = findOrCreateAnswer(existingAnswers, 2);
-                answer.setQuestionId(question.getId());
-                answer.setAnswerText(editAnswerField3.getText().trim());
-                answer.setCorrect(selectedRadio == editRadioAnswer3);
-                updatedAnswers.add(answer);
-            }
-            
-            // Process answer 4
-            if (!editAnswerField4.getText().trim().isEmpty()) {
-                Answer answer = findOrCreateAnswer(existingAnswers, 3);
-                answer.setQuestionId(question.getId());
-                answer.setAnswerText(editAnswerField4.getText().trim());
-                answer.setCorrect(selectedRadio == editRadioAnswer4);
-                updatedAnswers.add(answer);
-            }
-            
-            // Handle deletion of existing answers that are no longer needed
-            for (Answer existingAnswer : existingAnswers) {
-                boolean stillExists = false;
-                for (Answer updatedAnswer : updatedAnswers) {
-                    if (updatedAnswer.getId() == existingAnswer.getId()) {
-                        stillExists = true;
-                        break;
-                    }
-                }
-                if (!stillExists) {
-                    // Delete this answer
-                    AnswerService.deleteAnswer(existingAnswer.getId());
-                }
-            }
-            
-            // Save or update each answer
-            for (Answer answer : updatedAnswers) {
-                if (answer.getId() > 0) {
-                    // Update existing answer
-                    AnswerService.updateAnswer(answer);
-                } else {
-                    // Create new answer
-                    AnswerService.addAnswer(answer);
-                }
-            }
-            
-            // Update the stored answers for this question
-            questionAnswers.put(question.getId(), updatedAnswers);
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-            showAlert(AlertType.ERROR, "Error", "Failed to save question changes: " + e.getMessage());
-        }
-    }
-    
-    /**
-     * Finds an existing answer or creates a new one
-     */
-    private Answer findOrCreateAnswer(List<Answer> existingAnswers, int index) {
-        if (existingAnswers != null && index < existingAnswers.size()) {
-            return existingAnswers.get(index);
-        }
-        return new Answer();
-    }
-    
-    /**
-     * Handles deleting the current question
-     */
+    @FXML
     private void handleDeleteQuestion() {
-        // Confirm deletion
         Alert confirmation = new Alert(AlertType.CONFIRMATION);
         confirmation.setTitle("Confirm Deletion");
         confirmation.setHeaderText(null);
         confirmation.setContentText("Are you sure you want to delete this question?");
         
-        // Process the result
         confirmation.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
                 deleteCurrentQuestion();
@@ -884,14 +752,13 @@ public class TeacherQuizzesController implements Initializable {
     }
     
     /**
-     * Deletes the current question
+     * Deletes the current question and its answers from the database.
+     * Updates the question list and UI.
      */
     private void deleteCurrentQuestion() {
         try {
-            // Get the current question
             Question question = editingQuestions.get(currentQuestionIndex);
             
-            // Delete from database
             boolean success = QuestionService.deleteQuestion(question.getId());
             
             if (!success) {
@@ -899,24 +766,20 @@ public class TeacherQuizzesController implements Initializable {
                 return;
             }
             
-            // Remove from our lists
             editingQuestions.remove(currentQuestionIndex);
             questionAnswers.remove(question.getId());
             
-            // Check if we still have questions
             if (editingQuestions.isEmpty()) {
-                // If no more questions, close the dialog
                 editQuizOverlay.setVisible(false);
-                showAlert(AlertType.INFORMATION, "No Questions", "All questions have been deleted. You may add new ones from the Add Question dialog.");
+                showAlert(AlertType.INFORMATION, "No Questions", 
+                    "All questions have been deleted. You may add new ones from the Add Question dialog.");
                 return;
             }
             
-            // Adjust current index if needed
             if (currentQuestionIndex >= editingQuestions.size()) {
                 currentQuestionIndex = editingQuestions.size() - 1;
             }
             
-            // Show the current question
             showQuestionForEditing(currentQuestionIndex);
             
         } catch (Exception e) {
@@ -926,58 +789,51 @@ public class TeacherQuizzesController implements Initializable {
     }
     
     /**
-     * Handles saving all quiz edits and closing the dialog
+     * Handles saving all quiz edits and closing the dialog.
      */
     @FXML
     private void handleSaveQuizEdits() {
-        // Save current question changes
         if (validateEditQuestionForm()) {
             saveCurrentEditQuestion();
             
-            // Hide the dialog
             editQuizOverlay.setVisible(false);
             
-            // Show success message
             showAlert(AlertType.INFORMATION, "Success", "All changes have been saved successfully!");
             
-            // Refresh the quizzes list
             loadTeacherQuizzes();
         }
     }
     
     /**
-     * Handles canceling the edit dialog
+     * Handles canceling the edit dialog.
+     * Shows a confirmation dialog if changes might be lost.
      */
     @FXML
     private void handleCancelEdit() {
-        // Confirm cancellation if changes might be lost
         Alert confirmation = new Alert(AlertType.CONFIRMATION);
         confirmation.setTitle("Cancel Editing");
         confirmation.setHeaderText(null);
         confirmation.setContentText("Are you sure you want to cancel? Any unsaved changes will be lost.");
         
-        // Process the result
         confirmation.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
-                // Hide the dialog
                 editQuizOverlay.setVisible(false);
                 
-                // Refresh the quizzes list
                 loadTeacherQuizzes();
             }
         });
     }
     
     /**
-     * Handles updating an existing quiz
+     * Handles updating an existing quiz.
+     * 
+     * @param quizId The ID of the quiz to update
      */
     private void handleUpdateQuiz(int quizId) {
-        // Validate inputs
         if (!validateInputs()) {
             return;
         }
         
-        // Get existing quiz
         Quiz existingQuiz = quizzesList.stream()
                                       .filter(q -> q.getId() == quizId)
                                       .findFirst()
@@ -988,32 +844,24 @@ public class TeacherQuizzesController implements Initializable {
             return;
         }
         
-        // Create updated quiz object
         Quiz updatedQuiz = new Quiz();
         updatedQuiz.setId(quizId);
         updatedQuiz.setTitle(existingQuiz.getTitle());
         updatedQuiz.setDescription(existingQuiz.getDescription());
         updatedQuiz.setComment(existingQuiz.getComment());
-        
-        // Get selected course ID from our instance variable
         updatedQuiz.setCourseId(selectedCourseId);
         
-        // Update in database
         boolean success = QuizService.updateQuiz(updatedQuiz);
         
         if (success) {
-            // Hide dialog
             addQuizOverlay.setVisible(false);
             
-            // Reset save button to add mode for future uses
             if (saveButton != null) {
                 saveButton.setOnAction(this::handleSave);
             }
             
-            // Refresh the quizzes list
             loadTeacherQuizzes();
             
-            // Show success message
             showAlert(AlertType.INFORMATION, "Success", "Quiz updated successfully!");
         } else {
             showAlert(AlertType.ERROR, "Error", "Failed to update the quiz.");
@@ -1021,54 +869,53 @@ public class TeacherQuizzesController implements Initializable {
     }
 
     /**
-     * Handles the cancel button action in the question dialog
+     * Handles the cancel button action in the question dialog.
+     * 
+     * @param event The ActionEvent
      */
     @FXML
     private void handleCancelQuestion(ActionEvent event) {
-        // Hide the question overlay
         if (addQuestionOverlay != null) {
             addQuestionOverlay.setVisible(false);
         }
         
-        // Clear the combo box entries
         courseComboBox.getItems().clear();
         
-        // Refresh the quizzes list
         loadTeacherQuizzes();
     }
 
     /**
-     * Handles adding another question to the quiz
+     * Handles adding another question to the quiz.
+     * Validates and saves the current question, then resets the form.
+     * 
+     * @param event The ActionEvent
      */
     @FXML
     private void handleAddAnotherQuestion(ActionEvent event) {
-        // Validate and save the current question
         if (validateQuestionForm()) {
             saveCurrentQuestion();
-            // Reset the form for the next question
             resetQuestionForm();
-            // Show success message
             showAlert(AlertType.INFORMATION, "Success", "Question added successfully! Add another question or click Done when finished.");
         }
     }
     
     /**
-     * Handles completing the question entry process
+     * Handles completing the question entry process.
+     * Saves the current question if valid and finalizes the quiz creation.
+     * 
+     * @param event The ActionEvent
      */
     @FXML
     private void handleDoneAddingQuestions(ActionEvent event) {
-        // Check if we have at least entered the current question
         if (validateQuestionForm()) {
             saveCurrentQuestion();
         }
         
-        // Check if we have any questions to save
         if (currentQuizQuestions.isEmpty()) {
             showAlert(AlertType.WARNING, "No Questions", "Please add at least one question before finishing.");
             return;
         }
         
-        // If this is a new quiz, we need to save it to the database first
         if (isNewQuiz) {
             boolean success = QuizService.addQuiz(currentQuiz);
             if (!success) {
@@ -1076,11 +923,9 @@ public class TeacherQuizzesController implements Initializable {
                 return;
             }
             
-            // Get the newly created quiz ID so we can associate questions with it
             List<Quiz> latestQuizzes = QuizService.getQuizzesByTeacherId(currentUser.getId());
             Quiz createdQuiz = null;
             
-            // Find the quiz we just created (should be the most recent one with matching title and course ID)
             if (latestQuizzes != null && !latestQuizzes.isEmpty()) {
                 for (Quiz quiz : latestQuizzes) {
                     if (quiz.getTitle().equals(currentQuiz.getTitle()) && 
@@ -1096,20 +941,15 @@ public class TeacherQuizzesController implements Initializable {
                 return;
             }
             
-            // Update the currentQuiz with the database-assigned ID
             currentQuiz.setId(createdQuiz.getId());
             
-            // Now that we have a valid quiz ID, save all the questions and answers
             saveAllQuestionsAndAnswers();
         }
         
-        // Hide the form
         addQuestionOverlay.setVisible(false);
         
-        // Clear the combo box entries
         courseComboBox.getItems().clear();
         
-        // Show success message
         if (isNewQuiz) {
             showAlert(AlertType.INFORMATION, "Quiz Complete", 
                 "Quiz has been created and questions have been saved successfully!");
@@ -1118,43 +958,41 @@ public class TeacherQuizzesController implements Initializable {
                 "All questions have been saved successfully!");
         }
         
-        // Refresh the quizzes list
         loadTeacherQuizzes();
         
-        // Clear the form and questions list for future use
         resetQuestionForm();
         currentQuizQuestions.clear();
     }
 
     /**
-     * Shows the question entry form
+     * Shows the question entry form for adding questions to a quiz.
+     * 
      * @param quiz The quiz to add questions to
-     * @param isNewQuiz Flag indicating if this is a new quiz that hasn't been saved to the database yet
+     * @param isNewQuiz Flag indicating if this is a new quiz that hasn't been saved yet
      */
     public void showAddQuestionDialog(Quiz quiz, boolean isNewQuiz) {
         this.currentQuiz = quiz;
-        this.isNewQuiz = isNewQuiz; // Store if this is a new quiz or not
+        this.isNewQuiz = isNewQuiz;
         resetQuestionForm();
         addQuestionOverlay.setVisible(true);
     }
     
     /**
-     * Validates the question form inputs
+     * Validates the question form inputs.
+     * 
+     * @return true if all inputs are valid, false otherwise
      */
     private boolean validateQuestionForm() {
-        // Check question text
         if (questionTextField.getText() == null || questionTextField.getText().trim().isEmpty()) {
             showAlert(AlertType.WARNING, "Validation Error", "Please enter a question.");
             return false;
         }
         
-        // Check that at least 2 answers are provided
         if (answerField1.getText().trim().isEmpty() || answerField2.getText().trim().isEmpty()) {
             showAlert(AlertType.WARNING, "Validation Error", "Please provide at least two answer options.");
             return false;
         }
         
-        // Check that a correct answer is selected
         if (correctAnswerGroup.getSelectedToggle() == null) {
             showAlert(AlertType.WARNING, "Validation Error", "Please select the correct answer.");
             return false;
@@ -1164,7 +1002,7 @@ public class TeacherQuizzesController implements Initializable {
     }
     
     /**
-     * Resets the question form fields
+     * Resets the question form fields.
      */
     private void resetQuestionForm() {
         if (questionTextField != null) questionTextField.clear();
@@ -1176,39 +1014,29 @@ public class TeacherQuizzesController implements Initializable {
     }
 
     /**
-     * Saves the current question and its answers
+     * Saves the current question and its answers.
+     * For new quizzes, stores questions temporarily until the quiz is created.
      */
     private void saveCurrentQuestion() {
         try {
-            // For new quizzes, we need to store questions temporarily until the quiz is created
             if (isNewQuiz) {
-                // Create Question object but don't save it to database yet
                 Question question = new Question();
-                // Use a temporary ID until the quiz is saved to database
-                question.setId(-1 * (currentQuizQuestions.size() + 1)); // Use negative IDs for temp questions
+                question.setId(-1 * (currentQuizQuestions.size() + 1));
                 question.setQuestionText(questionTextField.getText().trim());
                 
-                // Add to our list of questions for this quiz
                 currentQuizQuestions.add(question);
                 
-                // Store answers in memory - we'll save them to DB after the quiz is created
                 storeAnswersForQuestion(question);
                 
-                // Don't try to save to the database yet
                 return;
             }
             
-            // If we're here, the quiz already exists in the database
-            
-            // Create Question object
             Question question = new Question();
             question.setQuizId(currentQuiz.getId());
             question.setQuestionText(questionTextField.getText().trim());
             
-            // Save question to database
             int questionId = QuestionService.addQuestion(question);
             
-            // Check if question was saved successfully
             if (questionId <= 0) {
                 showAlert(AlertType.ERROR, "Error", "Failed to save the question to the database.");
                 return;
@@ -1216,10 +1044,8 @@ public class TeacherQuizzesController implements Initializable {
             
             question.setId(questionId);
             
-            // Add to our list of questions for this quiz
             currentQuizQuestions.add(question);
             
-            // Save the answers
             saveAnswers(questionId);
             
         } catch (Exception e) {
@@ -1229,57 +1055,54 @@ public class TeacherQuizzesController implements Initializable {
     }
     
     /**
-     * Stores answers for a question in memory (for new quizzes before they're saved to DB)
+     * Stores answers for a question in memory for new quizzes.
+     * 
+     * @param question The question to store answers for
      */
     private void storeAnswersForQuestion(Question question) {
-        // Determine which radio button is selected
         RadioButton selectedRadio = (RadioButton) correctAnswerGroup.getSelectedToggle();
         
-        // Process answer 1
         if (!answerField1.getText().trim().isEmpty()) {
             Answer answer = new Answer();
-            answer.setQuestionId(question.getId()); // Use the temporary question ID
+            answer.setQuestionId(question.getId());
             answer.setAnswerText(answerField1.getText().trim());
             answer.setCorrect(selectedRadio == radioAnswer1);
-            question.addAnswer(answer); // Store answer in the question object
+            question.addAnswer(answer);
         }
         
-        // Process answer 2
         if (!answerField2.getText().trim().isEmpty()) {
             Answer answer = new Answer();
-            answer.setQuestionId(question.getId()); // Use the temporary question ID
+            answer.setQuestionId(question.getId());
             answer.setAnswerText(answerField2.getText().trim());
             answer.setCorrect(selectedRadio == radioAnswer2);
-            question.addAnswer(answer); // Store answer in the question object
+            question.addAnswer(answer);
         }
         
-        // Process answer 3
         if (!answerField3.getText().trim().isEmpty()) {
             Answer answer = new Answer();
-            answer.setQuestionId(question.getId()); // Use the temporary question ID
+            answer.setQuestionId(question.getId());
             answer.setAnswerText(answerField3.getText().trim());
             answer.setCorrect(selectedRadio == radioAnswer3);
-            question.addAnswer(answer); // Store answer in the question object
+            question.addAnswer(answer);
         }
         
-        // Process answer 4
         if (!answerField4.getText().trim().isEmpty()) {
             Answer answer = new Answer();
-            answer.setQuestionId(question.getId()); // Use the temporary question ID
+            answer.setQuestionId(question.getId());
             answer.setAnswerText(answerField4.getText().trim());
             answer.setCorrect(selectedRadio == radioAnswer4);
-            question.addAnswer(answer); // Store answer in the question object
+            question.addAnswer(answer);
         }
     }
     
     /**
-     * Saves the answers for the current question
+     * Saves the answers for a question to the database.
+     * 
+     * @param questionId The ID of the question to save answers for
      */
     private void saveAnswers(int questionId) {
-        // Determine which radio button is selected
         RadioButton selectedRadio = (RadioButton) correctAnswerGroup.getSelectedToggle();
         
-        // Process answer 1
         if (!answerField1.getText().trim().isEmpty()) {
             Answer answer = new Answer();
             answer.setQuestionId(questionId);
@@ -1288,7 +1111,6 @@ public class TeacherQuizzesController implements Initializable {
             AnswerService.addAnswer(answer);
         }
         
-        // Process answer 2
         if (!answerField2.getText().trim().isEmpty()) {
             Answer answer = new Answer();
             answer.setQuestionId(questionId);
@@ -1297,7 +1119,6 @@ public class TeacherQuizzesController implements Initializable {
             AnswerService.addAnswer(answer);
         }
         
-        // Process answer 3
         if (!answerField3.getText().trim().isEmpty()) {
             Answer answer = new Answer();
             answer.setQuestionId(questionId);
@@ -1306,7 +1127,6 @@ public class TeacherQuizzesController implements Initializable {
             AnswerService.addAnswer(answer);
         }
         
-        // Process answer 4
         if (!answerField4.getText().trim().isEmpty()) {
             Answer answer = new Answer();
             answer.setQuestionId(questionId);
@@ -1317,7 +1137,7 @@ public class TeacherQuizzesController implements Initializable {
     }
     
     /**
-     * Saves all temporarily stored questions and their answers to the database
+     * Saves all temporarily stored questions and their answers to the database.
      */
     private void saveAllQuestionsAndAnswers() {
         if (currentQuizQuestions.isEmpty() || currentQuiz == null || currentQuiz.getId() <= 0) {
@@ -1325,19 +1145,15 @@ public class TeacherQuizzesController implements Initializable {
         }
         
         try {
-            // Save each question and its answers
             for (Question question : currentQuizQuestions) {
-                // Skip questions that have already been saved (positive IDs)
                 if (question.getId() > 0) {
                     continue;
                 }
                 
-                // Create a new question to save
                 Question dbQuestion = new Question();
                 dbQuestion.setQuizId(currentQuiz.getId());
                 dbQuestion.setQuestionText(question.getQuestionText());
                 
-                // Save to database
                 int questionId = QuestionService.addQuestion(dbQuestion);
                 
                 if (questionId <= 0) {
@@ -1345,7 +1161,6 @@ public class TeacherQuizzesController implements Initializable {
                     continue;
                 }
                 
-                // Save all answers for this question
                 if (question.getAnswers() != null) {
                     for (Answer answer : question.getAnswers()) {
                         Answer dbAnswer = new Answer();
@@ -1363,22 +1178,22 @@ public class TeacherQuizzesController implements Initializable {
     }
     
     /**
-     * Handles deleting a quiz
+     * Handles deleting a quiz after confirmation.
+     * 
+     * @param quiz The quiz to delete
      */
     private void handleDeleteQuiz(Quiz quiz) {
-        // Confirm deletion
         Alert confirmation = new Alert(AlertType.CONFIRMATION);
         confirmation.setTitle("Confirm Deletion");
         confirmation.setHeaderText(null);
         confirmation.setContentText("Are you sure you want to delete the quiz: " + quiz.getTitle() + "?");
         
-        // Process the result
         confirmation.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
                 boolean success = QuizService.deleteQuiz(quiz.getId());
                 
                 if (success) {
-                    loadTeacherQuizzes(); // Reload quizzes after deletion
+                    loadTeacherQuizzes();
                     showAlert(AlertType.INFORMATION, "Success", "Quiz deleted successfully");
                 } else {
                     showAlert(AlertType.ERROR, "Error", "Failed to delete quiz");
@@ -1388,7 +1203,9 @@ public class TeacherQuizzesController implements Initializable {
     }
     
     /**
-     * Handles the search action
+     * Handles the search action.
+     * 
+     * @param event The ActionEvent
      */
     @FXML
     private void handleSearch(ActionEvent event) {
@@ -1397,7 +1214,11 @@ public class TeacherQuizzesController implements Initializable {
     }
     
     /**
-     * Helper method to show alerts
+     * Shows an alert dialog with the specified type, title, and message.
+     * 
+     * @param alertType The type of alert to show
+     * @param title The title of the alert
+     * @param message The message to display
      */
     private void showAlert(AlertType alertType, String title, String message) {
         Alert alert = new Alert(alertType);
@@ -1408,33 +1229,148 @@ public class TeacherQuizzesController implements Initializable {
     }
 
     /**
-     * Handles adding a new question to the quiz
+     * Handles adding a new question to the quiz.
+     * Creates a new empty question and displays it for editing.
      */
     private void handleAddNewQuestion() {
-        // Save current question changes
         if (validateEditQuestionForm()) {
             saveCurrentEditQuestion();
             
-            // Create a new question
             Question newQuestion = new Question();
             newQuestion.setQuizId(quizBeingEdited.getId());
-            newQuestion.setQuestionText("New Question"); // Default text
+            newQuestion.setQuestionText("New Question");
             
-            // Add to database
             int questionId = QuestionService.addQuestion(newQuestion);
             if (questionId > 0) {
                 newQuestion.setId(questionId);
                 
-                // Add to our lists
                 editingQuestions.add(newQuestion);
                 questionAnswers.put(questionId, new ArrayList<>());
                 
-                // Move to the new question
                 currentQuestionIndex = editingQuestions.size() - 1;
                 showQuestionForEditing(currentQuestionIndex);
             } else {
                 showAlert(AlertType.ERROR, "Error", "Failed to add new question.");
             }
         }
+    }
+
+    /**
+     * Handles viewing quiz results.
+     * Loads and displays the quiz results view.
+     * 
+     * @param quiz The quiz to view results for
+     */
+    private void handleViewResults(Quiz quiz) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/TeacherQuizResults.fxml"));
+            Parent resultsView = loader.load();
+            
+            TeacherQuizResultsController controller = loader.getController();
+            controller.setQuiz(quiz);
+            
+            StackPane contentArea = (StackPane) quizCardsContainer.getScene().lookup("#contentArea");
+            contentArea.getChildren().clear();
+            contentArea.getChildren().add(resultsView);
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(AlertType.ERROR, "Error", "Failed to load quiz results view: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Saves changes to the current question being edited.
+     * Updates the question text and answers in the database.
+     */
+    private void saveCurrentEditQuestion() {
+        try {
+            Question question = editingQuestions.get(currentQuestionIndex);
+            
+            question.setQuestionText(editQuestionTextArea.getText().trim());
+            
+            QuestionService.updateQuestion(question);
+            
+            RadioButton selectedRadio = (RadioButton) editCorrectAnswerGroup.getSelectedToggle();
+            
+            List<Answer> existingAnswers = questionAnswers.get(question.getId());
+            if (existingAnswers == null) {
+                existingAnswers = new ArrayList<>();
+            }
+            
+            List<Answer> updatedAnswers = new ArrayList<>();
+            
+            if (!editAnswerField1.getText().trim().isEmpty()) {
+                Answer answer = findOrCreateAnswer(existingAnswers, 0);
+                answer.setQuestionId(question.getId());
+                answer.setAnswerText(editAnswerField1.getText().trim());
+                answer.setCorrect(selectedRadio == editRadioAnswer1);
+                updatedAnswers.add(answer);
+            }
+            
+            if (!editAnswerField2.getText().trim().isEmpty()) {
+                Answer answer = findOrCreateAnswer(existingAnswers, 1);
+                answer.setQuestionId(question.getId());
+                answer.setAnswerText(editAnswerField2.getText().trim());
+                answer.setCorrect(selectedRadio == editRadioAnswer2);
+                updatedAnswers.add(answer);
+            }
+            
+            if (!editAnswerField3.getText().trim().isEmpty()) {
+                Answer answer = findOrCreateAnswer(existingAnswers, 2);
+                answer.setQuestionId(question.getId());
+                answer.setAnswerText(editAnswerField3.getText().trim());
+                answer.setCorrect(selectedRadio == editRadioAnswer3);
+                updatedAnswers.add(answer);
+            }
+            
+            if (!editAnswerField4.getText().trim().isEmpty()) {
+                Answer answer = findOrCreateAnswer(existingAnswers, 3);
+                answer.setQuestionId(question.getId());
+                answer.setAnswerText(editAnswerField4.getText().trim());
+                answer.setCorrect(selectedRadio == editRadioAnswer4);
+                updatedAnswers.add(answer);
+            }
+            
+            for (Answer existingAnswer : existingAnswers) {
+                boolean stillExists = false;
+                for (Answer updatedAnswer : updatedAnswers) {
+                    if (updatedAnswer.getId() == existingAnswer.getId()) {
+                        stillExists = true;
+                        break;
+                    }
+                }
+                if (!stillExists) {
+                    AnswerService.deleteAnswer(existingAnswer.getId());
+                }
+            }
+            
+            for (Answer answer : updatedAnswers) {
+                if (answer.getId() > 0) {
+                    AnswerService.updateAnswer(answer);
+                } else {
+                    AnswerService.addAnswer(answer);
+                }
+            }
+            
+            questionAnswers.put(question.getId(), updatedAnswers);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert(AlertType.ERROR, "Error", "Failed to save question changes: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Finds an existing answer or creates a new one.
+     * 
+     * @param existingAnswers List of existing answers
+     * @param index The index of the answer to find
+     * @return An existing answer or a new one if not found
+     */
+    private Answer findOrCreateAnswer(List<Answer> existingAnswers, int index) {
+        if (existingAnswers != null && index < existingAnswers.size()) {
+            return existingAnswers.get(index);
+        }
+        return new Answer();
     }
 }

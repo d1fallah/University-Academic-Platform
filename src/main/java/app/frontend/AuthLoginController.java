@@ -12,29 +12,50 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+/**
+ * Controller class for the login screen.
+ * Handles user authentication, password visibility toggling, and navigation to other screens.
+ * 
+ * @author Sellami Mohamed Odai
+ */
 public class AuthLoginController implements Initializable {
 
+    /** Password field for secured password input */
     @FXML private PasswordField passwordField;
+    
+    /** Username/matricule input field */
     @FXML private TextField usernameField;
+    
+    /** Container for password fields */
     @FXML private HBox passwordContainer;
 
+    /** Text field for showing password in clear text */
     private TextField passwordTextField;
+    
+    /** Tracks whether password is visible */
     private boolean passwordVisible = false;
+    
+    /** Current logged-in user */
     private static User currentUser = null;
 
-    
+    /**
+     * Returns the current logged-in user.
+     * 
+     * @return The current user or null if no user is logged in
+     */
     public static User getCurrentUser() {
         return currentUser;
     }
 
     /**
-     * Sets the current user
+     * Sets the current logged-in user.
      * 
      * @param user The user to set as current user
      */
@@ -43,29 +64,32 @@ public class AuthLoginController implements Initializable {
     }
     
     /**
-     * Loads the login view for a given stage
+     * Loads the login view for a given stage.
+     * Sets up the scene, configures stage properties and ensures proper layout.
      * 
      * @param stage The stage to load the login view into
      * @throws IOException If the login view cannot be loaded
      */
     public static void loadLoginView(Stage stage) throws IOException {
-        // Load the login view
-        Parent loginView = FXMLLoader.load(AuthLoginController.class.getResource("/fxml/login.fxml"));
+        Parent loginView = FXMLLoader.load(AuthLoginController.class.getResource("/fxml/AuthLogin.fxml"));
         Scene loginScene = new Scene(loginView, 1920, 1080);
         
-        // Set new Scene
         stage.setScene(loginScene);
         stage.setTitle("AOPFE Login");
-        
-        // Ensure it stays maximized
         stage.setMaximized(true);
         
         loginView.requestLayout();
     }
 
+    /**
+     * Initializes the controller.
+     * Sets up database connection and configures the password text field.
+     *
+     * @param url The location used to resolve relative paths
+     * @param resourceBundle The resources used by this controller
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        // Initialize the database connection when the login screen loads
         DataBaseConnection.getConnection();
         
         passwordTextField = new TextField();
@@ -73,59 +97,57 @@ public class AuthLoginController implements Initializable {
         passwordTextField.setPromptText("Password");
         passwordTextField.setManaged(false);
         passwordTextField.setVisible(false);
-
         HBox.setMargin(passwordTextField, new Insets(0, 0, 0, 5));
-
         passwordContainer.getChildren().add(2, passwordTextField);
     }
 
+    /**
+     * Toggles visibility of the password between masked and clear text.
+     * Switches between password field and text field while preserving the input value.
+     */
     @FXML
     public void togglePasswordVisibility() {
         passwordVisible = !passwordVisible;
 
         if (passwordVisible) {
-            // Show password
             passwordTextField.setText(passwordField.getText());
             passwordTextField.setManaged(true);
             passwordTextField.setVisible(true);
             passwordField.setManaged(false);
             passwordField.setVisible(false);
-
-            // Ensure the eye icon stays at the end
-            HBox.setHgrow(passwordTextField, javafx.scene.layout.Priority.ALWAYS);
+            HBox.setHgrow(passwordTextField, Priority.ALWAYS);
         } else {
-            // Hide password
             passwordField.setText(passwordTextField.getText());
             passwordField.setManaged(true);
             passwordField.setVisible(true);
             passwordTextField.setManaged(false);
             passwordTextField.setVisible(false);
-
-            // Ensure the eye icon stays at the end
-            HBox.setHgrow(passwordField, javafx.scene.layout.Priority.ALWAYS);
+            HBox.setHgrow(passwordField, Priority.ALWAYS);
         }
     }
 
+    /**
+     * Handles the login button click event.
+     * Validates user input, authenticates credentials and navigates to the appropriate screen.
+     *
+     * @param event The action event triggered by the login button
+     */
     @FXML
     public void handleLogin(ActionEvent event) {
-        // Get the input values
         String matricule = usernameField.getText().trim();
         String password = passwordVisible ? passwordTextField.getText() : passwordField.getText();
         
-        // Validate input
         if (matricule.isEmpty() || password.isEmpty()) {
             showAlert(Alert.AlertType.ERROR, "Login Error", "Please enter both matricule and password.");
             return;
         }
         
-        // Check database connection
         if (!DataBaseConnection.isDatabaseConnected()) {
             showAlert(Alert.AlertType.ERROR, "Database Error", 
                     "Unable to connect to the database. Please make sure MySQL is running and properly configured.");
             return;
         }
         
-        // Attempt login
         User user = AuthService.login(matricule, password);
         
         if (user == null) {
@@ -133,20 +155,13 @@ public class AuthLoginController implements Initializable {
             return;
         }
         
-        // Login successful
-        // Store the current user
         currentUser = user;
         
-        // Load the main screen based on user role
         try {
-            // Load the loading screen
-            Parent loadingView = FXMLLoader.load(getClass().getResource("/fxml/loading.fxml"));
+            Parent loadingView = FXMLLoader.load(getClass().getResource("/fxml/AuthLoading.fxml"));
             Scene loadingScene = new Scene(loadingView, 1920, 1080);
             
-            // Get current stage
             Stage stage = (Stage) usernameField.getScene().getWindow();
-            
-            // Set new Scene
             stage.setScene(loadingScene);
             stage.setMaximized(true);
             
@@ -156,24 +171,22 @@ public class AuthLoginController implements Initializable {
         }
     }
     
+    /**
+     * Navigates to the signup screen when the signup button is clicked.
+     * 
+     * @param event The action event triggered by the signup button
+     */
     @FXML
     public void navigateToSignup(ActionEvent event) {
         try {
-            // Load the signup view
-            Parent signupView = FXMLLoader.load(getClass().getResource("/fxml/signup.fxml"));
+            Parent signupView = FXMLLoader.load(getClass().getResource("/fxml/AuthSignup.fxml"));
             Scene signupScene = new Scene(signupView, 1920, 1080);
             
-            // Get current stage
             Stage stage = (Stage) usernameField.getScene().getWindow();
-            
-            // Set new Scene
             stage.setScene(signupScene);
             stage.setTitle("AOPFE Sign Up");
             
-            // Force layout recalculation to apply proper padding
             signupView.requestLayout();
-
-            // Ensure it stays maximized
             stage.setMaximized(true);
             
         } catch (IOException e) {
@@ -182,7 +195,13 @@ public class AuthLoginController implements Initializable {
         }
     }
     
-    // Helper method to show alerts
+    /**
+     * Displays an alert dialog with the specified type, title, and message.
+     * 
+     * @param alertType The type of alert to display
+     * @param title The title of the alert
+     * @param message The message to display in the alert
+     */
     private void showAlert(Alert.AlertType alertType, String title, String message) {
         Alert alert = new Alert(alertType);
         alert.setTitle(title);

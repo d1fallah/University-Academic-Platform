@@ -3,10 +3,11 @@ module PFE {
     requires javafx.fxml;
     requires java.sql;
     requires jbcrypt;
-    requires javafx.graphics;
+    requires transitive javafx.graphics;
     requires org.apache.pdfbox;
     requires javafx.swing;
     requires java.desktop;
+    requires transitive javafx.base;
 
     exports app;
     exports app.frontend to javafx.fxml;

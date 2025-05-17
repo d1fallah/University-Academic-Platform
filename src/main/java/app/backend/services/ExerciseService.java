@@ -275,4 +275,52 @@ public class ExerciseService {
 
         return exercises;
     }
+    
+    // Get count of exercises by teacher ID
+    public static int getExerciseCountByTeacher(int teacherId) {
+        Connection conn = DataBaseConnection.getConnection();
+        int count = 0;
+
+        String sql = "SELECT COUNT(*) FROM exercice WHERE teacher_id = ?";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, teacherId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                count = rs.getInt(1);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return count;
+    }
+
+    /**
+     * Get count of exercises available for a specific student level
+     * 
+     * @param level The enrollment level of the student
+     * @return Number of exercises
+     */
+    public static int getExerciseCountByLevel(String level) {
+        Connection conn = DataBaseConnection.getConnection();
+        int count = 0;
+
+        String sql = "SELECT COUNT(*) FROM exercice WHERE target_level = ? OR target_level IS NULL";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, level);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                count = rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return count;
+    }
 }

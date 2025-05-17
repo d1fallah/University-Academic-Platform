@@ -2,6 +2,7 @@ package app.backend.services;
 
 import app.backend.database.DataBaseConnection;
 import app.backend.models.Quiz;
+import app.backend.models.User;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -189,6 +190,48 @@ public class QuizService {
         return quizzes;
     }
     
+    /**
+     * Get teachers who have quizzes for a specific educational level
+     * 
+     * @param studentLevel The student's educational level
+     * @return List of teachers with quizzes matching the level
+     */
+    public static List<User> getTeachersWithQuizzesByLevel(String studentLevel) {
+        Connection conn = DataBaseConnection.getConnection();
+        List<User> teachers = new ArrayList<>();
+
+        String sql = "SELECT DISTINCT u.* FROM User u " +
+                    "JOIN Course c ON u.id = c.teacher_id " +
+                    "JOIN Quiz q ON c.id = q.course_id " +
+                    "WHERE u.role = 'teacher' " +
+                    "AND (c.target_level = ? OR c.target_level IS NULL) " +
+                    "ORDER BY u.name";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, studentLevel);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                User teacher = new User(
+                    rs.getInt("id"),
+                    rs.getString("name"),
+                    rs.getString("password"),
+                    rs.getString("matricule"),
+                    rs.getString("role"),
+                    rs.getTimestamp("created_at"),
+                    rs.getString("enrollment_level"),
+                    rs.getString("university_name")
+                );
+                teachers.add(teacher);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return teachers;
+    }
+
     // Get all quizzes by teacher ID
     public static List<Quiz> getQuizzesByTeacherId(int teacherId) {
         Connection conn = DataBaseConnection.getConnection();
@@ -220,5 +263,58 @@ public class QuizService {
         }
 
         return quizzes;
+    }
+    
+    // Get count of quizzes by teacher ID
+    public static int getQuizCountByTeacher(int teacherId) {
+        Connection conn = DataBaseConnection.getConnection();
+        int count = 0;
+
+        String sql = "SELECT COUNT(*) FROM Quiz q " +
+                     "INNER JOIN Course c ON q.course_id = c.id " +
+                     "WHERE c.teacher_id = ?";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, teacherId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                count = rs.getInt(1);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return count;
+    }
+
+    /**
+     * Get count of quizzes available for a specific student level
+     * 
+     * @param level The enrollment level of the student
+     * @return Number of quizzes
+     */
+    public static int getQuizCountByLevel(String level) {
+        Connection conn = DataBaseConnection.getConnection();
+        int count = 0;
+
+        String sql = "SELECT COUNT(*) FROM Quiz q " +
+                     "INNER JOIN Course c ON q.course_id = c.id " +
+                     "WHERE c.target_level = ? OR c.target_level IS NULL";
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, level);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                count = rs.getInt(1);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return count;
     }
 }

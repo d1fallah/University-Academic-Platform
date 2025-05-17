@@ -16,6 +16,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
@@ -32,149 +33,204 @@ import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
-public class TeacherPracticalWorkSubmissionsController implements Initializable {
-
+/**
+ * Controller for the teacher practical work submissions view.
+ * This class manages the display of student submissions for a specific practical work
+ * and provides functionalities to filter, view, and download submission files.
+ *
+ * @author Sellami Mohamed Odai
+ */
+public class TeacherPracticalWorkSubmissionsController implements Initializable {    
+    
+    /** Title label for the view */
     @FXML private Label titleLabel;
+    
+    /** Container for submission items */
     @FXML private VBox submissionsContainer;
+    
+    /** Button to return to previous view */
     @FXML private Button returnButton;
+    
+    /** Scroll pane for submissions */
     @FXML private ScrollPane scrollPane;
     
+    /** Search field for filtering students */
+    @FXML private TextField searchStudentField;
+    
+    /** Current practical work being viewed */
     private PracticalWork currentPracticalWork;
     
+    /** List of all submissions for the current practical work */
+    private List<PracticalWorkSubmission> allSubmissions;
+    
+    /**
+     * Initializes the controller.
+     * Sets up event handlers and listeners for UI components.
+     *
+     * @param location The location used to resolve relative paths for the root object
+     * @param resources The resources used to localize the root object
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Set up return button event handler
         returnButton.setOnAction(event -> handleReturn());
-    }
-    
-    /**
-     * Sets the practical work for this view and loads its submissions
-     */
-    public void setPracticalWork(PracticalWork practicalWork) {
-        this.currentPracticalWork = practicalWork;
         
-        // Update title
-        titleLabel.setText("Submissions for: " + practicalWork.getTitle());
-        
-        // Load submissions
-        loadSubmissions();
-    }
-    
-    /**
-     * Loads all submissions for the current practical work
-     */
-    private void loadSubmissions() {
-        // Clear the container
-        submissionsContainer.getChildren().clear();
-        
-        // Get all submissions for this practical work
-        List<PracticalWorkSubmission> submissions = 
-            PracticalWorkSubmissionService.getSubmissionsByPracticalWorkId(currentPracticalWork.getId());
-        
-        // If no submissions, show a message
-        if (submissions.isEmpty()) {
-            Label noSubmissionsLabel = new Label("No submissions yet for this practical work.");
-            noSubmissionsLabel.getStyleClass().add("no-data-message");
-            noSubmissionsLabel.setPadding(new Insets(20, 0, 0, 0));
-            submissionsContainer.getChildren().add(noSubmissionsLabel);
-        } else {
-            // Create a list item for each submission
-            for (PracticalWorkSubmission submission : submissions) {
-                submissionsContainer.getChildren().add(createSubmissionItem(submission));
-            }
+        if (searchStudentField != null) {
+            searchStudentField.textProperty().addListener((observable, oldValue, newValue) -> handleStudentSearch());
         }
     }
     
     /**
-     * Creates a list item for a submission
+     * Handles student search action.
+     * Filters submissions based on student name.
      */
+    @FXML    
+    public void handleStudentSearch() {
+        if (allSubmissions == null || allSubmissions.isEmpty()) {
+            return;
+        }
+        
+        String searchQuery = searchStudentField.getText().toLowerCase().trim();
+        
+        if (searchQuery.isEmpty()) {
+            displaySubmissions(allSubmissions);
+            return;
+        }
+        
+        List<PracticalWorkSubmission> filteredSubmissions = allSubmissions.stream()
+            .filter(submission -> {
+                User student = AuthService.getUserById(submission.getStudentId());
+                return student != null && student.getName().toLowerCase().contains(searchQuery);
+            })
+            .collect(Collectors.toList());
+        
+        displaySubmissions(filteredSubmissions);
+    }
+    
+    /**
+     * Sets the practical work for this view and loads its submissions.
+     *
+     * @param practicalWork The practical work to display submissions for
+     */    
+    public void setPracticalWork(PracticalWork practicalWork) {
+        this.currentPracticalWork = practicalWork;
+        titleLabel.setText("Submissions for: " + practicalWork.getTitle());
+        loadSubmissions();
+    }
+    
+    /**
+     * Loads all submissions for the current practical work.
+     * Retrieves submissions from the service and displays them.
+     */
+    private void loadSubmissions() {
+        submissionsContainer.getChildren().clear();
+        allSubmissions = PracticalWorkSubmissionService.getSubmissionsByPracticalWorkId(currentPracticalWork.getId());
+        displaySubmissions(allSubmissions);
+    }
+    
+    /**
+     * Displays submissions in the container.
+     * Creates and adds submission items to the container.
+     *
+     * @param submissions The list of submissions to display
+     */    
+    private void displaySubmissions(List<PracticalWorkSubmission> submissions) {
+        submissionsContainer.getChildren().clear();
+        
+        if (submissions.isEmpty()) {
+            Label noSubmissionsLabel = new Label("No submissions found.");
+            noSubmissionsLabel.getStyleClass().add("no-data-message");
+            noSubmissionsLabel.setPadding(new Insets(20, 0, 0, 0));
+            submissionsContainer.getChildren().add(noSubmissionsLabel);
+            return;
+        }
+        
+        submissions.forEach(submission -> 
+            submissionsContainer.getChildren().add(createSubmissionItem(submission))
+        );
+    }
+    
+    /**
+     * Creates a list item for a submission.
+     * Builds UI components for displaying submission details and download button.
+     *
+     * @param submission The submission to create an item for
+     * @return An HBox containing the submission item UI
+     */    
     private HBox createSubmissionItem(PracticalWorkSubmission submission) {
-        // Get student information
         User student = AuthService.getUserById(submission.getStudentId());
         
-        // Main container
         HBox itemContainer = new HBox();
         itemContainer.getStyleClass().add("submission-item");
         itemContainer.setAlignment(Pos.CENTER_LEFT);
         itemContainer.setSpacing(15);
         itemContainer.setPadding(new Insets(15));
         
-        // Student information section
         VBox studentInfo = new VBox(5);
         studentInfo.setAlignment(Pos.CENTER_LEFT);
         HBox.setHgrow(studentInfo, Priority.ALWAYS);
         
-        // Student matricule
         Label matriculeLabel = new Label(student != null ? student.getMatricule() : "Unknown");
         matriculeLabel.getStyleClass().add("submission-matricule");
         
-        // Student name
         Label nameLabel = new Label(student != null ? student.getName() : "Unknown Student");
         nameLabel.getStyleClass().add("submission-name");
         
-        // Submission date
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy 'at' HH:mm");
         String submissionDate = submission.getSubmittedAt() != null ? 
-                                dateFormat.format(submission.getSubmittedAt()) : "Unknown date";
+                               dateFormat.format(submission.getSubmittedAt()) : "Unknown date";
         Label dateLabel = new Label("Submitted: " + submissionDate);
         dateLabel.getStyleClass().add("submission-date");
         
         studentInfo.getChildren().addAll(nameLabel, matriculeLabel, dateLabel);
         
-        // Download button
         Button downloadButton = new Button("Download");
         downloadButton.getStyleClass().add("download-button");
         downloadButton.setOnAction(event -> handleDownload(submission));
         
-        // Add all elements to the item container
         itemContainer.getChildren().addAll(studentInfo, downloadButton);
         
         return itemContainer;
     }
     
     /**
-     * Handles downloading a submission file
-     */
+     * Handles downloading a submission file.
+     * Gets the file from the submissions directory and saves it to a user-selected location.
+     *
+     * @param submission The submission to download
+     */    
     private void handleDownload(PracticalWorkSubmission submission) {
         try {
-            // Get the file path
             String filePath = submission.getFilePath();
             if (filePath == null || filePath.isEmpty()) {
                 showAlert(Alert.AlertType.ERROR, "Error", "File path is not available.");
                 return;
             }
             
-            // Get the app's data directory - using the submissions directory that matches StudentPracticalWorksController
             String submissionsDir = System.getProperty("user.dir") + File.separator + "submissions";
             
-            // Create the directory if it doesn't exist
             Path dirPath = Paths.get(submissionsDir);
             if (!Files.exists(dirPath)) {
                 Files.createDirectories(dirPath);
             }
             
-            // Get the source file
             File sourceFile = new File(submissionsDir + File.separator + filePath);
             if (!sourceFile.exists()) {
                 showAlert(Alert.AlertType.ERROR, "Error", "Submission file not found at path: " + sourceFile.getAbsolutePath());
                 return;
             }
             
-            // Ask user where to save the file
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle("Save Submission File");
             
-            // Get student name for the default filename
             User student = AuthService.getUserById(submission.getStudentId());
             String studentName = student != null ? student.getName().replaceAll("\\s+", "_") : "unknown";
             
-            // Set suggested file name
             String originalFileName = sourceFile.getName();
             String fileName = "submission_" + studentName + "_" + originalFileName;
             fileChooser.setInitialFileName(fileName);
             
-            // Set extension filters based on the file type
             String fileExtension = getFileExtension(originalFileName).toLowerCase();
             if (fileExtension.equals("zip")) {
                 fileChooser.getExtensionFilters().add(
@@ -187,11 +243,9 @@ public class TeacherPracticalWorkSubmissionsController implements Initializable 
                     new FileChooser.ExtensionFilter("All files", "*.*"));
             }
             
-            // Show save dialog
             File targetFile = fileChooser.showSaveDialog(submissionsContainer.getScene().getWindow());
             
             if (targetFile != null) {
-                // Copy the file to the user's chosen location
                 Files.copy(sourceFile.toPath(), targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
                 showAlert(Alert.AlertType.INFORMATION, "Success", "File downloaded successfully.");
             }
@@ -200,10 +254,12 @@ public class TeacherPracticalWorkSubmissionsController implements Initializable 
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Error", "Failed to download file: " + e.getMessage());
         }
-    }
-    
+    }    
     /**
-     * Helper method to get file extension
+     * Extracts the file extension from a filename.
+     *
+     * @param fileName The name of the file
+     * @return The file extension or an empty string if no extension exists
      */
     private String getFileExtension(String fileName) {
         int lastDotIndex = fileName.lastIndexOf(".");
@@ -214,15 +270,14 @@ public class TeacherPracticalWorkSubmissionsController implements Initializable 
     }
     
     /**
-     * Handles the return button action
-     */
+     * Handles the return button action.
+     * Navigates back to the practical works view.
+     */    
     private void handleReturn() {
         try {
-            // Load the practical works view
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/my-practical-works.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/TeacherPracticalWorks.fxml"));
             Parent myPracticalWorksView = loader.load();
             
-            // Get the main layout's content area and set the practical works view
             StackPane contentArea = (StackPane) submissionsContainer.getScene().lookup("#contentArea");
             contentArea.getChildren().clear();
             contentArea.getChildren().add(myPracticalWorksView);
@@ -234,7 +289,11 @@ public class TeacherPracticalWorkSubmissionsController implements Initializable 
     }
     
     /**
-     * Helper method to show alerts
+     * Displays an alert dialog with the specified parameters.
+     *
+     * @param type The type of alert (information, warning, error, etc.)
+     * @param title The title of the alert
+     * @param content The message content of the alert
      */
     private void showAlert(Alert.AlertType type, String title, String content) {
         Alert alert = new Alert(type);

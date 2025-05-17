@@ -15,7 +15,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<StackPane stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.frontend.TeacherPracticalWorkSubmissionsController">
+<StackPane stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="app.frontend.TeacherQuizResultsController">
    <children>
       <BorderPane prefHeight="768.0" prefWidth="1024.0" styleClass="content-container" stylesheets="@../css/main.css">
          <top>
@@ -25,7 +25,7 @@
                      <children>
                         <HBox alignment="CENTER_LEFT" spacing="20">
                            <children>
-                              <Label fx:id="titleLabel" style="-fx-font-size: 28px; -fx-text-fill: white;" text="Submissions for: Practical Work No 3" wrapText="true">
+                              <Label fx:id="titleLabel" style="-fx-font-size: 28px; -fx-text-fill: white;" text="Results for: Quiz for Chapter 2: Modeling with UML" wrapText="true">
                                  <font>
                                     <Font name="Inter" size="35.0" />
                                  </font>
@@ -67,7 +67,7 @@
                <children>
                   <ScrollPane fx:id="scrollPane" fitToWidth="true" hbarPolicy="NEVER" styleClass="content-scroll" VBox.vgrow="ALWAYS">
                      <content>
-                        <VBox fx:id="submissionsContainer" spacing="10.0">
+                        <VBox fx:id="resultsContainer" spacing="10.0">
                            <padding>
                               <Insets bottom="20.0" top="10.0" />
                            </padding>
@@ -80,7 +80,7 @@
          <bottom>
             <HBox alignment="CENTER_RIGHT" spacing="15.0" BorderPane.alignment="CENTER">
                <children>
-                  <Button fx:id="returnButton" mnemonicParsing="false" styleClass="primary-button" text="Return to Practical Works" />
+                  <Button fx:id="returnButton" mnemonicParsing="false" styleClass="primary-button" text="Return to Quizzes" />
                </children>
                <BorderPane.margin>
                   <Insets top="20.0" />
@@ -92,4 +92,4 @@
          </padding>
       </BorderPane>
    </children>
-</StackPane>
+</StackPane> 

@@ -1,0 +1,391 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
+<?import java.lang.String?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<StackPane stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" 
+           fx:controller="app.frontend.StudentDashboardController">
+   <children>
+      <BorderPane styleClass="content-container" stylesheets="@../css/main.css">
+         <top>
+            <VBox BorderPane.alignment="CENTER">
+               <children>
+                  <HBox alignment="CENTER_LEFT">
+                     <children>
+                        <Label styleClass="dashboard-title" text="Dashboard">
+                           <font>
+                              <Font name="Inter" size="61.0" />
+                           </font>
+                        </Label>
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Label fx:id="dateLabel" styleClass="date-label" text="May 12, 2025">
+                           <font>
+                              <Font name="Inter" size="16.0" />
+                           </font>
+                        </Label>
+                     </children>
+                     <VBox.margin>
+                        <Insets bottom="20.0" left="30.0" right="30.0" top="30.0" />
+                     </VBox.margin>
+                  </HBox>
+                  <HBox alignment="CENTER">
+                     <children>
+                        <Separator prefWidth="1360.0" styleClass="header-separator" />
+                     </children>
+                     <VBox.margin>
+                        <Insets bottom="30.0" />
+                     </VBox.margin>
+                  </HBox>
+               </children>
+            </VBox>
+         </top>
+         
+         <center>
+            <ScrollPane fitToHeight="true" fitToWidth="true" styleClass="content-scroll" BorderPane.alignment="CENTER">
+               <content>
+                  <VBox spacing="30.0" styleClass="content-area">
+                     <!-- Welcome Section -->
+                     <VBox styleClass="welcome-section">
+                        <children>
+                           <HBox alignment="CENTER_LEFT" spacing="5.0">
+                              <children>
+                                 <VBox>
+                                    <children>
+                                       <HBox alignment="CENTER_LEFT" spacing="5.0">
+                                          <children>
+                                             <Label text="Welcome back," styleClass="welcome-text">
+                                                <font>
+                                                   <Font name="Inter" size="28.0" />
+                                                </font>
+                                             </Label>
+                                             <Label fx:id="studentNameLabel" text="Student" styleClass="teacher-name">
+                                                <font>
+                                                   <Font name="Inter Bold" size="28.0" />
+                                                </font>
+                                             </Label>
+                                          </children>
+                                       </HBox>
+                                       <Label styleClass="welcome-subtitle" text="Here's an overview of your learning materials">
+                                          <font>
+                                             <Font name="Inter" size="16.0" />
+                                          </font>
+                                       </Label>
+                                    </children>
+                                 </VBox>
+                                 <Region HBox.hgrow="ALWAYS" />
+                                 <ImageView fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                       <Image url="@../images/logo.png" />
+                                    </image>
+                                 </ImageView>
+                              </children>
+                              <padding>
+                                 <Insets bottom="15.0" left="20.0" right="20.0" top="20.0" />
+                              </padding>
+                           </HBox>
+                        </children>
+                        <styleClass>
+                           <String fx:value="section-container" />
+                           <String fx:value="welcome-container" />
+                        </styleClass>
+                     </VBox>
+                     
+                     <!-- Stats Section -->
+                     <HBox spacing="20.0">
+                        <!-- Courses Stat -->
+                        <VBox styleClass="stat-container" HBox.hgrow="ALWAYS">
+                           <children>
+                              <StackPane>
+                                 <children>
+                                    <Rectangle arcHeight="60.0" arcWidth="60.0" fill="#3a3b3c" height="60.0" stroke="#ff7801" strokeType="INSIDE" strokeWidth="0.0" width="60.0" />
+                                    <ImageView fitHeight="35.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/Square Academic Cap.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets bottom="15.0" />
+                                 </VBox.margin>
+                              </StackPane>
+                              <Label fx:id="coursesCountLabel" styleClass="stat-number" text="15">
+                                 <font>
+                                    <Font name="Inter Bold" size="36.0" />
+                                 </font>
+                              </Label>
+                              <Label styleClass="stat-label" text="Courses">
+                                 <font>
+                                    <Font name="Inter" size="16.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                           <padding>
+                              <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                           </padding>
+                        </VBox>
+                        
+                        <!-- Quizzes Stat -->
+                        <VBox styleClass="stat-container" HBox.hgrow="ALWAYS">
+                           <children>
+                              <StackPane>
+                                 <children>
+                                    <Rectangle arcHeight="60.0" arcWidth="60.0" fill="#3a3b3c" height="60.0" stroke="#ff7801" strokeType="INSIDE" strokeWidth="0.0" width="60.0" />
+                                    <ImageView fitHeight="35.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/Object Scan.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets bottom="15.0" />
+                                 </VBox.margin>
+                              </StackPane>
+                              <Label fx:id="quizzesCountLabel" styleClass="stat-number" text="14">
+                                 <font>
+                                    <Font name="Inter Bold" size="36.0" />
+                                 </font>
+                              </Label>
+                              <Label styleClass="stat-label" text="Quizzes">
+                                 <font>
+                                    <Font name="Inter" size="16.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                           <padding>
+                              <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                           </padding>
+                        </VBox>
+                        
+                        <!-- Exercises Stat -->
+                        <VBox styleClass="stat-container" HBox.hgrow="ALWAYS">
+                           <children>
+                              <StackPane>
+                                 <children>
+                                    <Rectangle arcHeight="60.0" arcWidth="60.0" fill="#3a3b3c" height="60.0" stroke="#ff7801" strokeType="INSIDE" strokeWidth="0.0" width="60.0" />
+                                    <ImageView fitHeight="35.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/Ruler Cross Pen.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets bottom="15.0" />
+                                 </VBox.margin>
+                              </StackPane>
+                              <Label fx:id="exercisesCountLabel" styleClass="stat-number" text="8">
+                                 <font>
+                                    <Font name="Inter Bold" size="36.0" />
+                                 </font>
+                              </Label>
+                              <Label styleClass="stat-label" text="Exercises">
+                                 <font>
+                                    <Font name="Inter" size="16.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                           <padding>
+                              <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                           </padding>
+                        </VBox>
+                        
+                        <!-- Practical Work Stat -->
+                        <VBox styleClass="stat-container" HBox.hgrow="ALWAYS">
+                           <children>
+                              <StackPane>
+                                 <children>
+                                    <Rectangle arcHeight="60.0" arcWidth="60.0" fill="#3a3b3c" height="60.0" stroke="#ff7801" strokeType="INSIDE" strokeWidth="0.0" width="60.0" />
+                                    <ImageView fitHeight="35.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../images/Keyboard.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets bottom="15.0" />
+                                 </VBox.margin>
+                              </StackPane>
+                              <Label fx:id="practicalCountLabel" styleClass="stat-number" text="6">
+                                 <font>
+                                    <Font name="Inter Bold" size="36.0" />
+                                 </font>
+                              </Label>
+                              <Label styleClass="stat-label" text="Practical Works">
+                                 <font>
+                                    <Font name="Inter" size="16.0" />
+                                 </font>
+                              </Label>
+                           </children>
+                           <padding>
+                              <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                           </padding>
+                        </VBox>
+                     </HBox>
+                     
+                     <!-- Quick Access Section -->
+                     <VBox styleClass="content-section" VBox.vgrow="ALWAYS">
+                        <children>
+                           <Label styleClass="section-title" text="Quick Access">
+                              <font>
+                                 <Font name="Inter Bold" size="20.0" />
+                              </font>
+                              <VBox.margin>
+                                 <Insets bottom="25.0" left="15.0" top="5.0" />
+                              </VBox.margin>
+                           </Label>
+                           
+                           <HBox fx:id="quickAccessContainer" alignment="CENTER" spacing="25.0" VBox.vgrow="ALWAYS">
+                              <!-- Courses -->
+                              <StackPane fx:id="courseAccess" onMouseClicked="#handleCoursesClick" styleClass="quick-access-tile" HBox.hgrow="ALWAYS">
+                                 <children>
+                                    <VBox alignment="CENTER" spacing="20.0">
+                                       <children>
+                                          <ImageView fitHeight="70.0" fitWidth="70.0" pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@../images/Square Academic Cap.png" />
+                                             </image>
+                                          </ImageView>
+                                          <Label styleClass="tile-title" text="Courses" wrapText="true">
+                                             <font>
+                                                <Font name="System Bold" size="20.0" />
+                                             </font>
+                                          </Label>
+                                          <Label styleClass="tile-subtitle" text="Browse available courses">
+                                             <font>
+                                                <Font size="16.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                       <padding>
+                                          <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+                                       </padding>
+                                    </VBox>
+                                 </children>
+                              </StackPane>
+                              
+                              <!-- Quizzes -->
+                              <StackPane fx:id="quizAccess" onMouseClicked="#handleQuizzesClick" styleClass="quick-access-tile" HBox.hgrow="ALWAYS">
+                                 <children>
+                                    <VBox alignment="CENTER" spacing="20.0">
+                                       <children>
+                                          <ImageView fitHeight="70.0" fitWidth="70.0" pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@../images/Object Scan.png" />
+                                             </image>
+                                          </ImageView>
+                                          <Label styleClass="tile-title" text="Quizzes" wrapText="true">
+                                             <font>
+                                                <Font name="System Bold" size="20.0" />
+                                             </font>
+                                          </Label>
+                                          <Label styleClass="tile-subtitle" text="Browse available quizzes">
+                                             <font>
+                                                <Font size="16.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                       <padding>
+                                          <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+                                       </padding>
+                                    </VBox>
+                                 </children>
+                              </StackPane>
+                              
+                              <!-- Exercises -->
+                              <StackPane fx:id="exerciseAccess" onMouseClicked="#handleExercisesClick" styleClass="quick-access-tile" HBox.hgrow="ALWAYS">
+                                 <children>
+                                    <VBox alignment="CENTER" spacing="20.0">
+                                       <children>
+                                          <ImageView fitHeight="70.0" fitWidth="70.0" pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@../images/Ruler Cross Pen.png" />
+                                             </image>
+                                          </ImageView>
+                                          <Label styleClass="tile-title" text="Exercises" wrapText="true">
+                                             <font>
+                                                <Font name="System Bold" size="20.0" />
+                                             </font>
+                                          </Label>
+                                          <Label styleClass="tile-subtitle" text="Browse available exercises">
+                                             <font>
+                                                <Font size="16.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                       <padding>
+                                          <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+                                       </padding>
+                                    </VBox>
+                                 </children>
+                              </StackPane>
+                              
+                              <!-- Practical Work -->
+                              <StackPane fx:id="practicalWorkAccess" onMouseClicked="#handlePracticalWorkClick" styleClass="quick-access-tile" HBox.hgrow="ALWAYS">
+                                 <children>
+                                    <VBox alignment="CENTER" spacing="20.0">
+                                       <children>
+                                          <ImageView fitHeight="70.0" fitWidth="70.0" pickOnBounds="true" preserveRatio="true">
+                                             <image>
+                                                <Image url="@../images/Keyboard.png" />
+                                             </image>
+                                          </ImageView>
+                                          <Label styleClass="tile-title" text="Practical Works" wrapText="true">
+                                             <font>
+                                                <Font name="System Bold" size="20.0" />
+                                             </font>
+                                          </Label>
+                                          <Label styleClass="tile-subtitle" text="Browse available practical works">
+                                             <font>
+                                                <Font size="16.0" />
+                                             </font>
+                                          </Label>
+                                       </children>
+                                       <padding>
+                                          <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+                                       </padding>
+                                    </VBox>
+                                 </children>
+                              </StackPane>
+                              
+                              <VBox.margin>
+                                 <Insets />
+                              </VBox.margin>
+                           </HBox>
+                        </children>
+                        <padding>
+                           <Insets bottom="40.0" left="40.0" right="40.0" top="30.0" />
+                        </padding>
+                        <VBox.margin>
+                           <Insets top="15.0" />
+                        </VBox.margin>
+                     </VBox>
+                     
+                     <padding>
+                        <Insets bottom="30.0" left="30.0" right="30.0" top="10.0" />
+                     </padding>
+                  </VBox>
+               </content>
+            </ScrollPane>
+         </center>
+      </BorderPane>
+   </children>
+   <VBox.margin>
+      <Insets top="10.0" />
+   </VBox.margin>
+</StackPane> 

@@ -24,6 +24,12 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
+/**
+ * Controller class for quiz viewing and interaction. Handles displaying quiz questions,
+ * collecting answers, and submitting quiz results.
+ * 
+ * @author Sellami Mohamed Odai
+ */
 public class ViewQuizController implements Initializable {
 
     @FXML private BorderPane quizViewerContainer;
@@ -44,31 +50,36 @@ public class ViewQuizController implements Initializable {
     private int currentQuestionIndex = 0;
     private User teacher;
     
+    /**
+     * Initializes the controller and sets up event handlers.
+     *
+     * @param location The location used to resolve relative paths for the root object
+     * @param resources The resources used to localize the root object
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Initialize collections
         questions = new ArrayList<>();
         selectedAnswers = new HashMap<>();
         
-        // Set action for the return button
         returnButton.setOnAction(e -> handleReturn());
-        
-        // Set action for the next button
         nextButton.setOnAction(e -> handleNextQuestion());
     }
     
     /**
-     * Sets the quiz to be displayed and loads its questions
+     * Sets the quiz to be displayed and loads its questions.
+     * If the student has already taken the quiz, shows the result instead.
+     *
+     * @param quiz The quiz to display
      */
     public void setQuiz(Quiz quiz) {
         this.currentQuiz = quiz;
         
-        // Set quiz title and course name
         quizTitleLabel.setText(quiz.getTitle());
+        quizTitleLabel.setWrapText(true);
+        quizTitleLabel.setAlignment(javafx.geometry.Pos.CENTER);
         String courseName = CourseService.getCourseById(quiz.getCourseId()).getTitle();
         courseNameLabel.setText(courseName);
         
-        // Check if the student has already taken this quiz
         if (AuthLoginController.getCurrentUser() != null &&
             AuthLoginController.getCurrentUser().getRole().equals("student")) {
             int studentId = AuthLoginController.getCurrentUser().getId();
@@ -80,38 +91,27 @@ public class ViewQuizController implements Initializable {
             }
         }
         
-        // Continue with loading quiz questions for a new attempt
         loadQuestions();
     }
     
     /**
-     * Loads all questions for the current quiz
+     * Loads all questions for the current quiz and displays the first question.
      */
     private void loadQuestions() {
         if (currentQuiz == null) return;
         
-        // Clear any previous content
         questions.clear();
         selectedAnswers.clear();
         
-        // Fetch questions from the database
         List<Question> quizQuestions = QuestionService.getQuestionsByQuizId(currentQuiz.getId());
         
         if (quizQuestions != null && !quizQuestions.isEmpty()) {
             questions.addAll(quizQuestions);
-            
-            // Remove the loading label
             loadingQuestionsLabel.setVisible(false);
             answersVBox.setVisible(true);
-            
-            // Show the first question
             showCurrentQuestion();
-            
-            // Initialize progress label
             updateProgressLabel();
-            
         } else {
-            // No questions found
             loadingQuestionsLabel.setText("No questions available for this quiz.");
             answersVBox.setVisible(false);
             nextButton.setDisable(true);
@@ -119,7 +119,8 @@ public class ViewQuizController implements Initializable {
     }
     
     /**
-     * Updates the progress label with current question number and total questions
+     * Updates the progress label with current question number and total questions.
+     * Also updates the next button text based on question position.
      */
     private void updateProgressLabel() {
         if (questions.isEmpty()) {
@@ -129,7 +130,6 @@ public class ViewQuizController implements Initializable {
         
         progressLabel.setText(String.format("Question %d/%d", currentQuestionIndex + 1, questions.size()));
         
-        // Update the next button text based on whether this is the last question
         if (currentQuestionIndex >= questions.size() - 1) {
             nextButton.setText("Submit Quiz");
         } else {
@@ -138,42 +138,33 @@ public class ViewQuizController implements Initializable {
     }
     
     /**
-     * Shows the current question based on the currentQuestionIndex
+     * Shows the current question with a fade transition effect.
      */
     private void showCurrentQuestion() {
         if (questions.isEmpty() || currentQuestionIndex < 0 || currentQuestionIndex >= questions.size()) {
             return;
         }
         
-        // First, fade out the current content
         fadeOutContent(() -> {
-            // Get the current question
             Question currentQuestion = questions.get(currentQuestionIndex);
-            
-            // Set the question text
             questionTextLabel.setText(currentQuestion.getQuestionText());
-            
-            // Clear previous answer options
             answersVBox.getChildren().clear();
             
-            // Reset the toggle group
             if (answerGroup != null) {
                 answerGroup.selectToggle(null);
             }
             
-            // Create new answer options
             createAnswerOptions(currentQuestion);
-            
-            // Fade in the new content
             fadeInContent();
         });
     }
     
     /**
-     * Creates radio button options for the current question's answers
+     * Creates radio button options for the current question's answers.
+     *
+     * @param question The question for which to create answer options
      */
     private void createAnswerOptions(Question question) {
-        // Get answers for this question
         List<Answer> answers = AnswerService.getAnswersByQuestionId(question.getId());
         
         if (answers == null || answers.isEmpty()) {
@@ -183,16 +174,13 @@ public class ViewQuizController implements Initializable {
             return;
         }
         
-        // Create radio buttons for each answer
         for (Answer answer : answers) {
-            // Create HBox container for radio + answer text
             HBox answerContainer = new HBox();
             answerContainer.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
-            answerContainer.setSpacing(15); // Increase space between radio and text
+            answerContainer.setSpacing(15);
             answerContainer.setPadding(new javafx.geometry.Insets(8, 0, 8, 0));
             answerContainer.setMaxWidth(Double.MAX_VALUE);
             
-            // Create radio button with constrained width
             RadioButton radio = new RadioButton();
             radio.setToggleGroup(answerGroup);
             radio.setUserData(answer.getId());
@@ -201,20 +189,17 @@ public class ViewQuizController implements Initializable {
             radio.setPrefWidth(20);
             radio.setMaxWidth(20);
             
-            // Check if this answer was previously selected
             Integer selectedAnswerId = selectedAnswers.get(question.getId());
             if (selectedAnswerId != null && selectedAnswerId.equals(answer.getId())) {
                 radio.setSelected(true);
             }
             
-            // Add listener to track selected answers
             radio.selectedProperty().addListener((obs, oldValue, newValue) -> {
                 if (newValue) {
                     selectedAnswers.put(question.getId(), (Integer) radio.getUserData());
                 }
             });
             
-            // Create answer text label with proper styling
             Label answerText = new Label(answer.getAnswerText());
             answerText.setWrapText(true);
             answerText.getStyleClass().add("dialog-input-field");
@@ -222,35 +207,29 @@ public class ViewQuizController implements Initializable {
             answerText.setPrefWidth(600);
             answerText.setMaxWidth(Double.MAX_VALUE);
             
-            // Make the label clickable to select the radio button
-            answerText.setOnMouseClicked(e -> {
-                radio.setSelected(true);
-            });
+            answerText.setOnMouseClicked(e -> radio.setSelected(true));
             
-            // Add to container (radio button first, then the text)
             answerContainer.getChildren().clear();
             answerContainer.getChildren().addAll(radio, answerText);
-            
-            // Add to answers VBox
             answersVBox.getChildren().add(answerContainer);
         }
     }
     
     /**
-     * Fades out the question content and executes an action afterward
+     * Fades out the question content and executes an action afterward.
+     *
+     * @param afterFadeOut Action to execute after fade out completes
      */
     private void fadeOutContent(Runnable afterFadeOut) {
         FadeTransition fadeOut = new FadeTransition(Duration.millis(200), questionsContainer);
         fadeOut.setFromValue(1.0);
         fadeOut.setToValue(0.5);
-        fadeOut.setOnFinished(e -> {
-            afterFadeOut.run();
-        });
+        fadeOut.setOnFinished(e -> afterFadeOut.run());
         fadeOut.play();
     }
     
     /**
-     * Fades in the question content
+     * Fades in the question content.
      */
     private void fadeInContent() {
         FadeTransition fadeIn = new FadeTransition(Duration.millis(300), questionsContainer);
@@ -260,22 +239,20 @@ public class ViewQuizController implements Initializable {
     }
     
     /**
-     * Handles the next question or submit quiz button action
+     * Handles the next question or submit quiz button action.
+     * Validates that the current question has been answered.
      */
     private void handleNextQuestion() {
         Question currentQuestion = questions.get(currentQuestionIndex);
         
-        // Check if current question has been answered
         if (!selectedAnswers.containsKey(currentQuestion.getId())) {
             showAlert(Alert.AlertType.WARNING, "No Answer Selected", "Please select an answer before proceeding.");
             return;
         }
         
-        // Check if this is the last question
         if (currentQuestionIndex >= questions.size() - 1) {
             handleSubmitQuiz();
         } else {
-            // Move to the next question
             currentQuestionIndex++;
             showCurrentQuestion();
             updateProgressLabel();
@@ -283,31 +260,17 @@ public class ViewQuizController implements Initializable {
     }
     
     /**
-     * Handles the return button action
+     * Handles the return button action to navigate back to the quizzes view.
      */
     private void handleReturn() {
         try {
             if (teacher != null) {
-                // Load the teacher quizzes view
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/teacher-quizzes.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/StudentQuizzes.fxml"));
                 Parent quizzesView = loader.load();
                 
-                // Get the controller and set the teacher
                 StudentQuizzesController controller = loader.getController();
                 controller.setTeacher(teacher);
                 
-                // Get the content area from the scene and set the quizzes view
-                StackPane contentArea = (StackPane) quizViewerContainer.getScene().lookup("#contentArea");
-                if (contentArea != null) {
-                    contentArea.getChildren().clear();
-                    contentArea.getChildren().add(quizzesView);
-                }
-            } else {
-                // Fallback to main quizzes view if teacher is not available
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/quizzes.fxml"));
-                Parent quizzesView = loader.load();
-                
-                // Get the content area from the scene and set the quizzes view
                 StackPane contentArea = (StackPane) quizViewerContainer.getScene().lookup("#contentArea");
                 if (contentArea != null) {
                     contentArea.getChildren().clear();
@@ -323,10 +286,11 @@ public class ViewQuizController implements Initializable {
     }
     
     /**
-     * Handles the submit quiz action
+     * Handles the submit quiz action.
+     * Prompts for confirmation if there are unanswered questions,
+     * calculates the score, saves student answers, and shows results.
      */
     private void handleSubmitQuiz() {
-        // Count unanswered questions
         int unanswered = 0;
         for (Question question : questions) {
             if (!selectedAnswers.containsKey(question.getId())) {
@@ -334,7 +298,6 @@ public class ViewQuizController implements Initializable {
             }
         }
         
-        // Warn if there are unanswered questions
         if (unanswered > 0) {
             String message = String.format("You have %d unanswered question%s. Do you want to submit anyway?", 
                                           unanswered, unanswered > 1 ? "s" : "");
@@ -349,15 +312,13 @@ public class ViewQuizController implements Initializable {
             }
         }
         
-        // Calculate the score
         int correctAnswers = 0;
         int totalQuestions = questions.size();
         int incorrectAnswers = 0;
-        List<Integer> userAnswerList = new java.util.ArrayList<>();
-        List<Answer> correctAnswerList = new java.util.ArrayList<>();
+        List<Integer> userAnswerList = new ArrayList<>();
+        List<Answer> correctAnswerList = new ArrayList<>();
         List<StudentAnswer> studentAnswersList = new ArrayList<>();
         
-        // Initialize quizResultId for student answers (will be set after the quiz result is saved)
         int quizResultId = -1;
         
         for (Question question : questions) {
@@ -365,12 +326,7 @@ public class ViewQuizController implements Initializable {
             userAnswerList.add(selectedAnswerId != null ? selectedAnswerId : -1);
             
             List<Answer> answers = AnswerService.getAnswersByQuestionId(question.getId());
-            Answer correctAnswer = null;
-            for (Answer answer : answers) {
-                if (answer.isCorrect()) {
-                    correctAnswer = answer;
-                }
-            }
+            Answer correctAnswer = findCorrectAnswer(answers);
             correctAnswerList.add(correctAnswer);
             
             boolean isCorrect = false;
@@ -381,7 +337,6 @@ public class ViewQuizController implements Initializable {
                 incorrectAnswers++;
             }
             
-            // Create StudentAnswer object for later saving
             StudentAnswer studentAnswer = new StudentAnswer(
                 quizResultId,
                 question.getId(),
@@ -391,11 +346,8 @@ public class ViewQuizController implements Initializable {
             studentAnswersList.add(studentAnswer);
         }
         
-        // Calculate percentage score
         int scorePercentage = totalQuestions > 0 ? (correctAnswers * 100 / totalQuestions) : 0;
         
-        // Save the result if the user is a student
-        boolean resultSaved = false;
         if (AuthLoginController.getCurrentUser() != null &&
             AuthLoginController.getCurrentUser().getRole().equals("student")) {
             QuizResult result = new QuizResult(
@@ -403,9 +355,8 @@ public class ViewQuizController implements Initializable {
                 AuthLoginController.getCurrentUser().getId(),
                 scorePercentage
             );
-            resultSaved = QuizResultService.submitQuizResult(result);
+            boolean resultSaved = QuizResultService.submitQuizResult(result);
             
-            // If the result was saved, get the ID and update student answers
             if (resultSaved) {
                 QuizResult savedResult = QuizResultService.getQuizResult(
                     AuthLoginController.getCurrentUser().getId(),
@@ -413,27 +364,66 @@ public class ViewQuizController implements Initializable {
                 );
                 
                 if (savedResult != null) {
-                    // Update quiz result ID in all student answers
                     for (StudentAnswer answer : studentAnswersList) {
                         answer.setQuizResultId(savedResult.getId());
                     }
                     
-                    // Save all student answers
                     StudentAnswerService.saveStudentAnswers(studentAnswersList);
                 }
             }
         }
         
-        // Show the new result page
+        displayQuizResults(correctAnswers, totalQuestions, incorrectAnswers, questions, 
+                          userAnswerList, correctAnswerList);
+    }
+    
+    /**
+     * Finds the correct answer in a list of answers.
+     *
+     * @param answers List of answers to search
+     * @return The correct answer or null if not found
+     */
+    private Answer findCorrectAnswer(List<Answer> answers) {
+        if (answers == null) return null;
+        
+        for (Answer answer : answers) {
+            if (answer.isCorrect()) {
+                return answer;
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * Displays the quiz results in the result view.
+     *
+     * @param correctAnswers Number of correct answers
+     * @param totalQuestions Total number of questions
+     * @param incorrectAnswers Number of incorrect answers
+     * @param questions The list of quiz questions
+     * @param userAnswerList List of user's selected answer IDs
+     * @param correctAnswerList List of correct answers
+     */
+    private void displayQuizResults(int correctAnswers, int totalQuestions, int incorrectAnswers,
+                                   List<Question> questions, List<Integer> userAnswerList,
+                                   List<Answer> correctAnswerList) {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/quiz-result.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/QuizResult.fxml"));
             Parent resultView = loader.load();
             ViewQuizResultController controller = loader.getController();
-            controller.setResultData(correctAnswers, totalQuestions, correctAnswers, incorrectAnswers, null, questions, userAnswerList, correctAnswerList);
+            
+            controller.setResultData(
+                correctAnswers, 
+                totalQuestions,
+                correctAnswers, 
+                incorrectAnswers, 
+                null, 
+                questions, 
+                userAnswerList, 
+                correctAnswerList
+            );
             controller.disableRetakeQuiz();
             
-            // Replace the current view with the result view without trying to add a return button
-            // The quiz-result.fxml already has a return button in its action buttons section
             StackPane contentArea = (StackPane) quizViewerContainer.getScene().lookup("#contentArea");
             if (contentArea != null) {
                 contentArea.getChildren().clear();
@@ -446,15 +436,22 @@ public class ViewQuizController implements Initializable {
     }
     
     /**
-     * Sets the teacher reference for proper navigation
+     * Sets the teacher reference for proper navigation.
+     *
+     * @param teacher The teacher user
      */
     public void setTeacher(User teacher) {
         this.teacher = teacher;
     }
 
+    /**
+     * Shows the result of a previously taken quiz.
+     *
+     * @param studentId The ID of the student
+     * @param quizId The ID of the quiz
+     */
     private void showQuizResult(int studentId, int quizId) {
         try {
-            // Get the quiz result data
             QuizResult result = QuizResultService.getQuizResult(studentId, quizId);
             
             if (result == null) {
@@ -462,7 +459,6 @@ public class ViewQuizController implements Initializable {
                 return;
             }
             
-            // Load questions for this quiz if not already loaded
             if (questions == null || questions.isEmpty()) {
                 questions = QuestionService.getQuestionsByQuizId(quizId);
                 if (questions == null) {
@@ -470,43 +466,20 @@ public class ViewQuizController implements Initializable {
                 }
             }
             
-            // Get the student answers
             List<StudentAnswer> studentAnswers = StudentAnswerService.getStudentAnswers(result.getId());
             
-            // Convert to lists needed by the quiz result controller
             List<Integer> userAnswerList = new ArrayList<>();
             List<Answer> correctAnswerList = new ArrayList<>();
             
             for (Question question : questions) {
-                // Find the student's answer for this question
-                Integer selectedAnswerId = null;
-                for (StudentAnswer ans : studentAnswers) {
-                    if (ans.getQuestionId() == question.getId()) {
-                        selectedAnswerId = ans.getSelectedAnswerId();
-                        break;
-                    }
-                }
-                
+                Integer selectedAnswerId = findStudentAnswerId(studentAnswers, question.getId());
                 userAnswerList.add(selectedAnswerId != null ? selectedAnswerId : -1);
                 
-                // Find the correct answer
                 List<Answer> answers = AnswerService.getAnswersByQuestionId(question.getId());
-                Answer correctAnswer = null;
-                for (Answer answer : answers) {
-                    if (answer.isCorrect()) {
-                        correctAnswer = answer;
-                        break;
-                    }
-                }
+                Answer correctAnswer = findCorrectAnswer(answers);
                 correctAnswerList.add(correctAnswer);
             }
             
-            // Show the quiz result view
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/quiz-result.fxml"));
-            Parent resultView = loader.load();
-            ViewQuizResultController controller = loader.getController();
-            
-            // Calculate metrics for display
             int totalQuestions = questions.size();
             int correctAnswers = 0;
             int incorrectAnswers = 0;
@@ -519,45 +492,8 @@ public class ViewQuizController implements Initializable {
                 }
             }
             
-            controller.setResultData(correctAnswers, totalQuestions, correctAnswers, incorrectAnswers, null, questions, userAnswerList, correctAnswerList);
-            controller.disableRetakeQuiz(); // Disable retaking the quiz
-            if (teacher != null) {
-                controller.setTeacher(teacher);
-            }
-            
-            // Replace current view with result view
-            // Try different methods to find the content area
-            StackPane contentArea = null;
-            
-            // Method 1: Try through the scene directly if available
-            if (quizViewerContainer != null && quizViewerContainer.getScene() != null) {
-                contentArea = (StackPane) quizViewerContainer.getScene().lookup("#contentArea");
-            }
-            
-            // Method 2: Try through the parent hierarchy
-            if (contentArea == null && quizViewerContainer != null) {
-                Parent parent = quizViewerContainer.getParent();
-                while (parent != null && contentArea == null) {
-                    if (parent instanceof StackPane && parent.getId() != null && parent.getId().equals("contentArea")) {
-                        contentArea = (StackPane) parent;
-                    }
-                    parent = parent.getParent();
-                }
-            }
-            
-            // If content area was found, update the UI
-            if (contentArea != null) {
-                contentArea.getChildren().clear();
-                contentArea.getChildren().add(resultView);
-                return; // Exit the method after successful navigation
-            }
-            
-            // If we got here, we couldn't find the content area
-            // Use the fallback alert
-            showAlert(Alert.AlertType.INFORMATION, "Quiz Result", 
-                "Score: " + correctAnswers + "/" + totalQuestions + 
-                "\nPercentage: " + (totalQuestions > 0 ? (correctAnswers * 100 / totalQuestions) : 0) + "%");
-            
+            displayQuizResultView(correctAnswers, totalQuestions, incorrectAnswers,
+                                 questions, userAnswerList, correctAnswerList);
         } catch (Exception e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Error", "Failed to load quiz result: " + e.getMessage());
@@ -565,7 +501,104 @@ public class ViewQuizController implements Initializable {
     }
     
     /**
-     * Helper method to show alerts
+     * Finds the student's selected answer ID for a question.
+     *
+     * @param studentAnswers List of student answers
+     * @param questionId The question ID to find the answer for
+     * @return The selected answer ID or null if not found
+     */
+    private Integer findStudentAnswerId(List<StudentAnswer> studentAnswers, int questionId) {
+        for (StudentAnswer ans : studentAnswers) {
+            if (ans.getQuestionId() == questionId) {
+                return ans.getSelectedAnswerId();
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * Displays the quiz result view with metrics.
+     *
+     * @param correctAnswers Number of correct answers
+     * @param totalQuestions Total number of questions
+     * @param incorrectAnswers Number of incorrect answers
+     * @param questions The list of quiz questions
+     * @param userAnswerList List of user's selected answer IDs
+     * @param correctAnswerList List of correct answers
+     */
+    private void displayQuizResultView(int correctAnswers, int totalQuestions, int incorrectAnswers,
+                                     List<Question> questions, List<Integer> userAnswerList,
+                                     List<Answer> correctAnswerList) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/QuizResult.fxml"));
+            Parent resultView = loader.load();
+            ViewQuizResultController controller = loader.getController();
+            
+            controller.setResultData(
+                correctAnswers, 
+                totalQuestions, 
+                correctAnswers, 
+                incorrectAnswers, 
+                null, 
+                questions, 
+                userAnswerList, 
+                correctAnswerList
+            );
+            
+            controller.disableRetakeQuiz();
+            if (teacher != null) {
+                controller.setTeacher(teacher);
+            }
+            
+            StackPane contentArea = findContentArea();
+            
+            if (contentArea != null) {
+                contentArea.getChildren().clear();
+                contentArea.getChildren().add(resultView);
+                return;
+            }
+            
+            showAlert(Alert.AlertType.INFORMATION, "Quiz Result", 
+                "Score: " + correctAnswers + "/" + totalQuestions + 
+                "\nPercentage: " + (totalQuestions > 0 ? (correctAnswers * 100 / totalQuestions) : 0) + "%");
+                
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Error", "Failed to load quiz result: " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Finds the content area StackPane through various methods.
+     *
+     * @return The content area StackPane or null if not found
+     */
+    private StackPane findContentArea() {
+        if (quizViewerContainer != null && quizViewerContainer.getScene() != null) {
+            StackPane contentArea = (StackPane) quizViewerContainer.getScene().lookup("#contentArea");
+            if (contentArea != null) return contentArea;
+        }
+        
+        if (quizViewerContainer != null) {
+            Parent parent = quizViewerContainer.getParent();
+            while (parent != null) {
+                if (parent instanceof StackPane && parent.getId() != null && 
+                    parent.getId().equals("contentArea")) {
+                    return (StackPane) parent;
+                }
+                parent = parent.getParent();
+            }
+        }
+        
+        return null;
+    }
+    
+    /**
+     * Helper method to show alerts.
+     *
+     * @param alertType The type of alert to show
+     * @param title The alert title
+     * @param message The alert message
      */
     private void showAlert(Alert.AlertType alertType, String title, String message) {
         Alert alert = new Alert(alertType);
