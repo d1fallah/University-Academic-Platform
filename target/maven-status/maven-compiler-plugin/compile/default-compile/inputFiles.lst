@@ -1,55 +1,55 @@
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\backend\database\DataBaseConnection.java
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\backend\database\DatabaseInitializer.java
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\backend\models\Answer.java
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\backend\models\Course.java
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\backend\models\Exercise.java
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\backend\models\ExerciseSubmission.java
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\backend\models\Notification.java
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\backend\models\PracticalWork.java
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\backend\models\PracticalWorkSubmission.java
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\backend\models\Question.java
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\backend\models\Quiz.java
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\backend\models\QuizResult.java
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\backend\models\StudentAnswer.java
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\backend\models\User.java
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\backend\services\AnswerService.java
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\backend\services\AuthService.java
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\backend\services\CourseService.java
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\backend\services\ExerciseService.java
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\backend\services\ExerciseSubmissionService.java
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\backend\services\FavoriteCoursesService.java
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\backend\services\NotificationService.java
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\backend\services\PracticalWorkService.java
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\backend\services\PracticalWorkSubmissionService.java
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\backend\services\QuestionService.java
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\backend\services\QuizResultService.java
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\backend\services\QuizService.java
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\backend\services\StudentAnswerService.java
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\backend\utils\PasswordHasher.java
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\backend\utils\SessionManager.java
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\frontend\ApplicationController.java
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\frontend\AuthLoadingController.java
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\frontend\AuthLoginController.java
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\frontend\AuthSignupController.java
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\frontend\SavedCoursesController.java
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\frontend\StudentCoursesController.java
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\frontend\StudentDashboardController.java
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\frontend\StudentExercisesController.java
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\frontend\StudentPracticalWorksController.java
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\frontend\StudentQuizzesController.java
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\frontend\TeacherCoursesController.java
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\frontend\TeacherDashboardController.java
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\frontend\TeacherExercisesController.java
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\frontend\TeacherPracticalWorksController.java
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\frontend\TeacherPracticalWorkSubmissionsController.java
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\frontend\TeacherQuizResultsController.java
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\frontend\TeacherQuizzesController.java
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\frontend\TeachersCardsController.java
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\frontend\UserProfileController.java
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\frontend\ViewCourseController.java
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\frontend\ViewExerciseController.java
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\frontend\ViewPracticalWorkController.java
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\frontend\ViewQuizController.java
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\frontend\ViewQuizResultController.java
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\Main.java
-C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\module-info.java
+C:\Users\Admin\Desktop\PFE\src\main\java\app\backend\database\DataBaseConnection.java
+C:\Users\Admin\Desktop\PFE\src\main\java\app\backend\database\DatabaseInitializer.java
+C:\Users\Admin\Desktop\PFE\src\main\java\app\backend\models\Answer.java
+C:\Users\Admin\Desktop\PFE\src\main\java\app\backend\models\Course.java
+C:\Users\Admin\Desktop\PFE\src\main\java\app\backend\models\Exercise.java
+C:\Users\Admin\Desktop\PFE\src\main\java\app\backend\models\ExerciseSubmission.java
+C:\Users\Admin\Desktop\PFE\src\main\java\app\backend\models\Notification.java
+C:\Users\Admin\Desktop\PFE\src\main\java\app\backend\models\PracticalWork.java
+C:\Users\Admin\Desktop\PFE\src\main\java\app\backend\models\PracticalWorkSubmission.java
+C:\Users\Admin\Desktop\PFE\src\main\java\app\backend\models\Question.java
+C:\Users\Admin\Desktop\PFE\src\main\java\app\backend\models\Quiz.java
+C:\Users\Admin\Desktop\PFE\src\main\java\app\backend\models\QuizResult.java
+C:\Users\Admin\Desktop\PFE\src\main\java\app\backend\models\StudentAnswer.java
+C:\Users\Admin\Desktop\PFE\src\main\java\app\backend\models\User.java
+C:\Users\Admin\Desktop\PFE\src\main\java\app\backend\services\AnswerService.java
+C:\Users\Admin\Desktop\PFE\src\main\java\app\backend\services\AuthService.java
+C:\Users\Admin\Desktop\PFE\src\main\java\app\backend\services\CourseService.java
+C:\Users\Admin\Desktop\PFE\src\main\java\app\backend\services\ExerciseService.java
+C:\Users\Admin\Desktop\PFE\src\main\java\app\backend\services\ExerciseSubmissionService.java
+C:\Users\Admin\Desktop\PFE\src\main\java\app\backend\services\FavoriteCoursesService.java
+C:\Users\Admin\Desktop\PFE\src\main\java\app\backend\services\NotificationService.java
+C:\Users\Admin\Desktop\PFE\src\main\java\app\backend\services\PracticalWorkService.java
+C:\Users\Admin\Desktop\PFE\src\main\java\app\backend\services\PracticalWorkSubmissionService.java
+C:\Users\Admin\Desktop\PFE\src\main\java\app\backend\services\QuestionService.java
+C:\Users\Admin\Desktop\PFE\src\main\java\app\backend\services\QuizResultService.java
+C:\Users\Admin\Desktop\PFE\src\main\java\app\backend\services\QuizService.java
+C:\Users\Admin\Desktop\PFE\src\main\java\app\backend\services\StudentAnswerService.java
+C:\Users\Admin\Desktop\PFE\src\main\java\app\backend\utils\PasswordHasher.java
+C:\Users\Admin\Desktop\PFE\src\main\java\app\backend\utils\SessionManager.java
+C:\Users\Admin\Desktop\PFE\src\main\java\app\frontend\ApplicationController.java
+C:\Users\Admin\Desktop\PFE\src\main\java\app\frontend\AuthLoadingController.java
+C:\Users\Admin\Desktop\PFE\src\main\java\app\frontend\AuthLoginController.java
+C:\Users\Admin\Desktop\PFE\src\main\java\app\frontend\AuthSignupController.java
+C:\Users\Admin\Desktop\PFE\src\main\java\app\frontend\SavedCoursesController.java
+C:\Users\Admin\Desktop\PFE\src\main\java\app\frontend\StudentCoursesController.java
+C:\Users\Admin\Desktop\PFE\src\main\java\app\frontend\StudentDashboardController.java
+C:\Users\Admin\Desktop\PFE\src\main\java\app\frontend\StudentExercisesController.java
+C:\Users\Admin\Desktop\PFE\src\main\java\app\frontend\StudentPracticalWorksController.java
+C:\Users\Admin\Desktop\PFE\src\main\java\app\frontend\StudentQuizzesController.java
+C:\Users\Admin\Desktop\PFE\src\main\java\app\frontend\TeacherCoursesController.java
+C:\Users\Admin\Desktop\PFE\src\main\java\app\frontend\TeacherDashboardController.java
+C:\Users\Admin\Desktop\PFE\src\main\java\app\frontend\TeacherExercisesController.java
+C:\Users\Admin\Desktop\PFE\src\main\java\app\frontend\TeacherPracticalWorksController.java
+C:\Users\Admin\Desktop\PFE\src\main\java\app\frontend\TeacherPracticalWorkSubmissionsController.java
+C:\Users\Admin\Desktop\PFE\src\main\java\app\frontend\TeacherQuizResultsController.java
+C:\Users\Admin\Desktop\PFE\src\main\java\app\frontend\TeacherQuizzesController.java
+C:\Users\Admin\Desktop\PFE\src\main\java\app\frontend\TeachersCardsController.java
+C:\Users\Admin\Desktop\PFE\src\main\java\app\frontend\UserProfileController.java
+C:\Users\Admin\Desktop\PFE\src\main\java\app\frontend\ViewCourseController.java
+C:\Users\Admin\Desktop\PFE\src\main\java\app\frontend\ViewExerciseController.java
+C:\Users\Admin\Desktop\PFE\src\main\java\app\frontend\ViewPracticalWorkController.java
+C:\Users\Admin\Desktop\PFE\src\main\java\app\frontend\ViewQuizController.java
+C:\Users\Admin\Desktop\PFE\src\main\java\app\frontend\ViewQuizResultController.java
+C:\Users\Admin\Desktop\PFE\src\main\java\app\Main.java
+C:\Users\Admin\Desktop\PFE\src\main\java\module-info.java

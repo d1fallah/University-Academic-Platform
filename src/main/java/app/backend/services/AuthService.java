@@ -217,4 +217,60 @@ public class AuthService {
 
         return teachers;
     }
+
+    /**
+     * Updates the password for a user after validating the current password.
+     * 
+     * @param matricule The user's matricule
+     * @param currentPassword The current password
+     * @param newPassword The new password
+     * @return true if password was successfully updated, false otherwise
+     */
+    public static boolean updatePassword(String matricule, String currentPassword, String newPassword) {
+        Connection conn = DataBaseConnection.getConnection();
+        
+        if (conn == null) {
+            System.out.println("❌ Cannot update password: Database connection failed.");
+            return false;
+        }
+
+        try {
+            // First, verify the current password
+            String verifySQL = "SELECT password FROM User WHERE matricule = ?";
+            PreparedStatement verifyStmt = conn.prepareStatement(verifySQL);
+            verifyStmt.setString(1, matricule);
+            ResultSet rs = verifyStmt.executeQuery();
+
+            if (!rs.next()) {
+                System.out.println("❌ User not found.");
+                return false;
+            }
+
+            String storedPassword = rs.getString("password");
+            if (!PasswordHasher.checkPassword(currentPassword, storedPassword)) {
+                System.out.println("❌ Current password is incorrect.");
+                return false;
+            }
+
+            // Update the password
+            String updateSQL = "UPDATE User SET password = ? WHERE matricule = ?";
+            PreparedStatement updateStmt = conn.prepareStatement(updateSQL);
+            updateStmt.setString(1, PasswordHasher.hashPassword(newPassword));
+            updateStmt.setString(2, matricule);
+
+            int rowsUpdated = updateStmt.executeUpdate();
+            if (rowsUpdated > 0) {
+                System.out.println("✅ Password updated successfully!");
+                return true;
+            } else {
+                System.out.println("❌ Failed to update password.");
+                return false;
+            }
+
+        } catch (SQLException e) {
+            System.out.println("❌ Database error during password update: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

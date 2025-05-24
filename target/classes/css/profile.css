@@ -1,4 +1,3 @@
-
 .content-section {
   -fx-background-color: #1e1e1e;
   -fx-text-fill: white;
@@ -113,4 +112,184 @@
     -fx-border-radius: 50px;
     -fx-border-width: 7px;
     -fx-effect: dropshadow(gaussian, linear-gradient(to bottom right, rgba(115, 179, 255, 0.7), rgba(166, 81, 78, 0.7)), 15, 0.7, 0, 0);
+}
+
+/* Dialog Styles */
+.dialog-pane {
+    -fx-background-color: #1e1e1e;
+    -fx-border-color: #797979;
+    -fx-border-radius: 20px;
+    -fx-background-radius: 20px;
+    -fx-border-width: 2px;
+}
+
+.dialog-pane .button-bar {
+    -fx-background-color: #1e1e1e;
+    -fx-padding: 15px 20px;
+}
+
+.dialog-container {
+    -fx-background-color: #1e1e1e;
+    -fx-spacing: 20px;
+}
+
+.dialog-title {
+    -fx-font-family: "Inter Bold";
+    -fx-font-size: 28px;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+}
+
+.dialog-field-label {
+    -fx-font-family: "Inter Regular";
+    -fx-font-size: 16px;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.dialog-input-container {
+    -fx-background-color: #1e1e1e;
+    -fx-background-radius: 8px;
+    -fx-border-color: #797979;
+    -fx-border-radius: 8px;
+    -fx-border-width: 2px;
+    -fx-alignment: center-left;
+    -fx-min-height: 50px;
+    -fx-max-height: 50px;
+}
+
+.dialog-input-container:focused-within {
+    -fx-border-color: #ff7f00;
+}
+
+.dialog-icon-container {
+    -fx-padding: 10px;
+    -fx-min-width: 40px;
+    -fx-alignment: center;
+}
+
+.dialog-input-divider {
+    -fx-stroke: #797979;
+    -fx-opacity: 0.7;
+    -fx-stroke-width: 2px;
+}
+
+.dialog-password-field,
+.dialog-text-field {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: #797979;
+    -fx-font-size: 16px;
+    -fx-padding: 0 10px;
+    -fx-border-width: 0;
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+}
+
+.dialog-password-field:focused,
+.dialog-text-field:focused {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+    -fx-effect: none;
+}
+
+.dialog-eye-button {
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+    -fx-padding: 10px;
+    -fx-cursor: hand;
+    -fx-min-width: 40px;
+    -fx-max-width: 40px;
+}
+
+.dialog-eye-button:hover {
+    -fx-background-color: rgba(255, 127, 0, 0.1);
+    -fx-background-radius: 5px;
+}
+
+.password-requirements {
+    -fx-font-family: "Inter Regular";
+    -fx-font-size: 13px;
+    -fx-text-fill: #cccccc;
+    -fx-opacity: 0.8;
+    -fx-wrap-text: true;
+    -fx-alignment: center;
+}
+
+.dialog-ok-button {
+    -fx-background-color: #ff7700;
+    -fx-background-radius: 15px;
+    -fx-text-fill: white;
+    -fx-font-family: "Inter Bold";
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 10px 20px;
+    -fx-cursor: hand;
+}
+
+.dialog-ok-button:hover {
+    -fx-background-color: #ff8800;
+}
+
+.button:cancel {
+    -fx-background-color: #4a4a4a;
+    -fx-background-radius: 15px;
+    -fx-text-fill: white;
+    -fx-font-family: "Inter Regular";
+    -fx-font-size: 14px;
+    -fx-padding: 10px 20px;
+    -fx-cursor: hand;
+}
+
+.button:cancel:hover {
+    -fx-background-color: #5a5a5a;
+}
+
+/* Built-in Password Change Section */
+.password-change-container {
+    -fx-background-color: #2a2a2a;
+    -fx-background-radius: 15px;
+    -fx-border-color: #797979;
+    -fx-border-radius: 15px;
+    -fx-border-width: 1px;
+    -fx-padding: 30px;
+    -fx-spacing: 20px;
+}
+
+.section-title {
+    -fx-font-family: "Inter Bold";
+    -fx-font-size: 24px;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+}
+
+.change-password-button {
+    -fx-background-color: #ff7700;
+    -fx-background-radius: 15px;
+    -fx-text-fill: white;
+    -fx-font-family: "Inter Bold";
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 12px 20px;
+    -fx-cursor: hand;
+}
+
+.change-password-button:hover {
+    -fx-background-color: #ff8800;
+}
+
+.cancel-password-button {
+    -fx-background-color: #4a4a4a;
+    -fx-background-radius: 15px;
+    -fx-text-fill: white;
+    -fx-font-family: "Inter Regular";
+    -fx-font-size: 14px;
+    -fx-padding: 12px 20px;
+    -fx-cursor: hand;
+}
+
+.cancel-password-button:hover {
+    -fx-background-color: #5a5a5a;
 }
