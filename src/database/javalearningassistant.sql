@@ -225,9 +225,7 @@ CREATE TABLE `favorite_courses` (
   `student_id` int(11) NOT NULL,
   `course_id` int(11) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  PRIMARY KEY (`student_id`, `course_id`),
-  FOREIGN KEY (`student_id`) REFERENCES `user` (`id`) ON DELETE CASCADE,
-  FOREIGN KEY (`course_id`) REFERENCES `course` (`id`) ON DELETE CASCADE
+  PRIMARY KEY (`student_id`, `course_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
@@ -490,6 +488,13 @@ ALTER TABLE `studentanswer`
   ADD CONSTRAINT `studentanswer_ibfk_1` FOREIGN KEY (`quiz_result_id`) REFERENCES `quizresult` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `studentanswer_ibfk_2` FOREIGN KEY (`question_id`) REFERENCES `question` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `studentanswer_ibfk_3` FOREIGN KEY (`selected_answer_id`) REFERENCES `answer` (`id`) ON DELETE SET NULL;
+
+--
+-- Contraintes pour la table `favorite_courses`
+--
+ALTER TABLE `favorite_courses`
+  ADD CONSTRAINT `favorite_courses_ibfk_1` FOREIGN KEY (`student_id`) REFERENCES `user` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `favorite_courses_ibfk_2` FOREIGN KEY (`course_id`) REFERENCES `course` (`id`) ON DELETE CASCADE;
 
 COMMIT;
 
