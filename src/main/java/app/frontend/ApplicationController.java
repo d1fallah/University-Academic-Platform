@@ -255,7 +255,7 @@ public class ApplicationController implements Initializable {
      */
     private void loadSavedCourses() {
         setActiveMenuItem(savedCoursesItem);
-        loadContent("saved-courses.fxml");
+        loadContent("SavedCourses.fxml");
     }
 
     /**
@@ -264,7 +264,7 @@ public class ApplicationController implements Initializable {
      */
     private void loadMyResults() {
         setActiveMenuItem(myResultsItem);
-        loadContent("my-results.fxml");
+        loadContent("UserProfile.fxml");
     }
 
     /**

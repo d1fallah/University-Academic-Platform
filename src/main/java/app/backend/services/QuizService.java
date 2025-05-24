@@ -1,6 +1,7 @@
 package app.backend.services;
 
 import app.backend.database.DataBaseConnection;
+import app.backend.models.Course;
 import app.backend.models.Quiz;
 import app.backend.models.User;
 import java.sql.*;
@@ -22,6 +23,13 @@ public class QuizService {
             stmt.setString(4, quiz.getComment());
 
             int rowsInserted = stmt.executeUpdate();
+            
+            // If quiz was added successfully, get the course and send notifications
+            if (rowsInserted > 0) {
+                // Get the course target level and teacher ID
+                Course course = CourseService.getCourseById(quiz.getCourseId());
+            }
+            
             return rowsInserted > 0;
 
         } catch (SQLException e) {

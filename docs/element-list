@@ -1,0 +1,7 @@
+module:PFE
+app
+app.backend.database
+app.backend.models
+app.backend.services
+app.backend.utils
+app.frontend

@@ -3,6 +3,7 @@ package app.frontend;
 import app.backend.models.Course;
 import app.backend.models.User;
 import app.backend.services.CourseService;
+import app.backend.services.FavoriteCoursesService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -180,16 +181,13 @@ public class StudentCoursesController implements Initializable {
         cardContent.setPrefWidth(480);
         cardContent.setPrefHeight(230);
 
-        // Header with title and logo
         HBox headerBox = createHeaderBox(course);
 
-        // Course description
         Label descriptionLabel = createDescriptionLabel(course);
 
         Region spacer = new Region();
         VBox.setVgrow(spacer, Priority.ALWAYS);
 
-        // Footer with instructor info and button
         HBox footerBox = createFooterBox(course);
 
         cardContent.getChildren().addAll(headerBox, descriptionLabel, spacer, footerBox);
@@ -212,7 +210,6 @@ public class StudentCoursesController implements Initializable {
         headerBox.setPrefWidth(480);
         headerBox.setSpacing(20);
 
-        // Title container
         VBox titleContainer = new VBox();
         titleContainer.setAlignment(Pos.TOP_LEFT);
         titleContainer.setPrefWidth(390);
@@ -224,26 +221,22 @@ public class StudentCoursesController implements Initializable {
         titleLabel.setMinHeight(Region.USE_PREF_SIZE);
         titleContainer.getChildren().add(titleLabel);
 
-        // Logo container
-        StackPane logoContainer = new StackPane();
-        logoContainer.setMinWidth(50);
-        logoContainer.setMaxWidth(50);
-        logoContainer.setPrefHeight(50);
+        VBox logoContainer = new VBox();
+        logoContainer.setSpacing(10);
         logoContainer.setAlignment(Pos.TOP_CENTER);
-        logoContainer.getStyleClass().add("logo-container");
 
         ImageView courseIcon = new ImageView();
         try {
             Image logo = new Image(getClass().getResourceAsStream("/images/courseCardLogo.png"));
             courseIcon.setImage(logo);
+            courseIcon.setFitWidth(50);
+            courseIcon.setFitHeight(50);
+            courseIcon.getStyleClass().add("course-icon");
         } catch (Exception e) {
             System.out.println("Failed to load logo for course: " + course.getTitle());
         }
-        courseIcon.setFitWidth(50);
-        courseIcon.setFitHeight(50);
-        courseIcon.getStyleClass().add("course-icon");
-        logoContainer.getChildren().add(courseIcon);
 
+        logoContainer.getChildren().addAll(courseIcon);
         headerBox.getChildren().addAll(titleContainer, logoContainer);
         return headerBox;
     }
@@ -279,7 +272,6 @@ public class StudentCoursesController implements Initializable {
         footerBox.setAlignment(Pos.BOTTOM_LEFT);
         footerBox.setPrefWidth(480);
 
-        // Instructor info
         HBox instructorBox = new HBox();
         instructorBox.getStyleClass().add("card-instructor");
         instructorBox.setAlignment(Pos.CENTER_LEFT);
@@ -302,17 +294,59 @@ public class StudentCoursesController implements Initializable {
         instructorLabel.getStyleClass().add("instructor-name");
         instructorBox.getChildren().addAll(instructorIcon, instructorLabel);
 
-        // Button section
         HBox buttonBox = new HBox();
         buttonBox.setAlignment(Pos.CENTER_RIGHT);
 
+        ToggleButton favoriteButton = new ToggleButton();
+        favoriteButton.getStyleClass().add("favorite-button");
+        favoriteButton.setFocusTraversable(false);
+        
+        ImageView starIcon = new ImageView();
+        try {
+            boolean isFavorite = FavoriteCoursesService.isFavoriteCourse(currentUser.getId(), course.getId());
+            Image starImage = new Image(getClass().getResourceAsStream(isFavorite ? "/images/star-active.png" : "/images/star.png"));
+            starIcon.setImage(starImage);
+            starIcon.setFitWidth(24);
+            starIcon.setFitHeight(26);
+            favoriteButton.setGraphic(starIcon);
+            favoriteButton.setSelected(isFavorite);
+        } catch (Exception e) {
+            System.out.println("Failed to load star icon for course: " + course.getTitle());
+        }
+
+        favoriteButton.setOnAction(event -> {
+            boolean isNowFavorite = favoriteButton.isSelected();
+            boolean success;
+            
+            if (isNowFavorite) {
+                success = FavoriteCoursesService.addFavoriteCourse(currentUser.getId(), course.getId());
+            } else {
+                success = FavoriteCoursesService.removeFavoriteCourse(currentUser.getId(), course.getId());
+            }
+            
+            if (success) {
+                try {
+                    Image newStarImage = new Image(getClass().getResourceAsStream(
+                        isNowFavorite ? "/images/star-active.png" : "/images/star.png"
+                    ));
+                    starIcon.setImage(newStarImage);
+                } catch (Exception e) {
+                    System.out.println("Failed to update star icon");
+                }
+            } else {
+                favoriteButton.setSelected(!isNowFavorite);
+            }
+        });
+
         Button viewButton = new Button("View Course");
         viewButton.getStyleClass().add("view-course-button");
-        viewButton.setStyle("-fx-background-color: #65558f;");
+        viewButton.setStyle("-fx-background-color: #65558f; -fx-background-radius: 8px;");
         viewButton.setPrefWidth(110);
         viewButton.setPrefHeight(24);
         viewButton.setOnAction(e -> handleViewCourseDetails(course));
-        buttonBox.getChildren().add(viewButton);
+
+        buttonBox.setSpacing(4);
+        buttonBox.getChildren().addAll(favoriteButton, viewButton);
 
         footerBox.getChildren().addAll(instructorBox, buttonBox);
         return footerBox;

@@ -17,6 +17,8 @@ C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\backend\services\A
 C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\backend\services\CourseService.java
 C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\backend\services\ExerciseService.java
 C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\backend\services\ExerciseSubmissionService.java
+C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\backend\services\FavoriteCoursesService.java
+C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\backend\services\NotificationService.java
 C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\backend\services\PracticalWorkService.java
 C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\backend\services\PracticalWorkSubmissionService.java
 C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\backend\services\QuestionService.java
@@ -29,6 +31,7 @@ C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\frontend\Applicati
 C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\frontend\AuthLoadingController.java
 C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\frontend\AuthLoginController.java
 C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\frontend\AuthSignupController.java
+C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\frontend\SavedCoursesController.java
 C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\frontend\StudentCoursesController.java
 C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\frontend\StudentDashboardController.java
 C:\Users\Admin\Desktop\Projet Fin Etude\PFE\src\main\java\app\frontend\StudentExercisesController.java

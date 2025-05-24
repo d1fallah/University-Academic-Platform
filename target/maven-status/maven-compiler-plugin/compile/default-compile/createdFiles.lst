@@ -35,6 +35,7 @@ app\backend\utils\PasswordHasher.class
 app\backend\database\DataBaseConnection.class
 app\backend\models\Notification.class
 app\backend\services\QuizService.class
+app\backend\services\FavoriteCoursesService.class
 app\frontend\TeacherQuizzesController$2.class
 app\backend\utils\SessionManager.class
 app\backend\models\QuizResult.class
@@ -50,6 +51,7 @@ app\backend\models\User.class
 app\frontend\TeacherPracticalWorksController.class
 app\frontend\AuthSignupController.class
 app\backend\services\AuthService.class
+app\frontend\SavedCoursesController.class
 app\frontend\StudentExercisesController.class
 app\backend\models\Course.class
 app\frontend\TeacherPracticalWorkSubmissionsController.class

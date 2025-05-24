@@ -667,7 +667,6 @@
   -fx-background-color: rgba(255, 255, 255, 0.1);
 }
 
-/* DatePicker styling for non-dialog contexts */
 .date-picker {
   -fx-background-color: transparent;
 }
@@ -738,7 +737,6 @@
   -fx-border-width: 2px;
 }
 
-/* Styles for practical work submissions view */
 .submission-item {
   -fx-background-color: #333333;
   -fx-background-radius: 10px;
@@ -818,7 +816,6 @@
   -fx-background-color: transparent;
 }
 
-/* Dashboard Styles */
 .welcome-box {
   -fx-background-color: #292929;
   -fx-background-radius: 12px;
@@ -959,7 +956,6 @@
   -fx-wrap-text: true;
 }
 
-/* Dashboard Styles */
 .dashboard-title {
     -fx-font-family: 'Inter';
     -fx-font-size: 36px;
@@ -1101,5 +1097,38 @@
 
 .view-exercises-button:hover {
   -fx-background-color: #7a699f;
+}
+
+.save-course-button {
+  -fx-background-color: transparent;
+  -fx-cursor: hand;
+  -fx-padding: 5;
+}
+
+.save-course-button:hover {
+  -fx-opacity: 0.8;
+}
+
+.favorite-button {
+    -fx-background-color: white;
+    -fx-padding: 4 8 4 8;
+    -fx-border-width: 1px;
+    -fx-border-color: #e0e0e0;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-cursor: hand;
+    -fx-effect: none;
+    -fx-content-display: graphic-only;
+    -fx-alignment: center;
+}
+
+.favorite-button:hover {
+    -fx-background-color: #f5f5f5;
+    -fx-effect: none;
+}
+
+.favorite-button:selected {
+    -fx-background-color: white;
+    -fx-effect: none;
 }
 

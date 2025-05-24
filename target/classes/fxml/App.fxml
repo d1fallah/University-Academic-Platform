@@ -39,15 +39,6 @@
                            <Label fx:id="portalTypeLabel" styleClass="app-subtitle" text="Student Portal" />
                         </children>
                      </VBox>
-                     <HBox alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS">
-                        <children>
-                           <ImageView fitHeight="35.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
-                              <image>
-                                 <Image url="@../images/Bell.png" />
-                              </image>
-                           </ImageView>
-                        </children>
-                     </HBox>
                   </children>
                   <padding>
                      <Insets left="40.0" right="40.0" />

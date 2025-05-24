@@ -25,6 +25,7 @@ public class ExerciseService {
             stmt.setInt(7, exercise.getTeacherId());
 
             int rowsInserted = stmt.executeUpdate();
+            
             return rowsInserted > 0;
 
         } catch (SQLException e) {

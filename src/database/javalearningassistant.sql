@@ -216,6 +216,20 @@ CREATE TABLE `validid` (
   `role` enum('student','teacher') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+
+--
+-- Structure de la table `favorite_courses`
+--
+
+CREATE TABLE `favorite_courses` (
+  `student_id` int(11) NOT NULL,
+  `course_id` int(11) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`student_id`, `course_id`),
+  FOREIGN KEY (`student_id`) REFERENCES `user` (`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`course_id`) REFERENCES `course` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 --
 -- Index pour les tables déchargées
 --
@@ -491,6 +505,9 @@ ADD COLUMN university_name VARCHAR(255) DEFAULT NULL;
 ALTER TABLE ValidID
 ADD COLUMN enrollment_level ENUM('L1','L2','L3','M1','M2') DEFAULT NULL,
 ADD COLUMN university_name VARCHAR(255) DEFAULT NULL;
+
+ALTER TABLE course 
+ADD COLUMN saved TINYINT(1) NOT NULL DEFAULT 0;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
