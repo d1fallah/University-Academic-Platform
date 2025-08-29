@@ -1,1 +1,11 @@
+![Preview](login.png)
+![Preview](signup.png)
+![Preview](prev1.png)
+![Preview](course.png)
+![Preview](prev2.png)
+![Preview](prev3.png)
+![Preview](prev4.png)
+![Preview](profile.png)
+![Preview](quiz1.png)
+![Preview](quiz2.png)
 
